@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import {useState} from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import {ChatActionsApi} from "./data/api.ts";
+import {ChatMessage_MessageStatus} from "./proto/chat/chat_actions.ts";
 
 function App() {
   const [count, setCount] = useState(0)
-
   return (
     <>
       <div>
@@ -28,6 +29,17 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+        <button onClick={async () => {
+            await ChatActionsApi.sendMessage({
+                authorId: "sdfsdf",
+                linkedChatId: "fsdf",
+                stampMillis: 4353234n,
+                status: ChatMessage_MessageStatus.sent,
+                text: "fgsdf"
+            })
+        }}>
+            send message
+        </button>
     </>
   )
 }
