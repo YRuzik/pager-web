@@ -1,45 +1,19 @@
-import {useState} from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import {ChatActionsApi} from "./data/api.ts";
-import {ChatMessage_MessageStatus} from "./proto/chat/chat_actions.ts";
+import TestComponent from "./components/testComponent/TestComponent.tsx";
+import {useEffect, useState} from "react";
+import {streamHandler} from "./data/streams.ts";
+import {StreamsApi} from "./data/api.ts";
+import {ChatStreamRequest} from "./proto/transfers/streams.ts";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [init, setInit] = useState(true)
+  useEffect(() => {
+      streamHandler<ChatStreamRequest>(init, () => setInit(!init), StreamsApi.streamChat.bind(StreamsApi), {chatId: "sdfsdf"})
+      // testStream(init, () => setInit(false))
+  }, [init])
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-        <button onClick={async () => {
-            await ChatActionsApi.sendMessage({
-                authorId: "sdfsdf",
-                linkedChatId: "fsdf",
-                stampMillis: 4353234n,
-                status: ChatMessage_MessageStatus.sent,
-                text: "fgsdf"
-            })
-        }}>
-            send message
-        </button>
+      <TestComponent/>
     </>
   )
 }
