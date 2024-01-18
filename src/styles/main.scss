@@ -1,0 +1,26 @@
+@use 'global';
+
+body {
+  background-color: global.$bg-color;
+  font-family: "Circular", sans-serif;
+  font-weight: 400;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: global.$light-brand-color;
+  border-radius: global.$max-br;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #92aaf1;
+  border-radius: global.$max-br;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

@@ -32,11 +32,11 @@ export enum ProfileStreamRequest_Type {
      */
     profile_info = 1,
     /**
-     * данные чатах
+     * информация о роли в чатах
      *
-     * @generated from protobuf enum value: chats = 2;
+     * @generated from protobuf enum value: chats_role = 2;
      */
-    chats = 2
+    chats_role = 2
 }
 /**
  * @generated from protobuf message com.pager.api.ChatStreamRequest
@@ -56,11 +56,17 @@ export enum ChatStreamRequest_Type {
      */
     none = 0,
     /**
+     * информация о чате
+     *
+     * @generated from protobuf enum value: chat_info = 1;
+     */
+    chat_info = 1,
+    /**
      * сообщения в чате
      *
-     * @generated from protobuf enum value: messages = 1;
+     * @generated from protobuf enum value: messages = 2;
      */
-    messages = 1
+    messages = 2
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class ProfileStreamRequest$Type extends MessageType<ProfileStreamRequest> {

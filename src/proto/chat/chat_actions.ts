@@ -29,11 +29,7 @@ export interface Chat {
      */
     metadata?: ChatMetadata; // дополнительная информация
     /**
-     * @generated from protobuf field: repeated com.pager.api.ChatMessage messages = 4;
-     */
-    messages: ChatMessage[]; // сообщения в чате
-    /**
-     * @generated from protobuf field: repeated string members_id = 5;
+     * @generated from protobuf field: repeated string members_id = 4;
      */
     membersId: string[]; // идентификаторы участников
 }
@@ -51,27 +47,61 @@ export interface ChatMetadata {
     avatarUrl?: string; // обложка для группового чата
 }
 /**
+ * @generated from protobuf message com.pager.api.ChatRole
+ */
+export interface ChatRole {
+    /**
+     * @generated from protobuf field: string id = 1;
+     */
+    id: string; // идентификатор чата
+    /**
+     * @generated from protobuf field: com.pager.api.ChatRole.Roles role = 2;
+     */
+    role: ChatRole_Roles; // роль в чате
+}
+/**
+ * @generated from protobuf enum com.pager.api.ChatRole.Roles
+ */
+export enum ChatRole_Roles {
+    /**
+     * @generated from protobuf enum value: none = 0;
+     */
+    none = 0,
+    /**
+     * @generated from protobuf enum value: member = 1;
+     */
+    member = 1,
+    /**
+     * @generated from protobuf enum value: viewer = 2;
+     */
+    viewer = 2
+}
+/**
  * @generated from protobuf message com.pager.api.ChatMessage
  */
 export interface ChatMessage {
     /**
-     * @generated from protobuf field: optional string text = 1;
+     * @generated from protobuf field: string id = 1;
+     */
+    id: string; // идентификатор сообщения
+    /**
+     * @generated from protobuf field: optional string text = 2;
      */
     text?: string; // текст сообщения
     /**
-     * @generated from protobuf field: int64 stamp_millis = 2;
+     * @generated from protobuf field: int64 stamp_millis = 3;
      */
     stampMillis: bigint; // время отправки сообщения
     /**
-     * @generated from protobuf field: com.pager.api.ChatMessage.MessageStatus status = 3;
+     * @generated from protobuf field: com.pager.api.ChatMessage.MessageStatus status = 4;
      */
     status: ChatMessage_MessageStatus; // статус сообщения
     /**
-     * @generated from protobuf field: string author_id = 4;
+     * @generated from protobuf field: string author_id = 5;
      */
     authorId: string; // автор сообщения
     /**
-     * @generated from protobuf field: string linked_chat_id = 5;
+     * @generated from protobuf field: string linked_chat_id = 6;
      */
     linkedChatId: string; // связанный чат
 }
@@ -139,15 +169,13 @@ class Chat$Type extends MessageType<Chat> {
             { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "type", kind: "enum", T: () => ["com.pager.api.ChatType", ChatType] },
             { no: 3, name: "metadata", kind: "message", T: () => ChatMetadata },
-            { no: 4, name: "messages", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => ChatMessage },
-            { no: 5, name: "members_id", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+            { no: 4, name: "members_id", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Chat>): Chat {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.id = "";
         message.type = 0;
-        message.messages = [];
         message.membersId = [];
         if (value !== undefined)
             reflectionMergePartial<Chat>(this, message, value);
@@ -167,10 +195,7 @@ class Chat$Type extends MessageType<Chat> {
                 case /* optional com.pager.api.ChatMetadata metadata */ 3:
                     message.metadata = ChatMetadata.internalBinaryRead(reader, reader.uint32(), options, message.metadata);
                     break;
-                case /* repeated com.pager.api.ChatMessage messages */ 4:
-                    message.messages.push(ChatMessage.internalBinaryRead(reader, reader.uint32(), options));
-                    break;
-                case /* repeated string members_id */ 5:
+                case /* repeated string members_id */ 4:
                     message.membersId.push(reader.string());
                     break;
                 default:
@@ -194,12 +219,9 @@ class Chat$Type extends MessageType<Chat> {
         /* optional com.pager.api.ChatMetadata metadata = 3; */
         if (message.metadata)
             ChatMetadata.internalBinaryWrite(message.metadata, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
-        /* repeated com.pager.api.ChatMessage messages = 4; */
-        for (let i = 0; i < message.messages.length; i++)
-            ChatMessage.internalBinaryWrite(message.messages[i], writer.tag(4, WireType.LengthDelimited).fork(), options).join();
-        /* repeated string members_id = 5; */
+        /* repeated string members_id = 4; */
         for (let i = 0; i < message.membersId.length; i++)
-            writer.tag(5, WireType.LengthDelimited).string(message.membersId[i]);
+            writer.tag(4, WireType.LengthDelimited).string(message.membersId[i]);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -265,18 +287,75 @@ class ChatMetadata$Type extends MessageType<ChatMetadata> {
  */
 export const ChatMetadata = new ChatMetadata$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class ChatRole$Type extends MessageType<ChatRole> {
+    constructor() {
+        super("com.pager.api.ChatRole", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "role", kind: "enum", T: () => ["com.pager.api.ChatRole.Roles", ChatRole_Roles] }
+        ]);
+    }
+    create(value?: PartialMessage<ChatRole>): ChatRole {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        message.role = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ChatRole>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChatRole): ChatRole {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* com.pager.api.ChatRole.Roles role */ 2:
+                    message.role = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChatRole, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* com.pager.api.ChatRole.Roles role = 2; */
+        if (message.role !== 0)
+            writer.tag(2, WireType.Varint).int32(message.role);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message com.pager.api.ChatRole
+ */
+export const ChatRole = new ChatRole$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class ChatMessage$Type extends MessageType<ChatMessage> {
     constructor() {
         super("com.pager.api.ChatMessage", [
-            { no: 1, name: "text", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "stamp_millis", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
-            { no: 3, name: "status", kind: "enum", T: () => ["com.pager.api.ChatMessage.MessageStatus", ChatMessage_MessageStatus] },
-            { no: 4, name: "author_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "linked_chat_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "text", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "stamp_millis", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 4, name: "status", kind: "enum", T: () => ["com.pager.api.ChatMessage.MessageStatus", ChatMessage_MessageStatus] },
+            { no: 5, name: "author_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "linked_chat_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ChatMessage>): ChatMessage {
         const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
         message.stampMillis = 0n;
         message.status = 0;
         message.authorId = "";
@@ -290,19 +369,22 @@ class ChatMessage$Type extends MessageType<ChatMessage> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* optional string text */ 1:
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* optional string text */ 2:
                     message.text = reader.string();
                     break;
-                case /* int64 stamp_millis */ 2:
+                case /* int64 stamp_millis */ 3:
                     message.stampMillis = reader.int64().toBigInt();
                     break;
-                case /* com.pager.api.ChatMessage.MessageStatus status */ 3:
+                case /* com.pager.api.ChatMessage.MessageStatus status */ 4:
                     message.status = reader.int32();
                     break;
-                case /* string author_id */ 4:
+                case /* string author_id */ 5:
                     message.authorId = reader.string();
                     break;
-                case /* string linked_chat_id */ 5:
+                case /* string linked_chat_id */ 6:
                     message.linkedChatId = reader.string();
                     break;
                 default:
@@ -317,21 +399,24 @@ class ChatMessage$Type extends MessageType<ChatMessage> {
         return message;
     }
     internalBinaryWrite(message: ChatMessage, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* optional string text = 1; */
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* optional string text = 2; */
         if (message.text !== undefined)
-            writer.tag(1, WireType.LengthDelimited).string(message.text);
-        /* int64 stamp_millis = 2; */
+            writer.tag(2, WireType.LengthDelimited).string(message.text);
+        /* int64 stamp_millis = 3; */
         if (message.stampMillis !== 0n)
-            writer.tag(2, WireType.Varint).int64(message.stampMillis);
-        /* com.pager.api.ChatMessage.MessageStatus status = 3; */
+            writer.tag(3, WireType.Varint).int64(message.stampMillis);
+        /* com.pager.api.ChatMessage.MessageStatus status = 4; */
         if (message.status !== 0)
-            writer.tag(3, WireType.Varint).int32(message.status);
-        /* string author_id = 4; */
+            writer.tag(4, WireType.Varint).int32(message.status);
+        /* string author_id = 5; */
         if (message.authorId !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.authorId);
-        /* string linked_chat_id = 5; */
+            writer.tag(5, WireType.LengthDelimited).string(message.authorId);
+        /* string linked_chat_id = 6; */
         if (message.linkedChatId !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.linkedChatId);
+            writer.tag(6, WireType.LengthDelimited).string(message.linkedChatId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

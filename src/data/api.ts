@@ -2,9 +2,15 @@ import {ChatActionsClient} from "../proto/chat/chat_actions.client.ts";
 import {GrpcWebFetchTransport} from "@protobuf-ts/grpcweb-transport";
 import {PagerStreamsClient} from "../proto/transfers/streams.client.ts";
 import {ChatMessage, CreateChatRequest} from "../proto/chat/chat_actions.ts";
-import {RpcOptions} from "@protobuf-ts/runtime-rpc";
+import {
+    MethodInfo,
+    NextUnaryFn,
+    RpcOptions,
+    UnaryCall
+} from "@protobuf-ts/runtime-rpc";
+import profile from "./mobx/profile.ts";
 
-const host = "http://localhost:4001";
+export const host = "http://localhost:4001";
 
 const transport = new GrpcWebFetchTransport({
     baseUrl: host
@@ -12,7 +18,15 @@ const transport = new GrpcWebFetchTransport({
 
 const authOptions: RpcOptions = {
     interceptors: [
-
+        {
+            interceptUnary(next: NextUnaryFn, method: MethodInfo, input: object, options: RpcOptions): UnaryCall {
+                if (!options.meta) {
+                    options.meta = {}
+                }
+                options.meta['user_id'] = profile.userId;
+                return next(method, input, options)
+            }
+        }
     ]
 }
 

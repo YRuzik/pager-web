@@ -1,0 +1,53 @@
+@use '../../../styles/global';
+.chatting-window-wrapper {
+  background-color: global.$tinted-color;
+  width: 100%;
+  height: 100%;
+  padding: global.$default-inset;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.all-messages-wrapper {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.chatting-input {
+  width: 100%;
+  height: 40px;
+  background-color: global.$bg-color;
+  padding: 0 global.$default-inset;
+  border-radius: global.$default-inset;
+}
+
+.message-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding-bottom: global.$default-inset;
+}
+
+.message-container {
+  max-width: 300px;
+  word-wrap: break-word;
+  height: auto;
+}
+
+.my-message {
+  background-color: global.$brand-color;
+  color: global.$text-on-brand-color;
+  padding: global.$default-inset;
+  border-radius: global.$default-br global.$default-br 0 global.$default-br;
+  right: 0;
+}
+
+.other-message {
+  background-color: global.$secondary-color;
+  color: global.$text-color;
+  padding: global.$default-inset;
+  border-radius: global.$default-br global.$default-br global.$default-br 0;
+  left: 0;
+}
