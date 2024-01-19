@@ -14,23 +14,21 @@ import {PagerProfile} from "../proto/common/common.ts";
 
 export const initializeStreams = async (init: boolean) => {
     if (init) {
-
-        await streamHandler<ProfileStreamRequest>(init, () => {}, StreamsApi.streamProfile.bind(StreamsApi), {})
+        await streamHandler<ProfileStreamRequest>(init, StreamsApi.streamProfile.bind(StreamsApi), {})
         for (const obj of profile.chatRoles) {
-            await streamHandler<ChatStreamRequest>(init, () => {}, StreamsApi.streamChat.bind(StreamsApi), {chatId: obj.id})
+            await streamHandler<ChatStreamRequest>(init, StreamsApi.streamChat.bind(StreamsApi), {chatId: obj.id})
         }
         return true
     } else {
-        streamHandler<ProfileStreamRequest>(init, () => {}, StreamsApi.streamProfile.bind(StreamsApi), {})
+        streamHandler<ProfileStreamRequest>(init, StreamsApi.streamProfile.bind(StreamsApi), {})
         for (const obj of profile.chatRoles) {
-            streamHandler<ChatStreamRequest>(init, () => {}, StreamsApi.streamChat.bind(StreamsApi), {chatId: obj.id})
+            streamHandler<ChatStreamRequest>(init, StreamsApi.streamChat.bind(StreamsApi), {chatId: obj.id})
         }
     }
 }
 
 export const streamHandler = async <T extends object>(
     init: boolean,
-    initToggle: () => void,
     stream: (input: T, options?: RpcOptions) => ServerStreamingCall<T, TransferObject>,
     prepareItem: T,
 ) => {
@@ -63,10 +61,6 @@ export const streamHandler = async <T extends object>(
         } catch (e) {
             console.log(e)
         }
-    }
-
-    if (init) {
-        initToggle()
     }
 }
 

@@ -14,7 +14,7 @@ const ChattingWindow = observer(() => {
     const messages = chat.messages;
 
     const visibleMessages = useMemo(() =>
-            chat.messages.filter((message) => message.linkedChatId == profile.selectedChatId)
+            chat.messages.filter((message) => message.linkedChatId == profile.selectedChatId).reverse()
         , [selectedId, messages])
 
     const handleKeyDownAction = useCallback(() => {
@@ -67,9 +67,10 @@ const MessageEntity: FC<ChatMessage> = ({text, authorId, stampMillis}) => {
     return (
         <div className={'message'} style={isMe ? {direction: "ltr"} : {direction: "rtl"}}>
             <div className={'message-outer'}>
-                <div className={'message-avatar'}>
-                </div>
                 <div className={'message-inner'}>
+                    <div className={'message-avatar'}>
+                        <div className={'message-avatar-handle'}></div>
+                    </div>
                     <div className={`message-bubble ${isMe ? 'my-message' : 'other-message'}`}>
                         <div>
                             {text} <span>{messageStamp}</span>

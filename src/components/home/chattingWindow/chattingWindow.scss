@@ -11,6 +11,8 @@
 .all-messages-wrapper {
   height: 100%;
   overflow-y: scroll;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 .input-wrapper {
@@ -19,6 +21,7 @@
     right: global.$default-inset;
     bottom: global.$default-inset;
   };
+  z-index: 2;
 }
 
 .chatting-input {
@@ -37,6 +40,7 @@
 .message-inner {
   flex: 1;
   display: flex;
+  align-items: flex-end;
   flex-direction: row-reverse;
 }
 
@@ -61,6 +65,13 @@
 .message-avatar {
   padding-left: 6px;
   padding-right: 8px;
+}
+
+.message-avatar-handle {
+  width: 20px;
+  height: 20px;
+  border-radius: global.$max-br;
+  background-color: #557BF3;
 }
 
 .my-message {

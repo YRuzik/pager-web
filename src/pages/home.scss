@@ -6,6 +6,8 @@
   overflow-y: auto;
   min-width: 400px;
   height: 100vh;
+  box-shadow: 0 0 20px 25px rgba(0,0,0,.015);
+  z-index: 1;
 }
 
 .home-chat-container {
