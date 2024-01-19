@@ -23,9 +23,9 @@ const ChattingWindow = observer(() => {
                 if (e.code === "Enter") {
                     await new ChatActionsApi().sendMessage({
                         authorId: profile.userId,
-                        id: "ut eu reprehenderit",
+                        id: "",
                         linkedChatId: profile.selectedChatId ?? "",
-                        stampMillis: 4749530n,
+                        stampMillis: BigInt(new Date().getTime()),
                         status: 4,
                         text: inputRef.current!.value
                     })
@@ -39,24 +39,45 @@ const ChattingWindow = observer(() => {
         handleKeyDownAction()
     }, [handleKeyDownAction]);
 
+    useEffect(() => {
+        if (messagesRef !== null) {
+            if ((messagesRef.current!.scrollTop - 50) !== messagesRef.current!.scrollHeight) {
+                messagesRef.current!.scrollTop = messagesRef.current!.scrollHeight
+            }
+        }
+    }, [messagesRef, messages]);
+
     return (
-        <div ref={messagesRef} className={"chatting-window-wrapper"}>
-            <div className={'all-messages-wrapper'}>
+        <div className={"chatting-window-wrapper"}>
+            <div ref={messagesRef} className={'all-messages-wrapper'}>
                 {visibleMessages.map((message, index) => <MessageEntity key={index} {...message}/>)}
             </div>
-            <input
-                ref={inputRef} placeholder={"some text..."} className={"chatting-input"}/>
+            <div className={'input-wrapper'}>
+                <input
+                    ref={inputRef} placeholder={"some text..."} className={"chatting-input"}/>
+            </div>
         </div>
     )
 })
 
-const MessageEntity: FC<ChatMessage> = ({text, authorId}) => {
+const MessageEntity: FC<ChatMessage> = ({text, authorId, stampMillis}) => {
     const profileId = profile.userId;
     const isMe = authorId === profileId
+    const messageStamp = new Date(Number(stampMillis)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     return (
-        <div className={'message-wrapper'} style={{justifyContent: isMe ? "end" : "start"}}>
-            <div className={`message-container ${isMe ? "my-message" : "other-message"}`}>
-                {text}
+        <div className={'message'} style={isMe ? {direction: "ltr"} : {direction: "rtl"}}>
+            <div className={'message-outer'}>
+                <div className={'message-avatar'}>
+                </div>
+                <div className={'message-inner'}>
+                    <div className={`message-bubble ${isMe ? 'my-message' : 'other-message'}`}>
+                        <div>
+                            {text} <span>{messageStamp}</span>
+                        </div>
+                    </div>
+                    <div className={'message-spacer'}></div>
+                </div>
+                <div className={'message-status'}></div>
             </div>
         </div>
     )

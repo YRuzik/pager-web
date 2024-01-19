@@ -3,7 +3,6 @@
   background-color: global.$tinted-color;
   width: 100%;
   height: 100%;
-  padding: global.$default-inset;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -11,7 +10,15 @@
 
 .all-messages-wrapper {
   height: 100%;
-  overflow-y: auto;
+  overflow-y: scroll;
+}
+
+.input-wrapper {
+  padding: {
+    left: global.$default-inset;
+    right: global.$default-inset;
+    bottom: global.$default-inset;
+  };
 }
 
 .chatting-input {
@@ -22,32 +29,48 @@
   border-radius: global.$default-inset;
 }
 
-.message-wrapper {
-  position: relative;
-  width: 100%;
-  height: auto;
+.message-outer {
   display: flex;
-  padding-bottom: global.$default-inset;
+  padding-bottom: 4px;
 }
 
-.message-container {
-  max-width: 300px;
-  word-wrap: break-word;
-  height: auto;
+.message-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.message-spacer {
+  flex: 1;
+}
+
+.message-bubble {
+  max-width: 70%;
+  overflow-wrap: break-word;
+  padding: global.$default-inset;
+}
+
+.message-status {
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.message-avatar {
+  padding-left: 6px;
+  padding-right: 8px;
 }
 
 .my-message {
   background-color: global.$brand-color;
   color: global.$text-on-brand-color;
-  padding: global.$default-inset;
   border-radius: global.$default-br global.$default-br 0 global.$default-br;
-  right: 0;
 }
 
 .other-message {
   background-color: global.$secondary-color;
   color: global.$text-color;
-  padding: global.$default-inset;
   border-radius: global.$default-br global.$default-br global.$default-br 0;
-  left: 0;
 }

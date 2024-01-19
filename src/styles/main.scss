@@ -7,6 +7,11 @@ body {
   overflow: hidden;
 }
 
+span {
+  opacity: 0.7;
+  font-size: 12px;
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }
