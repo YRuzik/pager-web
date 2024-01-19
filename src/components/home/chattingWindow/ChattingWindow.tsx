@@ -1,24 +1,23 @@
 import {observer} from "mobx-react-lite";
 import "./chattingWindow.scss"
-import {FC, useEffect, useRef, useState} from "react";
+import {FC, useCallback, useEffect, useMemo, useRef} from "react";
 import chat from "../../../data/mobx/chat.ts";
 import profile from "../../../data/mobx/profile.ts";
 import {ChatMessage} from "../../../proto/chat/chat_actions.ts";
 import {ChatActionsApi} from "../../../data/api.ts";
 
 const ChattingWindow = observer(() => {
-    const [messages, setMessages] = useState<ChatMessage[]>([])
     const inputRef = useRef<HTMLInputElement>(null)
     const messagesRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
-        setMessages(chat.messages.filter((message) => message.linkedChatId == profile.selectedChatId))
-        if (messagesRef !== null) {
-            messagesRef.current!.scrollTop = messagesRef.current!.scrollHeight
-        }
-    }, [profile.selectedChatId, chat.messages, messagesRef])
+    const selectedId = profile.selectedChatId;
+    const messages = chat.messages;
 
-    useEffect(() => {
+    const visibleMessages = useMemo(() =>
+            chat.messages.filter((message) => message.linkedChatId == profile.selectedChatId)
+        , [selectedId, messages])
+
+    const handleKeyDownAction = useCallback(() => {
         if (inputRef !== null) {
             inputRef.current!.addEventListener("keydown", async function (e) {
                 if (e.code === "Enter") {
@@ -34,14 +33,16 @@ const ChattingWindow = observer(() => {
                 }
             })
         }
-    }, [inputRef]);
+    }, [inputRef])
 
-    console.log(messages)
+    useEffect(() => {
+        handleKeyDownAction()
+    }, [handleKeyDownAction]);
 
     return (
         <div ref={messagesRef} className={"chatting-window-wrapper"}>
             <div className={'all-messages-wrapper'}>
-                {messages.map((message, index) => <MessageEntity key={index} {...message}/>)}
+                {visibleMessages.map((message, index) => <MessageEntity key={index} {...message}/>)}
             </div>
             <input
                 ref={inputRef} placeholder={"some text..."} className={"chatting-input"}/>
@@ -50,7 +51,8 @@ const ChattingWindow = observer(() => {
 })
 
 const MessageEntity: FC<ChatMessage> = ({text, authorId}) => {
-    const isMe = authorId === profile.userId
+    const profileId = profile.userId;
+    const isMe = authorId === profileId
     return (
         <div className={'message-wrapper'} style={{justifyContent: isMe ? "end" : "start"}}>
             <div className={`message-container ${isMe ? "my-message" : "other-message"}`}>
