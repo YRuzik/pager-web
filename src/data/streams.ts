@@ -42,7 +42,7 @@ export const streamHandler = async <T extends object>(
                     if (!init) {
                         options.meta['watch'] = 'watch';
                     }
-                    options.meta['user_id'] = profile.userId;
+                    options.meta['jwt'] = `${localStorage.getItem("jwt")}`;
                     return next(method, input, options)
                 }
             }

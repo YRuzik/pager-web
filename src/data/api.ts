@@ -8,12 +8,16 @@ import {
     RpcOptions,
     UnaryCall
 } from "@protobuf-ts/runtime-rpc";
-import profile from "./mobx/profile.ts";
+import {AuthServiceClient} from "../proto/auth/auth.client.ts";
+import {LoginRequest, RefreshRequest, RegistrationRequest, SearchUsersRequest} from "../proto/auth/auth.ts";
 
 export const host = "http://localhost:4001";
-
+export const authHost = "http://localhost:5001";
 const transport = new GrpcWebFetchTransport({
     baseUrl: host
+})
+const authTransport = new GrpcWebFetchTransport({
+    baseUrl: authHost,
 })
 
 const authOptions: RpcOptions = {
@@ -23,11 +27,28 @@ const authOptions: RpcOptions = {
                 if (!options.meta) {
                     options.meta = {}
                 }
-                options.meta['user_id'] = profile.userId;
+                options.meta['jwt'] = `${localStorage.getItem("jwt")}`;
                 return next(method, input, options)
             }
         }
     ]
+}
+
+export class AuthActionsApi{
+    private api = new AuthServiceClient(authTransport)
+
+    public Login(request: LoginRequest){
+        return this.api.login(request)
+    }
+    public Registration(request: RegistrationRequest){
+        return this.api.registration(request)
+    }
+    public searchUsersByIdentifier(request: SearchUsersRequest){
+        return this.api.searchUsersByIdentifier(request)
+    }
+    public Refresh(request: RefreshRequest){
+        return this.api.refresh(request)
+    }
 }
 
 export class ChatActionsApi {

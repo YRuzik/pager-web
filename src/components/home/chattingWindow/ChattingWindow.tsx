@@ -21,15 +21,17 @@ const ChattingWindow = observer(() => {
         if (inputRef !== null) {
             inputRef.current!.addEventListener("keydown", async function (e) {
                 if (e.code === "Enter") {
-                    await new ChatActionsApi().sendMessage({
-                        authorId: profile.userId,
-                        id: "",
-                        linkedChatId: profile.selectedChatId ?? "",
-                        stampMillis: BigInt(new Date().getTime()),
-                        status: 4,
-                        text: inputRef.current!.value
-                    })
-                    inputRef.current!.value = "";
+                    if (profile.profile?.userId != undefined){
+                        await new ChatActionsApi().sendMessage({
+                            authorId: profile.profile?.userId,
+                            id: "",
+                            linkedChatId: profile.selectedChatId ?? "",
+                            stampMillis: BigInt(new Date().getTime()),
+                            status: 4,
+                            text: inputRef.current!.value
+                        })
+                        inputRef.current!.value = "";
+                    }
                 }
             })
         }
@@ -61,7 +63,7 @@ const ChattingWindow = observer(() => {
 })
 
 const MessageEntity: FC<ChatMessage> = ({text, authorId, stampMillis}) => {
-    const profileId = profile.userId;
+    const profileId = profile.profile?.userId;
     const isMe = authorId === profileId
     const messageStamp = new Date(Number(stampMillis)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     return (

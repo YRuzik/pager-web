@@ -8,7 +8,7 @@ class ProfileContext {
     chats: Chat[] = []
     selectedChatId: string | null = null
     //test-field
-    userId: string = "65a9930fc94f6e3800fa6c29"
+    userId: string = "65ab97d05fc06e64113dab4a"
     constructor() {
         makeAutoObservable(this)
     }
