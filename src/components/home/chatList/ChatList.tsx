@@ -8,7 +8,7 @@ const ChatList = observer(() => {
     const {chats} = useContext(StreamsContext)
     return (
         <div className={"chat-wrapper"}>
-            {chats.map((chat, index) => <ChatListEntity key={index} {...chat}/>)}
+            {chats.map((chat) => <ChatListEntity key={chat.id} {...chat}/>)}
         </div>
     )
 })
@@ -17,9 +17,9 @@ const ChatListEntity: FC<Chat> = ({id}) => {
     const {setSelectedChatId, selectedChatId} = useContext(StreamsContext)
     const handleSetChat = useCallback((chatId: string) => {
         setSelectedChatId(chatId)
-    }, [])
+    }, [setSelectedChatId])
     return (
-        <div className={`chat-entity-wrapper ${(id === selectedChatId) ? "chat-entity-active" : ""}`}
+        <button className={`chat-entity-wrapper ${(id === selectedChatId) ? "chat-entity-active" : ""}`}
              onClick={() => {
                  handleSetChat(id)
              }}>
@@ -27,7 +27,7 @@ const ChatListEntity: FC<Chat> = ({id}) => {
             <div className={"chat-entity-text-wrapper"}>
                 <h1>{id}</h1>
             </div>
-        </div>
+        </button>
     )
 }
 

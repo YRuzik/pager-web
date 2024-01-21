@@ -5,34 +5,34 @@ import {useCallback, useEffect} from "react";
 import {AuthActionsApi} from "./data/api.ts";
 
 
-function App() {
-    const refreshAccessToken = useCallback(async () =>{
+const App = () => {
+    const refreshAccessToken = useCallback(async () => {
         const refreshToken = localStorage.getItem("refreshToken")
         if (!refreshToken) {
             return;
         }
         try {
-            await new AuthActionsApi().Refresh({refreshToken:refreshToken}).response.then(response =>{
-                localStorage.setItem("jwt",response.accessToken)
+            await new AuthActionsApi().Refresh({refreshToken: refreshToken}).response.then(response => {
+                    localStorage.setItem("jwt", response.accessToken)
                 }
-                )
-        }catch (e){
+            )
+        } catch (e) {
             console.error("Ошибка при обновлении токена:", e);
         }
-    },[])
+    }, [])
     useEffect(() => {
         refreshAccessToken();
     }, [refreshAccessToken]);
-  return (
-    <BrowserRouter>
-        <main>
-            <Routes>
-                <Route index element={<MainPage/>}/>
-                <Route path={"/chat"} element={<Home/>}/>
-            </Routes>
-        </main>
-    </BrowserRouter>
-  )
+    return (
+            <BrowserRouter>
+                <main>
+                    <Routes>
+                        <Route index element={<MainPage/>}/>
+                        <Route path={"/chat"} element={<Home/>}/>
+                    </Routes>
+                </main>
+            </BrowserRouter>
+    )
 }
 
 export default App

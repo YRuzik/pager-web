@@ -27,7 +27,10 @@ const authOptions: RpcOptions = {
                 if (!options.meta) {
                     options.meta = {}
                 }
-                options.meta['jwt'] = `${localStorage.getItem("jwt")}`;
+                const jwt = localStorage.getItem("jwt");
+                if (jwt) {
+                    options.meta['jwt'] = jwt;
+                }
                 return next(method, input, options)
             }
         }
