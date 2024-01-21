@@ -5,6 +5,7 @@ import {PagerProfile} from "../../proto/common/common.ts";
 class ProfileContext {
     profile: PagerProfile | null = null
     chatRoles: ChatRole[] = []
+    selectedChatId: string | null = null
     constructor() {
         makeAutoObservable(this)
     }
@@ -15,6 +16,10 @@ class ProfileContext {
 
     setProfile(profile: PagerProfile) {
         this.profile = profile
+    }
+
+    setSelectedChatId(chatId: string) {
+        this.selectedChatId = chatId
     }
 
 }

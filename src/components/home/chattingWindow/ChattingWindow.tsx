@@ -7,7 +7,8 @@ import {StreamsContext} from "../../contexts/StreamsContext.tsx";
 import profileState from "../../../data/mobx/profile.ts";
 
 const ChattingWindow = observer(() => {
-    const {selectedChatId, messages} = useContext(StreamsContext)
+    const selectedChatId = profileState.selectedChatId;
+    const {messages} = useContext(StreamsContext)
     const inputRef = useRef<HTMLInputElement>(null)
     const messagesRef = useRef<HTMLDivElement>(null)
 
@@ -15,31 +16,37 @@ const ChattingWindow = observer(() => {
             messages.filter((message) => message.linkedChatId == selectedChatId).reverse()
         , [selectedChatId, messages])
 
-    const handleKeyDownAction = useCallback(() => {
-        if (inputRef !== null) {
-            inputRef.current!.addEventListener("keydown", async (e) => {
-                if (e.code === "Enter") {
-                    if ((profileState.profile?.userId !== undefined) && (selectedChatId !== null)) {
-                        await new ChatActionsApi().sendMessage({
-                            authorId: profileState.profile?.userId,
-                            id: "",
-                            linkedChatId: selectedChatId,
-                            stampMillis: BigInt(new Date().getTime()),
-                            status: 4,
-                            text: inputRef.current!.value
-                        })
-                        inputRef.current!.value = "";
-                    } else {
-                        console.log('userid or chatid undefined')
-                    }
-                }
-            })
+    const handleSendMessage = useCallback(async (
+        e: KeyboardEvent,
+    ) => {
+        if (e.code === "Enter") {
+            if ((profileState.profile?.userId !== undefined) && (selectedChatId !== null)) {
+                await new ChatActionsApi().sendMessage({
+                    authorId: profileState.profile?.userId,
+                    id: "",
+                    linkedChatId: selectedChatId,
+                    stampMillis: BigInt(new Date().getTime()),
+                    status: 4,
+                    text: inputRef.current!.value
+                })
+                inputRef.current!.value = "";
+            } else {
+                console.log(`userid ${profileState.profile?.userId} or chatid ${selectedChatId} null`)
+            }
         }
     }, [selectedChatId])
 
     useEffect(() => {
-        handleKeyDownAction()
-    }, [handleKeyDownAction]);
+        const currentRef = inputRef.current;
+        if (currentRef !== null) {
+            currentRef.addEventListener("keydown", (e) => handleSendMessage(e))
+        }
+        return () => {
+            if (currentRef !== null) {
+                currentRef.removeEventListener("keydown", (e) => handleSendMessage(e))
+            }
+        }
+    }, [handleSendMessage, inputRef, selectedChatId]);
 
     useEffect(() => {
         if (messagesRef !== null) {

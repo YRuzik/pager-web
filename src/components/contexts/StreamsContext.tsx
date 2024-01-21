@@ -11,15 +11,13 @@ import {MethodInfo, NextServerStreamingFn, RpcOptions, ServerStreamingCall} from
 import {TransferObject} from "../../proto/transfers/item.ts";
 import profile from "../../data/mobx/profile.ts";
 import {PagerProfile} from "../../proto/common/common.ts";
+import {connectToWebSocket} from "../../data/sockets.ts";
 
 interface IDataObject {
     init: boolean
 
     chats: Chat[]
     messages: ChatMessage[]
-
-    selectedChatId: string | null
-    setSelectedChatId: (chatId: string) => void
 }
 
 const contextData: IDataObject = {
@@ -27,34 +25,20 @@ const contextData: IDataObject = {
 
     chats: [],
     messages: [],
-
-    selectedChatId: null,
-    setSelectedChatId: () => {
-    }
 };
 
 export const StreamsContext = createContext(contextData)
 
 const GlobalContext: FC<{ children: ReactNode }> = ({children}) => {
     const [init, setInit] = useState(true)
-    // const [profile, setProfile] = useState<PagerProfile | null>(null)
-    // const [chatRoles, setChatRoles] = useState<ChatRole[]>([])
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [chats, setChats] = useState<Chat[]>([])
-    const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
 
     const contextProperties = useMemo(():IDataObject  => ({
         messages,
-        selectedChatId,
         chats,
         init,
-        setSelectedChatId,
-    }), [chats, init, messages, selectedChatId])
-
-    // const handleSetMessages = useCallback((message: ChatMessage) => setMessages([...messages, message]), [messages])
-    // const handleSetChats = useCallback((chat: Chat) => setChats([...chats, chat]), [chats])
-
-    console.log(messages)
+    }), [chats, init, messages])
 
     const actionViaType = useCallback((type: string, jsonString: string) => {
         switch (type) {
@@ -93,7 +77,6 @@ const GlobalContext: FC<{ children: ReactNode }> = ({children}) => {
                         if (jwt) {
                             options.meta['jwt'] = jwt;
                         }
-                        console.log(jwt)
                         return next(method, input, options)
                     }
                 }
@@ -108,7 +91,6 @@ const GlobalContext: FC<{ children: ReactNode }> = ({children}) => {
             try {
                 const decodedJsonString = new TextDecoder().decode(response.data);
                 toObjectFunc(response.type, decodedJsonString)
-                console.log('decode done')
             } catch (e) {
                 console.log(e)
             }
@@ -128,10 +110,11 @@ const GlobalContext: FC<{ children: ReactNode }> = ({children}) => {
                 streamHandler<ChatStreamRequest>(init, StreamsApi.streamChat.bind(StreamsApi), actionViaType, {chatId: obj.id})
             }
         }
-    }, [actionViaType, init, streamHandler, profile.chatRoles])
+    }, [actionViaType, init, streamHandler])
 
     useEffect(() => {
         streamController()
+        connectToWebSocket()
     }, [streamController]);
 
     return (
