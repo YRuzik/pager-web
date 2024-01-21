@@ -1,21 +1,23 @@
 import './home.scss'
 import ChatList from "../components/home/chatList/ChatList.tsx";
 import ChattingWindow from "../components/home/chattingWindow/ChattingWindow.tsx";
+import {useCallback, useEffect, useState} from "react";
+import {initializeStreams} from "../data/streams.ts";
 
 const Home = () => {
-    // const [init, setInit] = useState(true)
-    // const handleStreams = useCallback(
-    //     () => {
-    //         initializeStreams(init).then((value) => {
-    //             if (value) {
-    //                 setInit(false)
-    //             }
-    //         })
-    //     }, [init]
-    // )
-    // useEffect(() => {
-    //     handleStreams()
-    // }, [handleStreams])
+    const [init, setInit] = useState(true)
+    const handleStreams = useCallback(
+        () => {
+            initializeStreams(init).then((value) => {
+                if (value) {
+                    setInit(false)
+                }
+            })
+        }, [init]
+    )
+    useEffect(() => {
+        handleStreams()
+    }, [handleStreams])
 
     return (
         <div className={"home-wrapper"}>
