@@ -1,30 +1,27 @@
 import {observer} from "mobx-react-lite";
 import "./chattingWindow.scss"
-import {FC, useCallback, useEffect, useMemo, useRef} from "react";
-import chat from "../../../data/mobx/chat.ts";
-import profile from "../../../data/mobx/profile.ts";
+import {FC, useCallback, useContext, useEffect, useMemo, useRef} from "react";
 import {ChatMessage} from "../../../proto/chat/chat_actions.ts";
 import {ChatActionsApi} from "../../../data/api.ts";
+import {StreamsContext} from "../../contexts/StreamsContext.tsx";
 
 const ChattingWindow = observer(() => {
+    const {selectedChatId, messages, userId} = useContext(StreamsContext)
     const inputRef = useRef<HTMLInputElement>(null)
     const messagesRef = useRef<HTMLDivElement>(null)
 
-    const selectedId = profile.selectedChatId;
-    const messages = chat.messages;
-
     const visibleMessages = useMemo(() =>
-            chat.messages.filter((message) => message.linkedChatId == profile.selectedChatId).reverse()
-        , [selectedId, messages])
+            messages.filter((message) => message.linkedChatId == selectedChatId).reverse()
+        , [selectedChatId, messages])
 
     const handleKeyDownAction = useCallback(() => {
         if (inputRef !== null) {
             inputRef.current!.addEventListener("keydown", async function (e) {
                 if (e.code === "Enter") {
                     await new ChatActionsApi().sendMessage({
-                        authorId: profile.userId,
+                        authorId: userId,
                         id: "",
-                        linkedChatId: profile.selectedChatId ?? "",
+                        linkedChatId: selectedChatId ?? "",
                         stampMillis: BigInt(new Date().getTime()),
                         status: 4,
                         text: inputRef.current!.value
@@ -61,7 +58,8 @@ const ChattingWindow = observer(() => {
 })
 
 const MessageEntity: FC<ChatMessage> = ({text, authorId, stampMillis}) => {
-    const profileId = profile.userId;
+    const {userId} = useContext(StreamsContext)
+    const profileId = userId;
     const isMe = authorId === profileId
     const messageStamp = new Date(Number(stampMillis)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     return (

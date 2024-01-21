@@ -4,6 +4,8 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { AuthService } from "./auth";
+import type { RefreshResponse } from "./auth";
+import type { RefreshRequest } from "./auth";
 import type { SearchUsersResponse } from "./auth";
 import type { SearchUsersRequest } from "./auth";
 import type { Empty } from "../common/common";
@@ -29,6 +31,10 @@ export interface IAuthServiceClient {
      * @generated from protobuf rpc: SearchUsersByIdentifier(com.pager.api.SearchUsersRequest) returns (com.pager.api.SearchUsersResponse);
      */
     searchUsersByIdentifier(input: SearchUsersRequest, options?: RpcOptions): UnaryCall<SearchUsersRequest, SearchUsersResponse>;
+    /**
+     * @generated from protobuf rpc: Refresh(com.pager.api.RefreshRequest) returns (com.pager.api.RefreshResponse);
+     */
+    refresh(input: RefreshRequest, options?: RpcOptions): UnaryCall<RefreshRequest, RefreshResponse>;
 }
 /**
  * @generated from protobuf service com.pager.api.AuthService
@@ -59,5 +65,12 @@ export class AuthServiceClient implements IAuthServiceClient, ServiceInfo {
     searchUsersByIdentifier(input: SearchUsersRequest, options?: RpcOptions): UnaryCall<SearchUsersRequest, SearchUsersResponse> {
         const method = this.methods[2], opt = this._transport.mergeOptions(options);
         return stackIntercept<SearchUsersRequest, SearchUsersResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: Refresh(com.pager.api.RefreshRequest) returns (com.pager.api.RefreshResponse);
+     */
+    refresh(input: RefreshRequest, options?: RpcOptions): UnaryCall<RefreshRequest, RefreshResponse> {
+        const method = this.methods[3], opt = this._transport.mergeOptions(options);
+        return stackIntercept<RefreshRequest, RefreshResponse>("unary", this._transport, method, opt, input);
     }
 }

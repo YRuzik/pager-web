@@ -1,24 +1,25 @@
 import "./chatList.scss"
-import profile from "../../../data/mobx/profile.ts";
-import {FC, useCallback} from "react";
+import {FC, useCallback, useContext} from "react";
 import {Chat} from "../../../proto/chat/chat_actions.ts";
 import {observer} from "mobx-react-lite";
-import chat from "../../../data/mobx/chat.ts";
+import {StreamsContext} from "../../contexts/StreamsContext.tsx";
 
 const ChatList = observer(() => {
+    const {chats} = useContext(StreamsContext)
     return (
         <div className={"chat-wrapper"}>
-            {chat.chats.map((chat, index) => <ChatListEntity key={index} {...chat}/>)}
+            {chats.map((chat, index) => <ChatListEntity key={index} {...chat}/>)}
         </div>
     )
 })
 
-const ChatListEntity: FC<Chat> = observer(({id}) => {
+const ChatListEntity: FC<Chat> = ({id}) => {
+    const {setSelectedChatId, selectedChatId} = useContext(StreamsContext)
     const handleSetChat = useCallback((chatId: string) => {
-        profile.setSelectedChat(chatId)
+        setSelectedChatId(chatId)
     }, [])
     return (
-        <div className={`chat-entity-wrapper ${(id === profile.selectedChatId) ? "chat-entity-active" : ""}`}
+        <div className={`chat-entity-wrapper ${(id === selectedChatId) ? "chat-entity-active" : ""}`}
              onClick={() => {
                  handleSetChat(id)
              }}>
@@ -28,6 +29,6 @@ const ChatListEntity: FC<Chat> = observer(({id}) => {
             </div>
         </div>
     )
-})
+}
 
 export default ChatList

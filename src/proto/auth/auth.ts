@@ -39,6 +39,24 @@ export interface Token {
     accessToken: string; // JWT-токен информация о пользователе
 }
 /**
+ * @generated from protobuf message com.pager.api.RefreshRequest
+ */
+export interface RefreshRequest {
+    /**
+     * @generated from protobuf field: string refresh_token = 1;
+     */
+    refreshToken: string;
+}
+/**
+ * @generated from protobuf message com.pager.api.RefreshResponse
+ */
+export interface RefreshResponse {
+    /**
+     * @generated from protobuf field: string access_token = 1;
+     */
+    accessToken: string;
+}
+/**
  * @generated from protobuf message com.pager.api.RegistrationRequest
  */
 export interface RegistrationRequest {
@@ -183,6 +201,100 @@ class Token$Type extends MessageType<Token> {
  * @generated MessageType for protobuf message com.pager.api.Token
  */
 export const Token = new Token$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RefreshRequest$Type extends MessageType<RefreshRequest> {
+    constructor() {
+        super("com.pager.api.RefreshRequest", [
+            { no: 1, name: "refresh_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RefreshRequest>): RefreshRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.refreshToken = "";
+        if (value !== undefined)
+            reflectionMergePartial<RefreshRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RefreshRequest): RefreshRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string refresh_token */ 1:
+                    message.refreshToken = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RefreshRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string refresh_token = 1; */
+        if (message.refreshToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.refreshToken);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message com.pager.api.RefreshRequest
+ */
+export const RefreshRequest = new RefreshRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RefreshResponse$Type extends MessageType<RefreshResponse> {
+    constructor() {
+        super("com.pager.api.RefreshResponse", [
+            { no: 1, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RefreshResponse>): RefreshResponse {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.accessToken = "";
+        if (value !== undefined)
+            reflectionMergePartial<RefreshResponse>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RefreshResponse): RefreshResponse {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string access_token */ 1:
+                    message.accessToken = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RefreshResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string access_token = 1; */
+        if (message.accessToken !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.accessToken);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message com.pager.api.RefreshResponse
+ */
+export const RefreshResponse = new RefreshResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class RegistrationRequest$Type extends MessageType<RegistrationRequest> {
     constructor() {
@@ -346,5 +458,6 @@ export const SearchUsersResponse = new SearchUsersResponse$Type();
 export const AuthService = new ServiceType("com.pager.api.AuthService", [
     { name: "Login", options: {}, I: LoginRequest, O: Token },
     { name: "Registration", options: {}, I: RegistrationRequest, O: Empty },
-    { name: "SearchUsersByIdentifier", options: {}, I: SearchUsersRequest, O: SearchUsersResponse }
+    { name: "SearchUsersByIdentifier", options: {}, I: SearchUsersRequest, O: SearchUsersResponse },
+    { name: "Refresh", options: {}, I: RefreshRequest, O: RefreshResponse }
 ]);

@@ -20,23 +20,23 @@ export interface Empty {
  */
 export interface PagerProfile {
     /**
-     * @generated from protobuf field: string user_id = 1;
+     * @generated from protobuf field: string UserId = 1 [json_name = "UserId"];
      */
     userId: string; // Индетификатор пользователя
     /**
-     * @generated from protobuf field: string email = 2;
+     * @generated from protobuf field: string Email = 2 [json_name = "Email"];
      */
     email: string; // Почта пользователя
     /**
-     * @generated from protobuf field: bytes avatar = 3;
+     * @generated from protobuf field: bytes Avatar = 3 [json_name = "Avatar"];
      */
     avatar: Uint8Array; // Картинка профиля пользователя
     /**
-     * @generated from protobuf field: string login = 4;
+     * @generated from protobuf field: string Login = 4 [json_name = "Login"];
      */
     login: string; // Логин пользователя
     /**
-     * @generated from protobuf field: bool online = 5;
+     * @generated from protobuf field: bool Online = 5 [json_name = "Online"];
      */
     online: boolean; // Пользователь в сети или нет
 }
@@ -69,11 +69,11 @@ export const Empty = new Empty$Type();
 class PagerProfile$Type extends MessageType<PagerProfile> {
     constructor() {
         super("com.pager.api.PagerProfile", [
-            { no: 1, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "avatar", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
-            { no: 4, name: "login", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "online", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 1, name: "UserId", kind: "scalar", jsonName: "UserId", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "Email", kind: "scalar", jsonName: "Email", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "Avatar", kind: "scalar", jsonName: "Avatar", T: 12 /*ScalarType.BYTES*/ },
+            { no: 4, name: "Login", kind: "scalar", jsonName: "Login", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "Online", kind: "scalar", jsonName: "Online", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<PagerProfile>): PagerProfile {
@@ -92,19 +92,19 @@ class PagerProfile$Type extends MessageType<PagerProfile> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string user_id */ 1:
+                case /* string UserId = 1 [json_name = "UserId"];*/ 1:
                     message.userId = reader.string();
                     break;
-                case /* string email */ 2:
+                case /* string Email = 2 [json_name = "Email"];*/ 2:
                     message.email = reader.string();
                     break;
-                case /* bytes avatar */ 3:
+                case /* bytes Avatar = 3 [json_name = "Avatar"];*/ 3:
                     message.avatar = reader.bytes();
                     break;
-                case /* string login */ 4:
+                case /* string Login = 4 [json_name = "Login"];*/ 4:
                     message.login = reader.string();
                     break;
-                case /* bool online */ 5:
+                case /* bool Online = 5 [json_name = "Online"];*/ 5:
                     message.online = reader.bool();
                     break;
                 default:
@@ -119,19 +119,19 @@ class PagerProfile$Type extends MessageType<PagerProfile> {
         return message;
     }
     internalBinaryWrite(message: PagerProfile, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string user_id = 1; */
+        /* string UserId = 1 [json_name = "UserId"]; */
         if (message.userId !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.userId);
-        /* string email = 2; */
+        /* string Email = 2 [json_name = "Email"]; */
         if (message.email !== "")
             writer.tag(2, WireType.LengthDelimited).string(message.email);
-        /* bytes avatar = 3; */
+        /* bytes Avatar = 3 [json_name = "Avatar"]; */
         if (message.avatar.length)
             writer.tag(3, WireType.LengthDelimited).bytes(message.avatar);
-        /* string login = 4; */
+        /* string Login = 4 [json_name = "Login"]; */
         if (message.login !== "")
             writer.tag(4, WireType.LengthDelimited).string(message.login);
-        /* bool online = 5; */
+        /* bool Online = 5 [json_name = "Online"]; */
         if (message.online !== false)
             writer.tag(5, WireType.Varint).bool(message.online);
         let u = options.writeUnknownFields;

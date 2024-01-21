@@ -8,7 +8,6 @@ import {
     RpcOptions,
     UnaryCall
 } from "@protobuf-ts/runtime-rpc";
-import profile from "./mobx/profile.ts";
 
 export const host = "http://localhost:4001";
 
@@ -23,7 +22,7 @@ const authOptions: RpcOptions = {
                 if (!options.meta) {
                     options.meta = {}
                 }
-                options.meta['user_id'] = profile.userId;
+                options.meta['user_id'] = "65a9930fc94f6e3800fa6c29";
                 return next(method, input, options)
             }
         }
