@@ -46,6 +46,10 @@ export interface RefreshRequest {
      * @generated from protobuf field: string refresh_token = 1;
      */
     refreshToken: string;
+    /**
+     * @generated from protobuf field: string access_token = 2;
+     */
+    accessToken: string;
 }
 /**
  * @generated from protobuf message com.pager.api.RefreshResponse
@@ -205,12 +209,14 @@ export const Token = new Token$Type();
 class RefreshRequest$Type extends MessageType<RefreshRequest> {
     constructor() {
         super("com.pager.api.RefreshRequest", [
-            { no: 1, name: "refresh_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "refresh_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "access_token", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<RefreshRequest>): RefreshRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.refreshToken = "";
+        message.accessToken = "";
         if (value !== undefined)
             reflectionMergePartial<RefreshRequest>(this, message, value);
         return message;
@@ -222,6 +228,9 @@ class RefreshRequest$Type extends MessageType<RefreshRequest> {
             switch (fieldNo) {
                 case /* string refresh_token */ 1:
                     message.refreshToken = reader.string();
+                    break;
+                case /* string access_token */ 2:
+                    message.accessToken = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -238,6 +247,9 @@ class RefreshRequest$Type extends MessageType<RefreshRequest> {
         /* string refresh_token = 1; */
         if (message.refreshToken !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.refreshToken);
+        /* string access_token = 2; */
+        if (message.accessToken !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.accessToken);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

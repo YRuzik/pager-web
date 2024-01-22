@@ -5,22 +5,25 @@ import {useCallback, useEffect, useState} from "react";
 import {AuthActionsApi} from "./data/api.ts";
 import toast, {ToastBar, Toaster} from 'react-hot-toast';
 import NotFoundRedirect from "./pages/notFound.tsx";
+import {RpcError} from "@protobuf-ts/runtime-rpc";
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const refreshAccessToken = useCallback(async () => {
         const refreshToken = localStorage.getItem("refreshToken");
-        if (!refreshToken) {
+        let accessToken = localStorage.getItem("jwt")
+        if (!refreshToken || !accessToken) {
             return;
         }
         try {
-            await new AuthActionsApi().Refresh({refreshToken: refreshToken}).response.then(response => {
+            await new AuthActionsApi().Refresh({refreshToken: refreshToken,accessToken:accessToken}).response.then(response => {
                 localStorage.setItem("jwt", response.accessToken);
                 setIsAuthenticated(true);
             });
-        } catch (e) {
-            console.error("Ошибка при обновлении токена:", e);
+        } catch (e:unknown) {
+            const error = e as RpcError;
+            toast.error("Ошибка при обновлении токена:" + error.message);
         }
     }, []);
 

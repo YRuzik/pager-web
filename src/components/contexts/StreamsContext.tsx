@@ -128,7 +128,7 @@ const GlobalContext: FC<{ children: ReactNode }> = ({children}) => {
                 streamHandler<ChatStreamRequest>(init, StreamsApi.streamChat.bind(StreamsApi), actionViaType, {chatId: obj.id})
             }
         }
-    }, [actionViaType, init, streamHandler, profile.chatRoles])
+    }, [actionViaType, init, streamHandler])
 
     useEffect(() => {
         streamController()

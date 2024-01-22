@@ -18,7 +18,7 @@ export function MainPage() {
         <div>
             <header className={"header-main-page"}>
                 <img className={"logo-header"} src={logo} alt={'logo'}/>
-                <span className={"span-name-header"}>Pager</span>
+                <div className={"span-name-header"}>Pager</div>
                 <span className={"auth-wrapper"}>
                     <button onClick={() => handleOpenModal('register')}>Регистрация</button>
                     <button onClick={() => handleOpenModal('login')}>Авторизация</button>
