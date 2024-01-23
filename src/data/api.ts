@@ -14,7 +14,8 @@ import {LoginRequest, RefreshRequest, RegistrationRequest, SearchUsersRequest} f
 export const host = "http://localhost:4001";
 export const authHost = "http://localhost:5001";
 const transport = new GrpcWebFetchTransport({
-    baseUrl: host
+    baseUrl: host,
+    format: "text"
 })
 const authTransport = new GrpcWebFetchTransport({
     baseUrl: authHost,

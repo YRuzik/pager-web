@@ -4,10 +4,10 @@ import {FC, useCallback, useContext, useEffect, useMemo, useRef} from "react";
 import {ChatMessage} from "../../../proto/chat/chat_actions.ts";
 import {ChatActionsApi} from "../../../data/api.ts";
 import {StreamsContext} from "../../contexts/StreamsContext.tsx";
-import profileState from "../../../data/mobx/profile.ts";
 
 const ChattingWindow = observer(() => {
-    const selectedChatId = profileState.selectedChatId;
+    const {selectedChatId, profile} = useContext(StreamsContext)
+
     const {messages} = useContext(StreamsContext)
     const inputRef = useRef<HTMLInputElement>(null)
     const messagesRef = useRef<HTMLDivElement>(null)
@@ -18,32 +18,33 @@ const ChattingWindow = observer(() => {
 
     const handleSendMessage = useCallback(async (
         e: KeyboardEvent,
+        chatId: string 
     ) => {
         if (e.code === "Enter") {
-            if ((profileState.profile?.userId !== undefined) && (selectedChatId !== null)) {
+            if ((profile?.userId !== undefined)) {
                 await new ChatActionsApi().sendMessage({
-                    authorId: profileState.profile?.userId,
-                    id: "",
-                    linkedChatId: selectedChatId,
+                    authorId: profile.userId,
+                    id: "sdfsdf",
+                    linkedChatId: chatId,
                     stampMillis: BigInt(new Date().getTime()),
                     status: 4,
                     text: inputRef.current!.value
                 })
                 inputRef.current!.value = "";
             } else {
-                console.log(`userid ${profileState.profile?.userId} or chatid ${selectedChatId} null`)
+                console.log(`userid ${profile?.userId} not valid`)
             }
         }
-    }, [selectedChatId])
+    }, [profile])
 
     useEffect(() => {
         const currentRef = inputRef.current;
-        if (currentRef !== null) {
-            currentRef.addEventListener("keydown", (e) => handleSendMessage(e))
+        if (currentRef !== null && selectedChatId !== null) {
+            currentRef.addEventListener("keydown", (e) => handleSendMessage(e, selectedChatId))
         }
         return () => {
-            if (currentRef !== null) {
-                currentRef.removeEventListener("keydown", (e) => handleSendMessage(e))
+            if (currentRef !== null && selectedChatId !== null) {
+                currentRef.removeEventListener("keydown", (e) => handleSendMessage(e, selectedChatId))
             }
         }
     }, [handleSendMessage, inputRef, selectedChatId]);
@@ -70,7 +71,8 @@ const ChattingWindow = observer(() => {
 })
 
 const MessageEntity: FC<ChatMessage> = observer(({text, authorId, stampMillis}) => {
-    const profileId = profileState.profile?.userId;
+    const {profile} = useContext(StreamsContext)
+    const profileId = profile?.userId;
     const isMe = authorId === profileId
     const messageStamp = new Date(Number(stampMillis)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     return (
