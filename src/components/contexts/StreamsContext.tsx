@@ -10,13 +10,12 @@ import {MethodInfo, NextServerStreamingFn, RpcOptions, ServerStreamingCall} from
 import {TransferObject} from "../../proto/transfers/item.ts";
 import {PagerProfile} from "../../proto/common/common.ts";
 import {connectToWebSocket} from "../../data/sockets.ts";
-import transfers, {streamListValue, streamValue} from "../../data/mobx/transfers.ts";
+import transfers from "../../data/mobx/transfers.ts";
 import {observer} from "mobx-react-lite";
 import {IInitialList} from "../../interfaces/ICommon.ts";
+import {autorun} from "mobx";
 
 interface IDataObject {
-    init: boolean
-
     profile: PagerProfile | null
     chatRoles: ChatRole[]
 
@@ -28,8 +27,6 @@ interface IDataObject {
 }
 
 const contextData: IDataObject = {
-    init: false,
-
     profile: null,
     chatRoles: [],
 
@@ -37,15 +34,12 @@ const contextData: IDataObject = {
     messages: [],
 
     selectedChatId: null,
-    setSelectedChatId: (chatId: string) => {
-    }
+    setSelectedChatId: () => {}
 };
 
 export const StreamsContext = createContext(contextData)
 
 const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
-    const objs = transfers.tObjectsMap;
-    const [init, setInit] = useState(true)
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [chats, setChats] = useState<Chat[]>([])
     const [profile, setProfile] = useState<PagerProfile | null>(null)
@@ -60,12 +54,11 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
     const contextProperties = useMemo((): IDataObject => ({
         messages,
         chats,
-        init,
         chatRoles,
         profile,
         selectedChatId,
         setSelectedChatId
-    }), [chatRoles, chats, init, messages, profile, selectedChatId])
+    }), [chatRoles, chats, messages, profile, selectedChatId])
 
     const handleDownStream = useCallback(async <T extends object>(
         init: boolean,
@@ -106,7 +99,6 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         }
 
         if (!init) {
-            console.log(transfers.tObjectsMap)
             toggleInit()
         }
     }, [])
@@ -122,7 +114,8 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         if (initList.profile && chatRoles.length > 0) {
             for (const obj of chatRoles) {
                 if (!initList.chat) {
-                    await handleDownStream<ChatStreamRequest>(initList.chat, () => {}, StreamsApi.streamChat.bind(StreamsApi), {chatId: obj.id})
+                    await handleDownStream<ChatStreamRequest>(initList.chat, () => {
+                    }, StreamsApi.streamChat.bind(StreamsApi), {chatId: obj.id})
                 } else {
                     handleDownStream<ChatStreamRequest>(initList.chat, () => setInitList({
                         ...initList,
@@ -137,23 +130,43 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
                 })
             }
         }
-    }, [chatRoles, handleDownStream, initList.profile, initList.chat])
+    }, [initList, chatRoles, handleDownStream])
+
+    useEffect(() => autorun(() => {
+        const lObj = transfers.lastObject
+        if (lObj !== null && initList.chat && initList.profile) {
+            switch (lObj.type) {
+                case ProfileStreamRequest_Type[1]:
+                    setProfile(transfers.streamValue<PagerProfile>(ProfileStreamRequest_Type[1], PagerProfile))
+                    break;
+                case ProfileStreamRequest_Type[2]:
+                    setChatRoles(transfers.streamListValue<ChatRole>(ProfileStreamRequest_Type[2], ChatRole))
+                    break;
+                case ChatStreamRequest_Type[1]:
+                    setChats(transfers.streamListValue<Chat>(ChatStreamRequest_Type[1], Chat))
+                    break;
+                case ChatStreamRequest_Type[2]:
+                    setMessages(transfers.streamListValue<ChatMessage>(ChatStreamRequest_Type[2], ChatMessage))
+                    break;
+            }
+        }
+    }), [initList.chat, initList.profile])
 
     useEffect(() => {
         if (initList.profile) {
             console.log("profile initiated")
-            setProfile(streamValue<PagerProfile>(ProfileStreamRequest_Type[1], PagerProfile, objs))
-            setChatRoles(streamListValue<ChatRole>(ProfileStreamRequest_Type[2], ChatRole, objs))
+            setProfile(transfers.streamValue<PagerProfile>(ProfileStreamRequest_Type[1], PagerProfile))
+            setChatRoles(transfers.streamListValue<ChatRole>(ProfileStreamRequest_Type[2], ChatRole))
         }
-    }, [initList.profile, objs]);
+    }, [initList.profile]);
 
     useEffect(() => {
         if (initList.chat) {
             console.log("chat initiated")
-            setChats(streamListValue<Chat>(ChatStreamRequest_Type[1], Chat, objs))
-            setMessages(streamListValue<ChatMessage>(ChatStreamRequest_Type[2], ChatMessage, objs))
+            setChats(transfers.streamListValue<Chat>(ChatStreamRequest_Type[1], Chat))
+            setMessages(transfers.streamListValue<ChatMessage>(ChatStreamRequest_Type[2], ChatMessage))
         }
-    }, [initList.chat, objs]);
+    }, [initList.chat]);
 
     useEffect(() => {
         handleProfileContextStream()

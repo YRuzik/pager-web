@@ -17,37 +17,44 @@ const ChattingWindow = observer(() => {
         , [selectedChatId, messages])
 
     const handleSendMessage = useCallback(async (
-        e: KeyboardEvent,
-        chatId: string 
+        chatId: string
     ) => {
-        if (e.code === "Enter") {
-            if ((profile?.userId !== undefined)) {
-                await new ChatActionsApi().sendMessage({
-                    authorId: profile.userId,
-                    id: "sdfsdf",
-                    linkedChatId: chatId,
-                    stampMillis: BigInt(new Date().getTime()),
-                    status: 4,
-                    text: inputRef.current!.value
-                })
-                inputRef.current!.value = "";
-            } else {
-                console.log(`userid ${profile?.userId} not valid`)
-            }
+        if ((profile?.userId !== undefined)) {
+            await new ChatActionsApi().sendMessage({
+                authorId: profile.userId,
+                id: "",
+                linkedChatId: chatId,
+                stampMillis: BigInt(new Date().getTime()),
+                status: 4,
+                text: inputRef.current!.value
+            })
+            inputRef.current!.value = ""
+        } else {
+            console.log(`userid ${profile?.userId} not valid`)
         }
     }, [profile])
+    
+    const handleEventListener = useCallback(async (
+        e: KeyboardEvent,
+    ) => {
+        if (e.code === "Enter") {
+            if (selectedChatId) await handleSendMessage(selectedChatId)
+        }
+    }, [handleSendMessage, selectedChatId])
 
     useEffect(() => {
         const currentRef = inputRef.current;
         if (currentRef !== null && selectedChatId !== null) {
-            currentRef.addEventListener("keydown", (e) => handleSendMessage(e, selectedChatId))
+            console.log('add event listener')
+            currentRef.addEventListener("keydown", handleEventListener)
         }
         return () => {
             if (currentRef !== null && selectedChatId !== null) {
-                currentRef.removeEventListener("keydown", (e) => handleSendMessage(e, selectedChatId))
+                console.log('remove event listener')
+                currentRef.removeEventListener("keydown", handleEventListener)
             }
         }
-    }, [handleSendMessage, inputRef, selectedChatId]);
+    }, [handleEventListener, handleSendMessage, inputRef, selectedChatId]);
 
     useEffect(() => {
         if (messagesRef !== null) {
