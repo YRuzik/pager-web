@@ -1,9 +1,9 @@
 import {observer} from "mobx-react-lite";
 import "./chattingWindow.scss"
 import {FC, useCallback, useContext, useEffect, useMemo, useRef} from "react";
-import {ChatMessage} from "../../../proto/chat/chat_actions.ts";
 import {ChatActionsApi} from "../../../data/api.ts";
 import {StreamsContext} from "../../contexts/StreamsContext.tsx";
+import {ChatMessage} from "../../../testproto/chat/chat_actions.ts";
 
 const ChattingWindow = observer(() => {
     const {selectedChatId, profile} = useContext(StreamsContext)
@@ -13,24 +13,24 @@ const ChattingWindow = observer(() => {
     const messagesRef = useRef<HTMLDivElement>(null)
 
     const visibleMessages = useMemo(() =>
-            messages.filter((message) => message.linkedChatId == selectedChatId).reverse()
+            messages.filter((message) => message.LinkedChatId == selectedChatId).reverse()
         , [selectedChatId, messages])
 
     const handleSendMessage = useCallback(async (
         chatId: string
     ) => {
-        if ((profile?.userId !== undefined)) {
+        if ((profile?.UserId !== undefined)) {
             await new ChatActionsApi().sendMessage({
-                authorId: profile.userId,
-                id: "",
-                linkedChatId: chatId,
-                stampMillis: BigInt(new Date().getTime()),
-                status: 4,
-                text: inputRef.current!.value
+                AuthorId: profile.UserId,
+                Id: "",
+                LinkedChatId: chatId,
+                StampMillis: new Date().getTime(),
+                Status: 4,
+                Text: inputRef.current!.value
             })
             inputRef.current!.value = ""
         } else {
-            console.log(`userid ${profile?.userId} not valid`)
+            console.log(`userid ${profile?.UserId} not valid`)
         }
     }, [profile])
     
@@ -45,12 +45,10 @@ const ChattingWindow = observer(() => {
     useEffect(() => {
         const currentRef = inputRef.current;
         if (currentRef !== null && selectedChatId !== null) {
-            console.log('add event listener')
             currentRef.addEventListener("keydown", handleEventListener)
         }
         return () => {
             if (currentRef !== null && selectedChatId !== null) {
-                console.log('remove event listener')
                 currentRef.removeEventListener("keydown", handleEventListener)
             }
         }
@@ -67,7 +65,7 @@ const ChattingWindow = observer(() => {
     return (
         <div className={"chatting-window-wrapper"}>
             <div ref={messagesRef} className={'all-messages-wrapper'}>
-                {visibleMessages.map((message) => <MessageEntity key={message.id} {...message}/>)}
+                {visibleMessages.map((message) => <MessageEntity key={message.Id} {...message}/>)}
             </div>
             <div className={'input-wrapper'}>
                 <input
@@ -77,11 +75,11 @@ const ChattingWindow = observer(() => {
     )
 })
 
-const MessageEntity: FC<ChatMessage> = observer(({text, authorId, stampMillis}) => {
+const MessageEntity: FC<ChatMessage> = observer(({Text, AuthorId, StampMillis}) => {
     const {profile} = useContext(StreamsContext)
-    const profileId = profile?.userId;
-    const isMe = authorId === profileId
-    const messageStamp = new Date(Number(stampMillis)).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    const profileId = profile?.UserId;
+    const isMe = AuthorId === profileId
+    const messageStamp = new Date(StampMillis).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     return (
         <div className={'message'} style={isMe ? {direction: "ltr"} : {direction: "rtl"}}>
             <div className={'message-outer'}>
@@ -91,7 +89,7 @@ const MessageEntity: FC<ChatMessage> = observer(({text, authorId, stampMillis}) 
                     </div>
                     <div className={`message-bubble ${isMe ? 'my-message' : 'other-message'}`}>
                         <div>
-                            {text} <span>{messageStamp}</span>
+                            {Text} <span>{messageStamp}</span>
                         </div>
                     </div>
                     <div className={'message-spacer'}></div>

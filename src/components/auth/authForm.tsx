@@ -20,10 +20,10 @@ const AuthForm = ({onClose}: any) => {
 
     const handleLogin = async (identity: string, password: string) => {
         try{
-            await new AuthActionsApi().Login({
+            await new AuthActionsApi().login({
                 identity:identity,
                 password:password
-            }).response.then(tokens=> {
+            }).then(tokens=> {
                 localStorage.setItem("jwt",tokens.accessToken)
                 localStorage.setItem("refreshToken",tokens.refreshToken)
             })

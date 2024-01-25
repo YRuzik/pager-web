@@ -1,6 +1,5 @@
 import {makeAutoObservable} from "mobx";
-import {TransferObject} from "../../proto/transfers/item.ts";
-import {MessageType} from "@protobuf-ts/runtime";
+import {TransferObject} from "../../testproto/transfers/item.ts";
 
 class Transfers {
     tObjectsMap: Map<string, TransferObject> = new Map()
@@ -11,50 +10,29 @@ class Transfers {
     }
 
     setToMap(obj: TransferObject) {
-        this.tObjectsMap.set(obj.id, obj)
+        this.tObjectsMap.set(obj.Id, obj)
         this.lastObject = obj
     }
 
-    streamListValue<T extends object>(type: string, prepareItem: MessageType<T>) {
+    streamListValue<T extends object>(type: string) {
         const dataList: T[] = []
         this.tObjectsMap.forEach((value) => {
-            if (value.type === type) {
-                dataList.push(prepareItem.fromJsonString(new TextDecoder().decode(value.data)))
+            if (value.Type === type) {
+                dataList.push(JSON.parse(new TextDecoder().decode(value.Data)))
             }
         })
         return dataList;
     }
 
-    streamValue<T extends object>(type: string, prepareItem: MessageType<T>) {
-        let dataObject: T | null = null
+    streamValue<T extends object>(type: string) {
+        let dataObject: T | undefined = undefined
         this.tObjectsMap.forEach((value) => {
-            if (value.type === type) {
-                dataObject = prepareItem.fromJsonString(new TextDecoder().decode(value.data))
+            if (value.Type === type) {
+                dataObject = JSON.parse(new TextDecoder().decode(value.Data))
             }
         })
         return dataObject
     }
-
 }
-
-// export const streamListValue = <T extends object>(type: string, prepareItem: MessageType<T>) => {
-//     const dataList: T[] = []
-//     new Transfers().tObjectsMap.forEach((value) => {
-//         if (value.type === type) {
-//             dataList.push(prepareItem.fromJsonString(new TextDecoder().decode(value.data)))
-//         }
-//     })
-//     return dataList;
-// }
-//
-// export const streamValue = <T extends object>(type: string, prepareItem: MessageType<T>) => {
-//     let dataObject: T | null = null
-//     new Transfers().tObjectsMap.forEach((value) => {
-//         if (value.type === type) {
-//             dataObject = prepareItem.fromJsonString(new TextDecoder().decode(value.data))
-//         }
-//     })
-//     return dataObject
-// }
 
 export default new Transfers()

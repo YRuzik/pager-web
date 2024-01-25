@@ -26,7 +26,7 @@ const RegForm = ({onClose}: any) => {
             if (password !== confirmPassword) {
                 throw new Error('Пароли не совпадают');
             }
-            await new AuthActionsApi().Registration({
+            await new AuthActionsApi().registration({
                 login:name,
                 email:email,
                 password:password
