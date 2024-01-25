@@ -1,27 +1,32 @@
 import Home from "./pages/Home.tsx";
-import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {MainPage} from "./pages/Main.tsx";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect} from "react";
 import {AuthActionsApi} from "./data/api.ts";
 import toast, {ToastBar, Toaster} from 'react-hot-toast';
 import NotFoundRedirect from "./pages/notFound.tsx";
 import {RpcError} from "@protobuf-ts/runtime-rpc";
+import RequireAuth from "./components/protectedRoute/protectedRoute.tsx";
+import {useAuth} from "./hooks/useAuth.tsx";
+import Login from "./components/auth/Login.tsx";
+import Register from "./components/auth/Register.tsx";
 
 const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const {logout} = useAuth()
 
     const refreshAccessToken = useCallback(async () => {
         const refreshToken = localStorage.getItem("refreshToken");
         let accessToken = localStorage.getItem("jwt")
         if (!refreshToken || !accessToken) {
+            await logout()
             return;
         }
         try {
             await new AuthActionsApi().Refresh({refreshToken: refreshToken,accessToken:accessToken}).response.then(response => {
                 localStorage.setItem("jwt", response.accessToken);
-                setIsAuthenticated(true);
             });
         } catch (e:unknown) {
+            await logout()
             const error = e as RpcError;
             toast.error("Ошибка при обновлении токена:" + error.message);
         }
@@ -50,13 +55,10 @@ const App = () => {
                     )}
                 </Toaster>
                 <Routes>
-                    <Route path="/" element={<Outlet />}>
-                        {isAuthenticated ? (
-                            <Route index element={<Home />} />
-                        ) : (
-                            <Route index element={<MainPage />} />
-                        )}
-                    </Route>
+                    <Route path={"/chat"} element={<RequireAuth><Home/></RequireAuth>}/>
+                    <Route path={"/login"} element={<Login/>}/>
+                    <Route path={"/registration"} element={<Register/>}/>
+                    <Route path={'/'} element={<MainPage/>}/>
                     <Route path={'*'} element={<NotFoundRedirect />} />
                 </Routes>
             </main>

@@ -1,28 +1,20 @@
 import "./main.scss"
 import logo from "../assets/pager.png"
-import Modal from "../components/auth/modal.tsx";
-import {useState} from "react";
+import {Link} from "react-router-dom";
+import {useAuth} from "../hooks/useAuth.tsx";
 
 export function MainPage() {
-    const [isOpen, setIsOpen] = useState(false);
-    const [modalForm,setModalForm] = useState("")
-    const handleOpenModal = (form:string) => {
-        setIsOpen(true);
-        setModalForm(form)
-    }
-
-    const handleCloseModal = () => {
-        setIsOpen(false);
-    }
+    const {authed,logout} = useAuth();
     return (
         <div>
             <header className={"header-main-page"}>
                 <img className={"logo-header"} src={logo} alt={'logo'}/>
                 <div className={"span-name-header"}>Pager</div>
                 <span className={"auth-wrapper"}>
-                    <button onClick={() => handleOpenModal('register')}>Регистрация</button>
-                    <button onClick={() => handleOpenModal('login')}>Авторизация</button>
-                    {isOpen && <Modal open={isOpen} onClose={handleCloseModal} LoginRegisterFrom={modalForm}/>}
+                    {!authed && <>
+                        <Link to={'/registration'}>Регистрация</Link>
+                        <Link to={'/login'}>Авторизация</Link> </>}
+                    {authed && <button onClick={() => logout()}>Выйти</button>}
                 </span>
             </header>
             <span className={"main-slogan"}>
@@ -31,6 +23,7 @@ export function MainPage() {
             <text className={"main-slogan-text"}>
                 Pager - <br/>облегчите общение с кем угодно!
             </text>
+            <div className={"background-present"}></div>
         </div>
     );
 }

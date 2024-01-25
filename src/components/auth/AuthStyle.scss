@@ -9,17 +9,17 @@
   top: 0;
   right: 0;
   left: 0;
-  background: global.$bg-color;
   flex-direction: row;
+  background: linear-gradient(160deg, global.$brand-color 0%, global.$light-brand-color 100%) 70% 100%;
+  background-size: 500%;
 }
 
 .container-item{
   margin: auto;
-  padding: 2vw;
-  width: 35vw;
+  padding: 2vw 2vw;
+  width: 30vw;
   border-radius: 2vw;
   background: global.$secondary-color;
-  border: 1px solid black;
 }
 
 .form-header{
@@ -51,7 +51,7 @@
 
 .form-field{
   background: white;
-  border-radius: global.$default-inset;
+  border-radius: global.$default-br;
   border: .1vw solid #9f9f9f;
   width: 34vw;
   height: 2.5vw;
@@ -75,12 +75,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: .2vw solid black;
   font-size: 1.5vw;
   margin-top: 1.6vw;
-  width: 10vw;
   height: 2.8vw;
   border-radius: 1vw;
+  background: global.$button-color;
+  padding: 0 1vw;
+  color: white;
 }
 
 .name-container{
