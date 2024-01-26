@@ -15,7 +15,7 @@ function Register() {
     const validationSchema = Yup.object({
         email: Yup.string().email('Неверный формат email').required('Это поле обязательно для заполнения'),
         password: Yup.string().required('Это поле обязательно для заполнения').min(6, 'Пароль слишком короткий')
-            .matches(/^[a-zA-Z]+$/, 'Используйте только латинские буквы a-z'),
+            .matches(/^[a-zA-Z0-9]+$/, 'Используйте только латинские буквы и цифры'),
         confirmPassword: Yup.string().required('Это поле обязательно для заполнения')
             .oneOf([Yup.ref('password')], 'Пароли не совпадают'),
         name: Yup.string().required('Это поле обязательно для заполнения').min(4, 'Имя слишком короткое')

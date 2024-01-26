@@ -4,8 +4,11 @@ import {FC, useCallback, useContext, useEffect, useMemo, useRef} from "react";
 import {ChatActionsApi} from "../../../data/api.ts";
 import {StreamsContext} from "../../contexts/StreamsContext.tsx";
 import {ChatMessage} from "../../../testproto/chat/chat_actions.ts";
+import {asyncFuncHandler} from "../../../data/utils/error.ts";
+import {useAuth} from "../../../hooks/useAuth.tsx";
 
 const ChattingWindow = observer(() => {
+    const {logout} = useAuth();
     const {selectedChatId, profile} = useContext(StreamsContext)
 
     const {messages} = useContext(StreamsContext)
@@ -20,15 +23,19 @@ const ChattingWindow = observer(() => {
         chatId: string
     ) => {
         if ((profile?.UserId !== undefined)) {
-            await new ChatActionsApi().sendMessage({
-                AuthorId: profile.UserId,
-                Id: "",
-                LinkedChatId: chatId,
-                StampMillis: new Date().getTime(),
-                Status: 4,
-                Text: inputRef.current!.value
+            await asyncFuncHandler(async () => {
+                await new ChatActionsApi().sendMessage({
+                    AuthorId: profile.UserId,
+                    Id: "",
+                    LinkedChatId: chatId,
+                    StampMillis: new Date().getTime(),
+                    Status: 4,
+                    Text: inputRef.current!.value
+                })
+                inputRef.current!.value = ""
+            }, async ()=>{
+                await logout()
             })
-            inputRef.current!.value = ""
         } else {
             console.log(`userid ${profile?.UserId} not valid`)
         }

@@ -1,5 +1,8 @@
 import React, { useState, createContext, useContext, useMemo } from "react";
 import { AuthActionsApi } from "../data/api.ts";
+import {RichClientError} from "nice-grpc-error-details";
+import {PagerError} from "../testproto/common/errors.ts";
+import toast from "react-hot-toast";
 
 interface AuthContextProps {
     authed: boolean;
@@ -46,7 +49,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             localStorage.setItem("refreshToken", tokens.refreshToken);
 
             return true;
-        }catch (e) {
+        }catch (e:unknown) {
+            if(e instanceof RichClientError){
+                const error =  PagerError.decode(e.extra[0].value)
+                    toast.error(error.details)
+            }
             return false
         }
     };

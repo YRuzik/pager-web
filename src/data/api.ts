@@ -16,10 +16,9 @@ import {
     SearchUsersRequest
 } from "../testproto/auth/auth.ts";
 import {CallOptions} from "nice-grpc-common";
-import toast from "react-hot-toast";
-import {useAuth} from "../hooks/useAuth.tsx";
+import {errorDetailsClientMiddleware} from "nice-grpc-error-details";
 
-export const host = "http://localhost:8080";
+export const host = "https://localhost:8443";
 export const authHost = "http://localhost:5001";
 
 const websocketTransport = createChannel(host, WebsocketTransport())
@@ -35,34 +34,17 @@ async function* authMiddleware<Request, Response>(
     call: ClientMiddlewareCall<Request, Response>,
     options: CallOptions,
 ) {
-    const {logout} = useAuth()
-    let jwt = localStorage.getItem('jwt')
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (!refreshToken || !jwt) {
-        await logout()
-        return;
-    }
-    try {
-        await new AuthActionsApi().refresh({refreshToken: refreshToken,accessToken:jwt}).then(response => {
-            localStorage.setItem("jwt", response.accessToken);
-        });
-    } catch (error) {
-        await logout()
-        toast.error("Ошибка при обновлении токена:" + error);
-        return;
-    }
-    jwt = localStorage.getItem('jwt')
+    const jwt = localStorage.getItem('jwt')
     if (jwt) {
         options.metadata?.set("jwt", jwt)
     }
     return yield * call.next(call.request, options);
 }
 
-const clientFactory = createClientFactory().use(authMiddleware)
-
-
+const clientFactory = createClientFactory().use(authMiddleware).use(errorDetailsClientMiddleware)
+const authFactory = createClientFactory().use(errorDetailsClientMiddleware)
 export class AuthActionsApi{
-    private api = createClient(
+    private api = authFactory.create(
         AuthServiceDefinition,
         authTransport
     )

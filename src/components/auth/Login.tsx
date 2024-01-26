@@ -18,7 +18,7 @@ function Login() {
         password: Yup.string()
             .required('Это поле обязательно для заполнения')
             .min(6, 'Пароль слишком короткий')
-            .matches(/^[a-zA-Z]+$/, 'Используйте только латинские буквы a-z'),
+            .matches(/^[a-zA-Z0-9]+$/, 'Используйте только латинские буквы и цифры')
     });
     const handleLogin = async (identity: string, password: string) => {
         try {
