@@ -1,7 +1,6 @@
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
 import {AuthActionsApi} from "../../data/api.ts";
-import {RpcError} from "@protobuf-ts/runtime-rpc";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
 
@@ -24,15 +23,14 @@ function Register() {
     });
     const handleSubmit = async (email: string, password: string, name: string) => {
         try{
-            await new AuthActionsApi().Registration({
+            await new AuthActionsApi().registration({
                 login:name,
                 email:email,
                 password:password
             })
             navigate('/login')
-        } catch (e: unknown) {
-            const error = e as RpcError;
-            toast.error(error.message)
+        } catch (error) {
+            toast.error("ошибка регистрации)")
         }
     }
     return (

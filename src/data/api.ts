@@ -16,6 +16,8 @@ import {
     SearchUsersRequest
 } from "../testproto/auth/auth.ts";
 import {CallOptions} from "nice-grpc-common";
+import toast from "react-hot-toast";
+import {useAuth} from "../hooks/useAuth.tsx";
 
 export const host = "http://localhost:8080";
 export const authHost = "http://localhost:5001";
@@ -33,13 +35,27 @@ async function* authMiddleware<Request, Response>(
     call: ClientMiddlewareCall<Request, Response>,
     options: CallOptions,
 ) {
-    const jwt = localStorage.getItem('jwt')
+    const {logout} = useAuth()
+    let jwt = localStorage.getItem('jwt')
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken || !jwt) {
+        await logout()
+        return;
+    }
+    try {
+        await new AuthActionsApi().refresh({refreshToken: refreshToken,accessToken:jwt}).then(response => {
+            localStorage.setItem("jwt", response.accessToken);
+        });
+    } catch (error) {
+        await logout()
+        toast.error("Ошибка при обновлении токена:" + error);
+        return;
+    }
+    jwt = localStorage.getItem('jwt')
     if (jwt) {
         options.metadata?.set("jwt", jwt)
     }
-    const response = yield* call.next(call.request, options);
-
-    return response;
+    return yield * call.next(call.request, options);
 }
 
 const clientFactory = createClientFactory().use(authMiddleware)

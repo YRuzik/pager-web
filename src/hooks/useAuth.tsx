@@ -37,17 +37,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const AsyncLogin = async (identity: string, password: string): Promise<boolean> => {
         try {
-            const tokens = await new AuthActionsApi().Login({
+            const tokens = await new AuthActionsApi().login({
                 identity: identity,
                 password: password,
-            }).response;
+            });
 
             localStorage.setItem("jwt", tokens.accessToken);
             localStorage.setItem("refreshToken", tokens.refreshToken);
 
             return true;
-        } catch (error) {
-            throw error;
+        }catch (e) {
+            return false
         }
     };
 

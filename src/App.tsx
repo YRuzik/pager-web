@@ -5,7 +5,6 @@ import {useCallback, useEffect} from "react";
 import {AuthActionsApi} from "./data/api.ts";
 import toast, {ToastBar, Toaster} from 'react-hot-toast';
 import NotFoundRedirect from "./pages/notFound.tsx";
-import {RpcError} from "@protobuf-ts/runtime-rpc";
 import RequireAuth from "./components/protectedRoute/protectedRoute.tsx";
 import {useAuth} from "./hooks/useAuth.tsx";
 import Login from "./components/auth/Login.tsx";
@@ -22,13 +21,12 @@ const App = () => {
             return;
         }
         try {
-            await new AuthActionsApi().Refresh({refreshToken: refreshToken,accessToken:accessToken}).response.then(response => {
+            await new AuthActionsApi().refresh({refreshToken: refreshToken,accessToken:accessToken}).then(response => {
                 localStorage.setItem("jwt", response.accessToken);
             });
-        } catch (e:unknown) {
+        } catch (error) {
             await logout()
-            const error = e as RpcError;
-            toast.error("Ошибка при обновлении токена:" + error.message);
+            toast.error("Ошибка при обновлении токена:" + error);
         }
     }, []);
 

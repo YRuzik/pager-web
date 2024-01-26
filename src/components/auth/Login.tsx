@@ -2,7 +2,6 @@ import {ErrorMessage, Field, Form, Formik} from "formik";
 import "./AuthStyle.scss"
 import {useAuth} from "../../hooks/useAuth.tsx";
 import * as Yup from "yup";
-import {RpcError} from "@protobuf-ts/runtime-rpc";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
 
@@ -25,9 +24,8 @@ function Login() {
         try {
             await login(identity, password)
             navigate("/chat")
-        } catch (e: unknown) {
-            const error = e as RpcError;
-            toast.error(error.message)
+        } catch (error) {
+            toast.error("ошибка логина)")
         }
     };
     return (
