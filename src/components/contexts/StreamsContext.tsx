@@ -215,8 +215,10 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
 
     //connect to users socket server
     useEffect(() => {
-        connectToWebSocket()
-    }, []);
+        if (profile !== undefined) {
+            connectToWebSocket(profile.UserId)
+        }
+    }, [profile]);
 
     return (
         <StreamsContext.Provider
