@@ -1,5 +1,6 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import Long = require("long");
 
 export const protobufPackage = "com.pager.api";
 
@@ -12,10 +13,12 @@ export interface TransferObject {
   Data: Uint8Array;
   /** тип данных */
   Type: string;
+  /** номер */
+  SeqNumber: number;
 }
 
 function createBaseTransferObject(): TransferObject {
-  return { Id: "", SectionId: "", Data: new Uint8Array(0), Type: "" };
+  return { Id: "", SectionId: "", Data: new Uint8Array(0), Type: "", SeqNumber: 0 };
 }
 
 export const TransferObject = {
@@ -31,6 +34,9 @@ export const TransferObject = {
     }
     if (message.Type !== "") {
       writer.uint32(34).string(message.Type);
+    }
+    if (message.SeqNumber !== 0) {
+      writer.uint32(40).int64(message.SeqNumber);
     }
     return writer;
   },
@@ -70,6 +76,13 @@ export const TransferObject = {
 
           message.Type = reader.string();
           continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.SeqNumber = longToNumber(reader.int64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -85,6 +98,7 @@ export const TransferObject = {
       SectionId: isSet(object.SectionId) ? globalThis.String(object.SectionId) : "",
       Data: isSet(object.Data) ? bytesFromBase64(object.Data) : new Uint8Array(0),
       Type: isSet(object.Type) ? globalThis.String(object.Type) : "",
+      SeqNumber: isSet(object.SeqNumber) ? globalThis.Number(object.SeqNumber) : 0,
     };
   },
 
@@ -102,6 +116,9 @@ export const TransferObject = {
     if (message.Type !== "") {
       obj.Type = message.Type;
     }
+    if (message.SeqNumber !== 0) {
+      obj.SeqNumber = Math.round(message.SeqNumber);
+    }
     return obj;
   },
 
@@ -114,6 +131,7 @@ export const TransferObject = {
     message.SectionId = object.SectionId ?? "";
     message.Data = object.Data ?? new Uint8Array(0);
     message.Type = object.Type ?? "";
+    message.SeqNumber = object.SeqNumber ?? 0;
     return message;
   },
 };
@@ -150,6 +168,18 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

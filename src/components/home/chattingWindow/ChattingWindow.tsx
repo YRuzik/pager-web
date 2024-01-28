@@ -1,20 +1,23 @@
 import {observer} from "mobx-react-lite";
 import "./chattingWindow.scss"
-import {FC, useCallback, useContext, useEffect, useMemo, useRef} from "react";
+import {FC, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {ChatActionsApi} from "../../../data/api.ts";
-import {StreamsContext} from "../../contexts/StreamsContext.tsx";
+import {ChatInfo, StreamsContext} from "../../contexts/StreamsContext.tsx";
 import {ChatMessage} from "../../../testproto/chat/chat_actions.ts";
 
 const ChattingWindow = observer(() => {
-    const {selectedChatId, profile} = useContext(StreamsContext)
-
-    const {messages} = useContext(StreamsContext)
+    const {selectedChatId, profile, chats} = useContext(StreamsContext)
+    const [chat, setChat] = useState<ChatInfo | undefined>(undefined)
     const inputRef = useRef<HTMLInputElement>(null)
     const messagesRef = useRef<HTMLDivElement>(null)
 
-    const visibleMessages = useMemo(() =>
-            messages.filter((message) => message.LinkedChatId == selectedChatId).reverse()
-        , [selectedChatId, messages])
+    useEffect(() => {
+        if (chats && selectedChatId) {
+            setChat(chats.get(selectedChatId))
+        }
+    }, [chats, selectedChatId]);
+
+
 
     const handleSendMessage = useCallback(async (
         chatId: string
@@ -33,7 +36,7 @@ const ChattingWindow = observer(() => {
             console.log(`userid ${profile?.UserId} not valid`)
         }
     }, [profile])
-    
+
     const handleEventListener = useCallback(async (
         e: KeyboardEvent,
     ) => {
@@ -60,12 +63,13 @@ const ChattingWindow = observer(() => {
                 messagesRef.current!.scrollTop = messagesRef.current!.scrollHeight
             }
         }
-    }, [messagesRef, messages]);
+    }, [messagesRef]);
 
     return (
         <div className={"chatting-window-wrapper"}>
             <div ref={messagesRef} className={'all-messages-wrapper'}>
-                {visibleMessages.map((message) => <MessageEntity key={message.Id} {...message}/>)}
+                {chat?.messages ? chat?.messages.reverse().map((message) => <MessageEntity
+                    key={message.Id} {...message}/>) : null}
             </div>
             <div className={'input-wrapper'}>
                 <input
