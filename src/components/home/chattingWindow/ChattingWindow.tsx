@@ -4,12 +4,11 @@ import {FC, useCallback, useContext, useEffect, useMemo, useRef} from "react";
 import {ChatActionsApi} from "../../../data/api.ts";
 import {StreamsContext} from "../../contexts/StreamsContext.tsx";
 import {ChatMessage} from "../../../testproto/chat/chat_actions.ts";
-import {asyncFuncHandler} from "../../../data/utils/error.ts";
 import {useAuth} from "../../../hooks/useAuth.tsx";
 
 const ChattingWindow = observer(() => {
-    const {logout} = useAuth();
     const {selectedChatId, profile} = useContext(StreamsContext)
+    const {logout} = useAuth()
 
     const {messages} = useContext(StreamsContext)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -23,7 +22,6 @@ const ChattingWindow = observer(() => {
         chatId: string
     ) => {
         if ((profile?.UserId !== undefined)) {
-            await asyncFuncHandler(async () => {
                 await new ChatActionsApi().sendMessage({
                     AuthorId: profile.UserId,
                     Id: "",
@@ -31,11 +29,8 @@ const ChattingWindow = observer(() => {
                     StampMillis: new Date().getTime(),
                     Status: 4,
                     Text: inputRef.current!.value
-                })
+                },logout)
                 inputRef.current!.value = ""
-            }, async ()=>{
-                await logout()
-            })
         } else {
             console.log(`userid ${profile?.UserId} not valid`)
         }

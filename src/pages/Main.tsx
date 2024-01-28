@@ -20,9 +20,9 @@ export function MainPage() {
             <span className={"main-slogan"}>
                 Будь частью разговора, будь частью истории. Мессенджер, где твои слова - ключ к захватывающему общению!
             </span>
-            <text className={"main-slogan-text"}>
+            <div className={"main-slogan-text"}>
                 Pager - <br/>облегчите общение с кем угодно!
-            </text>
+            </div>
             <div className={"background-present"}></div>
         </div>
     );

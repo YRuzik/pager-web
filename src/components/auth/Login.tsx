@@ -21,12 +21,7 @@ function Login() {
             .matches(/^[a-zA-Z0-9]+$/, 'Используйте только латинские буквы и цифры')
     });
     const handleLogin = async (identity: string, password: string) => {
-        try {
-            await login(identity, password)
-            navigate("/chat")
-        } catch (error) {
-            toast.error("ошибка логина)")
-        }
+        await login(identity, password).catch((e) => toast.error(e)).then(() => navigate("/chat"))
     };
     return (
         <div className={'container'}>
@@ -37,7 +32,7 @@ function Login() {
                     validationSchema={validationSchema}
                     onSubmit={values => console.log(JSON.stringify(values))}
                 >
-                    {({isSubmitting, isValid, dirty, values, resetForm}) => (
+                    {({isSubmitting, isValid, dirty, values, setSubmitting}) => (
                         <Form>
                             <div className={'email-container'}>
                                 Логин / Почта
@@ -54,9 +49,8 @@ function Login() {
                                         type="submit"
                                         disabled={!(isValid && dirty) || isSubmitting}
                                         onClick={async () => {
-                                            isSubmitting = true;
+                                            setSubmitting(true);
                                             await handleLogin(values.identity, values.password);
-                                            setTimeout(() => resetForm(), 500);
                                         }}
                                 >
                                     {isSubmitting ? 'Загрузка...' : 'Войти'}

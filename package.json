@@ -14,6 +14,7 @@
   "dependencies": {
     "@vitejs/plugin-basic-ssl": "^1.1.0",
     "formik": "^2.4.5",
+    "jwt-decode": "^4.0.0",
     "long": "^5.2.3",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
