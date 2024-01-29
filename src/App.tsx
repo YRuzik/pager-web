@@ -12,7 +12,7 @@ const App = () => {
             return;
         }
         try {
-            await new AuthActionsApi().Refresh({refreshToken: refreshToken}).response.then(response => {
+            await new AuthActionsApi().refresh({refreshToken: refreshToken, accessToken: ""}).then(response => {
                     localStorage.setItem("jwt", response.accessToken)
                 }
             )
