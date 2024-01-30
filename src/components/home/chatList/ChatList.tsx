@@ -1,50 +1,53 @@
 import "./chatList.scss"
-import {FC, useCallback, useContext, useEffect, useState} from "react";
-import {observer} from "mobx-react-lite";
+import {FC, useContext, useEffect, useMemo, useState} from "react";
 import {ChatInfo, StreamsContext} from "../../contexts/StreamsContext.tsx";
-import {ChatMessage} from "../../../testproto/chat/chat_actions.ts";
+import {ChatMember} from "../../../testproto/chat/chat_actions.ts";
 import {v4 as uuidv4} from 'uuid';
+import {observer} from "mobx-react-lite";
+import actions from "../../../data/mobx/actions.ts";
+import ChatTile from "../../common/chatTile/ChatTile.tsx";
 
-const ChatList = observer(() => {
-    const {chats} = useContext(StreamsContext)
-    const [chatsState, setChatsState] = useState<ChatInfo[]>([])
-    useEffect(() => {
-        setChatsState(Array.from(chats?.values() ?? []))
-    }, [chats]);
+const ChatList = () => {
+    const {chats, members, profile} = useContext(StreamsContext)
+    // const [chatsState, setChatsState] = useState<ChatInfo[]>([])
+
+    const chatsMemo = useMemo(() => Array.from(chats?.values() ?? []), [chats])
+
     return (
         <div className={"chat-wrapper"}>
-            {chatsState.map((chat) => <ChatListEntity key={uuidv4()} {...chat}/>)}
+            {chatsMemo.map((chat) => <ChatListEntity key={uuidv4()} chat={chat} profileId={profile?.UserId}
+                                                     members={members}/>)}
         </div>
     )
-})
+}
 
-const ChatListEntity: FC<ChatInfo> = observer(({chatInfo, messages}) => {
-    const {setSelectedChatId, selectedChatId} = useContext(StreamsContext)
-    const [lastMessage, setLastMessage] = useState<ChatMessage | undefined>(undefined)
+type ChatListEntityProps = {
+    chat: ChatInfo
+    profileId: string
+    members: Map<string, ChatMember>
+}
 
-    const handleSetChat = useCallback((chatId: string) => {
-        setSelectedChatId(chatId)
-    }, [setSelectedChatId])
+const ChatListEntity: FC<ChatListEntityProps> = observer(({chat, profileId, members}) => {
+    const selectedChatId = actions.selectedChatId
+    const {messages, chatInfo} = chat
+    const [member, setMember] = useState<ChatMember | undefined>(undefined)
 
     useEffect(() => {
-        if (messages) {
-            setLastMessage(messages.slice(-1)[0])
+        const memberId = chatInfo.MembersId.find((val) => val !== profileId)
+        if (memberId) {
+            setMember(members.get(memberId))
         }
-    }, [messages]);
+    }, [chatInfo.MembersId, members, profileId]);
+
+    // const member = useMemo(() => , [members])
+    const lastMessage = useMemo(() => messages.slice(-1)[0], [messages])
 
     return (
-        <button className={`chat-entity-wrapper ${(chatInfo?.Id === selectedChatId) ? "chat-entity-active" : ""}`}
-                onClick={() => {
-                    if (chatInfo) {
-                        handleSetChat(chatInfo?.Id)
-                    }
-                }}>
-            <div className={"chat-entity-img-wrapper"}></div>
-            <div className={"chat-entity-text-wrapper"}>
-                <h1>{chatInfo?.Id}</h1>
-                {lastMessage?.Text ?? ""}
-            </div>
-        </button>
+        <>
+            {member &&
+                <ChatTile member={member} lastMessage={lastMessage} onClick={() => actions.toggleChatId(chatInfo.Id)}
+                          isSelected={selectedChatId === chat.chatInfo.Id}/>}
+        </>
     )
 })
 

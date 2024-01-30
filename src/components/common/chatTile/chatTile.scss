@@ -1,0 +1,46 @@
+.chat-tile-wrapper {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.chat-tile-avatar {
+  margin-right: 0.5rem;
+}
+
+.chat-tile-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.chat-tile-info-title {
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.chat-tile-login {
+  text-align: initial;
+  unicode-bidi: plaintext;
+  text-overflow: ellipsis;
+}
+
+.chat-tile-separator {
+  flex-grow: 1;
+  min-width: 0.5rem;
+}
+
+.chat-tile-lastMd {
+  flex-shrink: 0;
+}
+
+.chat-tile-info-subtitle {
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: initial;
+  unicode-bidi: plaintext;
+  text-overflow: ellipsis;
+}

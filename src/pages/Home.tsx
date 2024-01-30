@@ -2,13 +2,14 @@ import './home.scss'
 import ChatList from "../components/home/chatList/ChatList.tsx";
 import ChattingWindow from "../components/home/chattingWindow/ChattingWindow.tsx";
 import GlobalContext from "../components/contexts/StreamsContext.tsx";
+import LeftColumn from "../components/home/leftColumn/LeftColumn.tsx";
 
 const Home = () => {
     return (
         <GlobalContext>
             <div className={"home-wrapper"}>
                 <div className={"home-chat-list-container"}>
-                    <ChatList/>
+                    <LeftColumn/>
                 </div>
                 <div className={"home-chat-container"}>
                     <ChattingWindow/>

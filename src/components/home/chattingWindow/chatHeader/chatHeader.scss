@@ -1,0 +1,29 @@
+@use "../../../../styles/global";
+.middle-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: global.$bg-color;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  height: 3.5rem;
+  padding: 1rem;
+}
+
+.chat-info {
+  display: flex;
+  align-items: center;
+}
+
+.chat-avatar {
+  margin-right: 0.625rem;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  overflow: hidden;
+}

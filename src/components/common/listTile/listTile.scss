@@ -1,0 +1,15 @@
+@use "../../../styles/global";
+.listTile-wrapper {
+  width: 100%;
+  cursor: pointer;
+  padding: global.$default-inset;
+  position: relative;
+}
+
+.listTile-wrapper:hover {
+  background-color: global.$light-brand-color;
+}
+
+.listTile-selected {
+  background-color: global.$secondary-color;
+}

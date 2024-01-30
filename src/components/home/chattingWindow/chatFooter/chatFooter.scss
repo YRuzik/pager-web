@@ -1,0 +1,32 @@
+@use "../../../../styles/global";
+.middle-footer {
+  top: 0;
+  width: 100%;
+  padding: 0 1rem;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  z-index: 2;
+  height: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.chatting-input {
+  flex-grow: 1;
+  height: 100%;
+  max-width: calc(100% - 4rem);
+  background: global.$bg-color;
+  position: relative;
+  z-index: 1;
+  border-radius: global.$default-inset;
+  padding: 0 1rem;
+}
+
+.chatting-button {
+  background: global.$bg-color;
+  height: 100%;
+  width: 2.5rem;
+  border-radius: global.$max-br;
+  cursor: pointer;
+}

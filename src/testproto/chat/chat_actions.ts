@@ -187,7 +187,7 @@ export interface CreateChatRequest {
 
 export interface ChatMember {
   /** Индетификатор пользователя */
-  UserId: string;
+  Id: string;
   /** Почта пользователя */
   Email: string;
   /** Картинка профиля пользователя */
@@ -684,13 +684,13 @@ export const CreateChatRequest = {
 };
 
 function createBaseChatMember(): ChatMember {
-  return { UserId: "", Email: "", Avatar: new Uint8Array(0), Login: "", Online: false, lastSeenMillis: 0 };
+  return { Id: "", Email: "", Avatar: new Uint8Array(0), Login: "", Online: false, lastSeenMillis: 0 };
 }
 
 export const ChatMember = {
   encode(message: ChatMember, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.UserId !== "") {
-      writer.uint32(10).string(message.UserId);
+    if (message.Id !== "") {
+      writer.uint32(10).string(message.Id);
     }
     if (message.Email !== "") {
       writer.uint32(18).string(message.Email);
@@ -722,7 +722,7 @@ export const ChatMember = {
             break;
           }
 
-          message.UserId = reader.string();
+          message.Id = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
@@ -770,7 +770,7 @@ export const ChatMember = {
 
   fromJSON(object: any): ChatMember {
     return {
-      UserId: isSet(object.UserId) ? globalThis.String(object.UserId) : "",
+      Id: isSet(object.Id) ? globalThis.String(object.Id) : "",
       Email: isSet(object.Email) ? globalThis.String(object.Email) : "",
       Avatar: isSet(object.Avatar) ? bytesFromBase64(object.Avatar) : new Uint8Array(0),
       Login: isSet(object.Login) ? globalThis.String(object.Login) : "",
@@ -781,8 +781,8 @@ export const ChatMember = {
 
   toJSON(message: ChatMember): unknown {
     const obj: any = {};
-    if (message.UserId !== "") {
-      obj.UserId = message.UserId;
+    if (message.Id !== "") {
+      obj.Id = message.Id;
     }
     if (message.Email !== "") {
       obj.Email = message.Email;
@@ -807,7 +807,7 @@ export const ChatMember = {
   },
   fromPartial(object: DeepPartial<ChatMember>): ChatMember {
     const message = createBaseChatMember();
-    message.UserId = object.UserId ?? "";
+    message.Id = object.Id ?? "";
     message.Email = object.Email ?? "";
     message.Avatar = object.Avatar ?? new Uint8Array(0);
     message.Login = object.Login ?? "";

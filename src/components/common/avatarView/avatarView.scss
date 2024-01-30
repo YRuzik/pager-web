@@ -1,0 +1,21 @@
+@use "../../../styles/global";
+.avatar-wrapper {
+  position: relative;
+}
+
+.avatar-img {
+  background-color: global.$text-color;
+  border-radius: global.$max-br;
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-online {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  background-color: green;
+  border-radius: global.$max-br;
+}

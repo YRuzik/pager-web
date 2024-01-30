@@ -1,6 +1,5 @@
 import {makeAutoObservable} from "mobx";
 import {TransferObject} from "../../testproto/transfers/item.ts";
-import {ChatMessage} from "../../testproto/chat/chat_actions.ts";
 
 class Transfers {
     tObjectsMap: Map<string, TransferObject> = new Map()
@@ -41,11 +40,8 @@ class Transfers {
 
 export const getValueByType = <T>(type: string, arr: TransferObject[]) => {
     const foundedElement = arr.find((val) => val.Type === type);
-    if (foundedElement) {
-        const object: T = JSON.parse(new TextDecoder().decode(foundedElement.Data))
-        return object
-    }
-    return undefined
+    const object: T = JSON.parse(new TextDecoder().decode(foundedElement!.Data))
+    return object
 }
 
 export const getListByType = <T>(type: string, arr: TransferObject[]) => {

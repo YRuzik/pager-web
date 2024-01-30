@@ -1,0 +1,54 @@
+@use '../../../../styles/global';
+.message-outer {
+  display: flex;
+  padding-bottom: 4px;
+}
+
+.message-inner {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-spacer {
+  flex: 1;
+}
+
+.message-bubble {
+  max-width: 70%;
+  overflow-wrap: break-word;
+  padding: global.$default-inset;
+}
+
+.message-status {
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.message-avatar {
+  padding-left: 6px;
+  padding-right: 8px;
+}
+
+.message-avatar-handle {
+  width: 20px;
+  height: 20px;
+  border-radius: global.$max-br;
+  background-color: #557BF3;
+}
+
+.my-message {
+  background-color: global.$brand-color;
+  color: global.$text-on-brand-color;
+  border-radius: global.$default-br global.$default-br 0 global.$default-br;
+}
+
+.other-message {
+  background-color: global.$secondary-color;
+  color: global.$text-color;
+  border-radius: global.$default-br global.$default-br global.$default-br 0;
+}
