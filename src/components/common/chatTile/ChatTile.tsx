@@ -6,13 +6,14 @@ import AvatarView from "../avatarView/AvatarView.tsx";
 
 type ChatTileProps = {
     member: ChatMember
-    lastMessage: ChatMessage
+    lastMessage?: ChatMessage
     onClick: () => void
     isSelected: boolean
 }
 
-const ChatTile: FC<ChatTileProps> = memo(({member, lastMessage, onClick, isSelected}) => {
-    const messageStamp = new Date(lastMessage.StampMillis).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+const ChatTile: FC<ChatTileProps> = (props) => {
+    const {member, onClick, lastMessage, isSelected} = props
+    const messageStamp = new Date(lastMessage?.StampMillis ?? 0).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     return (
         <ListTile onClick={onClick} isSelected={isSelected}>
             <div className={'chat-tile-wrapper'}>
@@ -30,12 +31,12 @@ const ChatTile: FC<ChatTileProps> = memo(({member, lastMessage, onClick, isSelec
                         </div>
                     </div>
                     <div className={'chat-tile-info-subtitle'}>
-                        {lastMessage.Text}
+                        {lastMessage?.Text ?? ""}
                     </div>
                 </div>
             </div>
         </ListTile>
     )
-})
+}
 
 export default ChatTile
