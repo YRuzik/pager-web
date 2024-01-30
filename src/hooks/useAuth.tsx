@@ -44,6 +44,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 identity: identity,
                 password: password,
             });
+            if (!tokens) {
+                return false;
+            }
 
             localStorage.setItem("jwt", tokens.accessToken);
             localStorage.setItem("refreshToken", tokens.refreshToken);

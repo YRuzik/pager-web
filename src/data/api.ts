@@ -13,7 +13,7 @@ import {
     LoginRequest,
     RefreshRequest,
     RegistrationRequest,
-    SearchUsersRequest, Token
+    SearchUsersRequest
 } from "../testproto/auth/auth.ts";
 import {CallOptions} from "nice-grpc-common";
 import {errorDetailsClientMiddleware} from "nice-grpc-error-details";
@@ -49,8 +49,7 @@ export class AuthActionsApi{
         authTransport
     )
 
-    public login(request: LoginRequest):Promise<Token>{
-        // @ts-ignore
+    public login(request: LoginRequest){
         return asyncFuncHandler(
              async () => this.api.login(request)
          )
