@@ -2,7 +2,8 @@ import "./leftMenu.scss"
 import React, {useContext, useEffect, useRef, useState} from "react";
 import {StreamsContext} from "../../contexts/StreamsContext.tsx";
 import AvatarView from "../../common/avatarView/AvatarView.tsx";
-import ProfileModal from "../profileModal/ProfileModal.tsx";
+import ProfileModal from "../../common/profileModal/ProfileModal.tsx";
+import ListTile from "../../common/listTile/ListTile.tsx";
 
 interface LeftMenuProps {
     action: () => void;
@@ -38,10 +39,13 @@ const LeftMenu: React.FC<LeftMenuProps> = ({action, state}) => {
     return (
         <>
             <div ref={node} className={`menu ${state ? "Menu-open" : "Menu-close"}`}>
-                {profile.Avatar}<AvatarView online={false}/>
-                {profile.Login}
+               <div className={"menu-info"}>
+                   {profile.Avatar}
+                   <AvatarView online={false}/>
+                   {profile.Login}
+               </div>
                 <div className={"button-list"}>
-                    <button onClick={() => setIsOpen(true)}>Настройки</button>
+                   <ListTile onClick={() => setIsOpen(true)} isSelected={false}>Настройки</ListTile>
                 </div>
             </div>
             <ProfileModal handleClose={() => setIsOpen(false)} isOpen={isOpen}/>

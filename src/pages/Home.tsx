@@ -28,7 +28,7 @@ const Home = () => {
                     refreshAccessTokenTimerId = setTimeout(refreshAndSetTokenExp, (newTokenData.exp - Math.floor(Date.now() / 1000)) * 1000);
                 }
             } catch (error) {
-                await logout();
+                logout();
             }
         };
 

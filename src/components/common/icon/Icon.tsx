@@ -1,8 +1,14 @@
 import {FC} from "react";
 import iBurgerMenu from '../../../assets/burger-menu.svg'
+import IPencil from '../../../assets/pencil.svg'
+import IXsymbol from '../../../assets/x-symbol.svg'
+import ICheckMark from '../../../assets/checkmark.svg'
 import "./icon.scss"
 export enum AppIcons {
-    burgerMenu = iBurgerMenu
+    burgerMenu = iBurgerMenu,
+    pencil = IPencil,
+    xSymbol = IXsymbol,
+    checkmark = ICheckMark
 }
 
 type IconProps = {

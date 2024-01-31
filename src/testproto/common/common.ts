@@ -1,5 +1,6 @@
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import Long = require("long");
 
 export const protobufPackage = "com.pager.api";
 
@@ -15,6 +16,10 @@ export interface PagerProfile {
   Avatar: Uint8Array;
   /** Логин пользователя */
   Login: string;
+  /** метка онлайна */
+  Online: boolean;
+  /** когда последний раз заходил */
+  lastSeenMillis: number;
 }
 
 function createBaseEmpty(): Empty {
@@ -61,7 +66,7 @@ export const Empty = {
 };
 
 function createBasePagerProfile(): PagerProfile {
-  return { UserId: "", Email: "", Avatar: new Uint8Array(0), Login: "" };
+  return { UserId: "", Email: "", Avatar: new Uint8Array(0), Login: "", Online: false, lastSeenMillis: 0 };
 }
 
 export const PagerProfile = {
@@ -77,6 +82,12 @@ export const PagerProfile = {
     }
     if (message.Login !== "") {
       writer.uint32(34).string(message.Login);
+    }
+    if (message.Online === true) {
+      writer.uint32(40).bool(message.Online);
+    }
+    if (message.lastSeenMillis !== 0) {
+      writer.uint32(48).int64(message.lastSeenMillis);
     }
     return writer;
   },
@@ -116,6 +127,20 @@ export const PagerProfile = {
 
           message.Login = reader.string();
           continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.Online = reader.bool();
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.lastSeenMillis = longToNumber(reader.int64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -131,6 +156,8 @@ export const PagerProfile = {
       Email: isSet(object.Email) ? globalThis.String(object.Email) : "",
       Avatar: isSet(object.Avatar) ? bytesFromBase64(object.Avatar) : new Uint8Array(0),
       Login: isSet(object.Login) ? globalThis.String(object.Login) : "",
+      Online: isSet(object.Online) ? globalThis.Boolean(object.Online) : false,
+      lastSeenMillis: isSet(object.lastSeenMillis) ? globalThis.Number(object.lastSeenMillis) : 0,
     };
   },
 
@@ -148,6 +175,12 @@ export const PagerProfile = {
     if (message.Login !== "") {
       obj.Login = message.Login;
     }
+    if (message.Online === true) {
+      obj.Online = message.Online;
+    }
+    if (message.lastSeenMillis !== 0) {
+      obj.lastSeenMillis = Math.round(message.lastSeenMillis);
+    }
     return obj;
   },
 
@@ -160,6 +193,8 @@ export const PagerProfile = {
     message.Email = object.Email ?? "";
     message.Avatar = object.Avatar ?? new Uint8Array(0);
     message.Login = object.Login ?? "";
+    message.Online = object.Online ?? false;
+    message.lastSeenMillis = object.lastSeenMillis ?? 0;
     return message;
   },
 };
@@ -196,6 +231,18 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -37,16 +37,6 @@ export interface RegistrationRequest {
   password: string;
 }
 
-export interface SearchUsersRequest {
-  /** Логин или почта для поиска */
-  identifier: string;
-}
-
-export interface SearchUsersResponse {
-  /** Список ID найденных пользователей */
-  userIds: string[];
-}
-
 function createBaseLoginRequest(): LoginRequest {
   return { identity: "", password: "" };
 }
@@ -415,122 +405,6 @@ export const RegistrationRequest = {
   },
 };
 
-function createBaseSearchUsersRequest(): SearchUsersRequest {
-  return { identifier: "" };
-}
-
-export const SearchUsersRequest = {
-  encode(message: SearchUsersRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.identifier !== "") {
-      writer.uint32(10).string(message.identifier);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): SearchUsersRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSearchUsersRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.identifier = reader.string();
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): SearchUsersRequest {
-    return { identifier: isSet(object.identifier) ? globalThis.String(object.identifier) : "" };
-  },
-
-  toJSON(message: SearchUsersRequest): unknown {
-    const obj: any = {};
-    if (message.identifier !== "") {
-      obj.identifier = message.identifier;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<SearchUsersRequest>): SearchUsersRequest {
-    return SearchUsersRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<SearchUsersRequest>): SearchUsersRequest {
-    const message = createBaseSearchUsersRequest();
-    message.identifier = object.identifier ?? "";
-    return message;
-  },
-};
-
-function createBaseSearchUsersResponse(): SearchUsersResponse {
-  return { userIds: [] };
-}
-
-export const SearchUsersResponse = {
-  encode(message: SearchUsersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.userIds) {
-      writer.uint32(10).string(v!);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): SearchUsersResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSearchUsersResponse();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.userIds.push(reader.string());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): SearchUsersResponse {
-    return {
-      userIds: globalThis.Array.isArray(object?.userIds) ? object.userIds.map((e: any) => globalThis.String(e)) : [],
-    };
-  },
-
-  toJSON(message: SearchUsersResponse): unknown {
-    const obj: any = {};
-    if (message.userIds?.length) {
-      obj.userIds = message.userIds;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<SearchUsersResponse>): SearchUsersResponse {
-    return SearchUsersResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<SearchUsersResponse>): SearchUsersResponse {
-    const message = createBaseSearchUsersResponse();
-    message.userIds = object.userIds?.map((e) => e) || [];
-    return message;
-  },
-};
-
 export type AuthServiceDefinition = typeof AuthServiceDefinition;
 export const AuthServiceDefinition = {
   name: "AuthService",
@@ -552,14 +426,6 @@ export const AuthServiceDefinition = {
       responseStream: false,
       options: {},
     },
-    searchUsersByIdentifier: {
-      name: "SearchUsersByIdentifier",
-      requestType: SearchUsersRequest,
-      requestStream: false,
-      responseType: SearchUsersResponse,
-      responseStream: false,
-      options: {},
-    },
     refresh: {
       name: "Refresh",
       requestType: RefreshRequest,
@@ -574,20 +440,12 @@ export const AuthServiceDefinition = {
 export interface AuthServiceImplementation<CallContextExt = {}> {
   login(request: LoginRequest, context: CallContext & CallContextExt): Promise<DeepPartial<Token>>;
   registration(request: RegistrationRequest, context: CallContext & CallContextExt): Promise<DeepPartial<Empty>>;
-  searchUsersByIdentifier(
-    request: SearchUsersRequest,
-    context: CallContext & CallContextExt,
-  ): Promise<DeepPartial<SearchUsersResponse>>;
   refresh(request: RefreshRequest, context: CallContext & CallContextExt): Promise<DeepPartial<RefreshResponse>>;
 }
 
 export interface AuthServiceClient<CallOptionsExt = {}> {
   login(request: DeepPartial<LoginRequest>, options?: CallOptions & CallOptionsExt): Promise<Token>;
   registration(request: DeepPartial<RegistrationRequest>, options?: CallOptions & CallOptionsExt): Promise<Empty>;
-  searchUsersByIdentifier(
-    request: DeepPartial<SearchUsersRequest>,
-    options?: CallOptions & CallOptionsExt,
-  ): Promise<SearchUsersResponse>;
   refresh(request: DeepPartial<RefreshRequest>, options?: CallOptions & CallOptionsExt): Promise<RefreshResponse>;
 }
 

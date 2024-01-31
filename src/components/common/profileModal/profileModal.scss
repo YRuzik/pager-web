@@ -30,8 +30,18 @@
 
 }
 .profile-data{
+  width: 15rem;
   display: flex;
   flex-direction: column;
   gap: .5rem;
   padding-left: 1rem;
+}
+.buttons-modal{
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-buttons{
+  display: flex;
+  gap: 1rem;
 }

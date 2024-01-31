@@ -1,6 +1,7 @@
 import {FC, useCallback, useEffect, useRef} from "react";
 import {ChatActionsApi} from "../../../../data/api.ts";
 import './chatFooter.scss'
+import {useAuth} from "../../../../hooks/useAuth.tsx";
 
 type ChatFooterProps = {
     selectedChatId?: string
@@ -9,6 +10,7 @@ type ChatFooterProps = {
 
 const ChatFooter: FC<ChatFooterProps> = ({selectedChatId,profileId}) => {
     const inputRef = useRef<HTMLInputElement>(null)
+    const {logout} = useAuth();
     const handleSendMessage = useCallback(async (
         chatId: string
     ) => {
@@ -20,7 +22,7 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId,profileId}) => {
                 StampMillis: new Date().getTime(),
                 Status: 4,
                 Text: inputRef.current!.value
-            })
+            },logout)
             inputRef.current!.value = ""
         } else {
             console.log(`userid ${profileId} not valid`)

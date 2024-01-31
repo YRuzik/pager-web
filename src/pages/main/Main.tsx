@@ -1,7 +1,7 @@
 import "./main.scss"
-import logo from "../assets/pager.png"
+import logo from "../../assets/pager.png"
 import {Link} from "react-router-dom";
-import {useAuth} from "../hooks/useAuth.tsx";
+import {useAuth} from "../../hooks/useAuth.tsx";
 
 export function MainPage() {
     const {authed,logout} = useAuth();

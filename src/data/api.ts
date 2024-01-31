@@ -13,12 +13,12 @@ import {
     LoginRequest,
     RefreshRequest,
     RegistrationRequest,
-    SearchUsersRequest
 } from "../testproto/auth/auth.ts";
 import {CallOptions} from "nice-grpc-common";
 import {errorDetailsClientMiddleware} from "nice-grpc-error-details";
 import {asyncFuncHandler} from "./utils/error.ts";
-import {useAuth} from "../hooks/useAuth.tsx";
+import {ClientServiceDefinition, SearchUsersRequest} from "../testproto/client/client.ts";
+import {PagerProfile} from "../testproto/common/common.ts";
 
 export const host = "http://localhost:4561";
 export const authHost = "http://localhost:5001";
@@ -59,9 +59,6 @@ export class AuthActionsApi{
             async () => this.api.registration(request)
     )
     }
-    public searchUsersByIdentifier(request: SearchUsersRequest){
-        return this.api.searchUsersByIdentifier(request)
-    }
     public refresh(request: RefreshRequest){
         return this.api.refresh(request)
     }
@@ -75,17 +72,35 @@ export class ChatActionsApi {
 
     public createChat(request: CreateChatRequest) {
         return asyncFuncHandler(
-            async () => this.api.createChat(request, authOptions),
-            () => useAuth().logout()
+            async () => this.api.createChat(request, authOptions)
     )
     }
 
-    public async sendMessage(request: ChatMessage, onLogout: () => Promise<void>) {
+    public async sendMessage(request: ChatMessage, onLogout: () => void) {
         return asyncFuncHandler(
             async () => await this.api.sendMessage(request, authOptions),
             onLogout
         )
     }
+}
+
+export class ClientActionsApi {
+    private api = clientFactory.create(
+        ClientServiceDefinition,
+        websocketTransport
+    )
+    public searchUsersByIdentifier(request:SearchUsersRequest){
+        return asyncFuncHandler(
+            async () => await this.api.searchUsersByIdentifier(request,authOptions)
+        )
+    }
+    public UpdateData(request: PagerProfile, onLogout: () => void){
+        return asyncFuncHandler(
+            async () => await this.api.changeDataProfile(request,authOptions),
+            onLogout
+        )
+    }
+
 }
 
 export const StreamsApi = createClient(

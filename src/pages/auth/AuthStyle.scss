@@ -16,82 +16,63 @@
 
 .container-item{
   margin: auto;
-  padding: 2vw 2vw;
-  width: 30vw;
-  border-radius: 2vw;
+  padding: 2rem;
+  width: 32rem;
+  border-radius: global.$default-br;
   background: global.$secondary-color;
 }
 
 .form-header{
-  font-size: 4vw;
+  font-size: 4rem;
   font-weight: 700;
   font-style: normal;
-  margin-top: 1vw;
+  margin-top: 1rem;
 }
 
 .email-container{
   display: flex;
   flex-wrap: wrap;
-  font-size: 1.2vw;
-  margin-top: .8vw;
+  font-size: 1.4rem;
+  margin-top: 1rem;
 }
 .email-container .ErrorMessages{
   color: red;
-  font-size: 1vw;
-}
-
-.error-messages{
-  margin-top: 1.5vw;
-  margin-left: 0.5vw;
-  color: red;
-  font-size: 1.2vw;
-  text-wrap: normal;
-  font-weight: 500;
+  font-size: 1rem;
 }
 
 .form-field{
   background: white;
   border-radius: global.$default-br;
-  border: .1vw solid #9f9f9f;
-  width: 34vw;
-  height: 2.5vw;
-  padding-left: .6vw;
-  margin-top: .5vw;
-  font-size: 1vw;
+  border: .1rem solid #9f9f9f;
+  width: 34rem;
+  height: 3rem;
+  padding-left: 1rem;
+  margin-top: .5rem;
+  font-size: 1.2rem;
 }
 
 .password-container{
   display: flex;
   flex-wrap: wrap;
-  font-size: 1.2vw;
-  margin-top: .8vw;}
+  font-size: 1.2rem;
+  margin-top: .8rem;}
 
 .password-container .ErrorMessages{
   color: red;
-  font-size: 1vw;
+  font-size: 1rem;
 }
 
 .submit-button{
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5vw;
-  margin-top: 1.6vw;
-  height: 2.8vw;
-  border-radius: 1vw;
+  font-size: 1.5rem;
+  margin-top: 1.6rem;
+  height: 2.8rem;
+  border-radius: 1rem;
   background: global.$button-color;
-  padding: 0 1vw;
+  padding: 0 1rem;
   color: white;
-}
-
-.name-container{
-  background: white;
-  border: .1vw solid #9f9f9f;
-  width: 34vw;
-  height: 2.5vw;
-  padding-left: .6vw;
-  margin-top: .5vw;
-  font-size: 1vw;
 }
 
 .container-temp{

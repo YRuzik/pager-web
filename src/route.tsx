@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
-import RequireAuth from "./components/protectedRoute/protectedRoute.tsx";
+import RequireAuth from "./components/common/protectedRoute/protectedRoute.tsx";
 import Home from "./pages/Home.tsx";
-import Login from "./components/auth/Login.tsx";
-import Register from "./components/auth/Register.tsx";
-import {MainPage} from "./pages/Main.tsx";
-import NotFoundRedirect from "./pages/notFound.tsx";
+import Login from "./pages/auth/Login.tsx";
+import Register from "./pages/auth/Register.tsx";
+import {MainPage} from "./pages/main/Main.tsx";
+import NotFoundRedirect from "./pages/RedirectPage.tsx";
 
 const AppRoutes = () => (
     <Routes>

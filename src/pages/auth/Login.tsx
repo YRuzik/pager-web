@@ -30,9 +30,11 @@ function Login() {
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
-                    onSubmit={values => console.log(JSON.stringify(values))}
+                    onSubmit={async (values) => {
+                        await handleLogin(values.identity, values.password);
+                    }}
                 >
-                    {({isSubmitting, isValid, dirty, values, setSubmitting}) => (
+                    {({isSubmitting, isValid, dirty}) => (
                         <Form>
                             <div className={'email-container'}>
                                 Логин / Почта
@@ -48,10 +50,6 @@ function Login() {
                                 <button className={"submit-button"}
                                         type="submit"
                                         disabled={!(isValid && dirty) || isSubmitting}
-                                        onClick={async () => {
-                                            setSubmitting(true);
-                                            await handleLogin(values.identity, values.password);
-                                        }}
                                 >
                                     {isSubmitting ? 'Загрузка...' : 'Войти'}
                                 </button>

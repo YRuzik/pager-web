@@ -22,11 +22,11 @@ function Register() {
             .matches(/^[a-zA-Z]+$/, 'Используйте только латинские буквы a-z')
     });
     const handleSubmit = async (email: string, password: string, name: string) => {
-        try{
+        try {
             await new AuthActionsApi().registration({
-                login:name,
-                email:email,
-                password:password
+                login: name,
+                email: email,
+                password: password
             })
             navigate('/login')
         } catch (error) {
@@ -38,8 +38,9 @@ function Register() {
             <div className={'container-item'}>
                 <div className={"form-header"}>Регистрация</div>
                 <Formik initialValues={initialValues} validationSchema={validationSchema}
-                        onSubmit={values => console.log(JSON.stringify(values))}>
-                    {({isSubmitting, isValid, dirty, values, resetForm}) => (
+                        onSubmit={async (values) =>
+                            await handleSubmit(values.email, values.password, values.name)}>
+                    {({isSubmitting, isValid, dirty}) => (
                         <Form>
                             <div className={"email-container"}>
                                 <Field placeholder={'Имя пользователя'} type='name' name='name'
@@ -65,11 +66,7 @@ function Register() {
                             </div>
                             <div className={'container-temp'}>
                                 <button className={"submit-button"} type="submit"
-                                        disabled={!(isValid && dirty) || isSubmitting} onClick={async () => {
-                                    isSubmitting = true
-                                    await handleSubmit(values.email, values.password, values.name)
-                                    setTimeout(() => resetForm(), 500)
-                                }}>
+                                        disabled={!(isValid && dirty) || isSubmitting}>
                                     {isSubmitting ? 'Загрузка...' : 'Регистрация'}
                                 </button>
                             </div>

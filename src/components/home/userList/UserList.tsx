@@ -1,6 +1,6 @@
 import {FC, useEffect, useState} from "react";
 import {ChatMember} from "../../../testproto/chat/chat_actions.ts";
-import {AuthActionsApi, StreamsApi} from "../../../data/api.ts";
+import {ClientActionsApi, StreamsApi} from "../../../data/api.ts";
 import {handleDownStream} from "../../../data/utils.ts";
 import ChatTile from "../../common/chatTile/ChatTile.tsx";
 import {v4 as uuidv4} from 'uuid';
@@ -20,7 +20,10 @@ const UserList: FC<UserListProps> = ({searchValue}) => {
         if (searchValue.length > 3) {
             timerId = setTimeout(async () => {
                 const membersArray: ChatMember[] = []
-                await new AuthActionsApi().searchUsersByIdentifier({identifier: searchValue}).then(async (response) => {
+                await new ClientActionsApi().searchUsersByIdentifier({identifier: searchValue}).then(async (response) => {
+                    if(!response){
+                        return
+                    }
                     for (const id of response.userIds) {
                         await handleDownStream(false, StreamsApi.streamChatMember, {MemberId: id}).then((v) => {
                             const member: ChatMember = JSON.parse(new TextDecoder().decode(v[0].Data))
