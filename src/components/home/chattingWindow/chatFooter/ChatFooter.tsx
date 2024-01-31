@@ -39,12 +39,10 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId,profileId}) => {
     useEffect(() => {
         const currentRef = inputRef.current;
         if (currentRef !== null && selectedChatId !== null) {
-            console.log('add input listener')
             currentRef.addEventListener("keydown", handleEventListener)
         }
         return () => {
             if (currentRef !== null && selectedChatId !== null) {
-                console.log('remove input listener')
                 currentRef.removeEventListener("keydown", handleEventListener)
             }
         }

@@ -150,7 +150,7 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
             await handleSetMembers(Array.from(membersIdMap.keys()))
             setChats(chatsMap)
         }
-    }, [chatRoles, chats, handleSetMembers, members, profile.UserId])
+    }, [chatRoles, chats, handleSetMembers, members])
 
     useEffect(() => {
         startProfileStreaming()
