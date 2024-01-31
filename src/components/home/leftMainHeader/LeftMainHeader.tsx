@@ -1,19 +1,19 @@
+
 import './leftMainHeader.scss'
-import {FC} from "react";
+import {AppIcons, Icon} from "../../common/icon/Icon.tsx";
+import React from "react";
 
-type LeftMainHeaderProps = {
-    searchOnChange: (val: string) => void
+interface LeftMainHeaderProps {
+    action: () => void;
 }
-
-const LeftMainHeader: FC<LeftMainHeaderProps> = ({searchOnChange}) => {
+const LeftMainHeader: React.FC<LeftMainHeaderProps> = ({ action }) => {
     return (
         <div className={'left-main-header-wrapper'}>
             <div className={'left-main-header-menu'}>
-
+                <Icon icon={AppIcons.burgerMenu} onClick={action}/>
             </div>
             <div className={'search-input-wrapper'}>
-                <input placeholder={'search...'} className={'search-input'}
-                       onChange={(e) => searchOnChange(e.currentTarget.value)}/>
+                <input placeholder={'search...'} className={'search-input'}/>
             </div>
         </div>
     )

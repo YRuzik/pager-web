@@ -1,15 +1,15 @@
-
 import './leftColumn.scss'
 import LeftMainHeader from "../leftMainHeader/LeftMainHeader.tsx";
 import ChatList from "../chatList/ChatList.tsx";
 import {useState} from "react";
-import UserList from "../userList/UserList.tsx";
+import LeftMenu from "../leftMenu/LeftMenu.tsx";
 const LeftColumn = () => {
-    const [searchValue, setSearchValue] = useState("")
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     return (
         <div className={'left-column-wrapper'}>
-            <LeftMainHeader searchOnChange={setSearchValue}/>
-            {(searchValue.length > 0) ? <UserList searchValue={searchValue}/> : <ChatList/>}
+            <LeftMainHeader action={() => setIsMenuOpen(!isMenuOpen)}/>
+            <ChatList/>
+            <LeftMenu state={isMenuOpen} action={() => setIsMenuOpen(false)}/>
         </div>
     )
 }
