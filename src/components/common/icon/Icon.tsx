@@ -16,3 +16,5 @@ const Icon: FC<IconProps> = ({icon, size = 36, onClick}) => {
         </div>
     )
 }
+
+export default Icon

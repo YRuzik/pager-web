@@ -8,6 +8,8 @@ $text-color: #28355B;
 $text-secondary-color: #7C85A3;
 $text-on-brand-color: #EDF0FE;
 
+$button-color:#23262f;
+
 $default-transition: 0.2s;
 
 $max-br: 50px;
@@ -17,4 +19,4 @@ $min-br: 9px;
 
 $default-inset: 10px;
 
-$brand-gradient: (to bottom right, #557BF3,#B06AB3)
+$brand-gradient: (to bottom, #557BF3, rgb(176, 106, 179));
