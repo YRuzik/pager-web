@@ -9,18 +9,21 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "proto": "protoc -I=./proto/pager_proto/ --ts_out ./src/proto/ --ts_opt generate_dependencies --ts_opt keep_enum_prefix ./proto/pager_proto/chat/chat_actions.proto ./proto/pager_proto/common/common.proto ./proto/pager_proto/transfers/item.proto ./proto/pager_proto/transfers/streams.proto ./proto/pager_proto/auth/auth.proto",
-    "nice-proto": "protoc --ts_proto_out=./src/testproto/ --ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false,forceLong=Long --proto_path=./proto/pager_proto/ ./proto/pager_proto/chat/chat_actions.proto ./proto/pager_proto/common/common.proto ./proto/pager_proto/transfers/item.proto ./proto/pager_proto/transfers/streams.proto ./proto/pager_proto/auth/auth.proto"
+    "nice-proto": "protoc --ts_proto_out=./src/testproto/ --ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false,forceLong=Long --proto_path=./proto/pager_proto/ ./proto/pager_proto/chat/chat_actions.proto ./proto/pager_proto/common/common.proto ./proto/pager_proto/common/errors.proto ./proto/pager_proto/transfers/item.proto ./proto/pager_proto/transfers/streams.proto ./proto/pager_proto/auth/auth.proto"
   },
   "dependencies": {
     "@vitejs/plugin-basic-ssl": "^1.1.0",
     "formik": "^2.4.5",
+    "jwt-decode": "^4.0.0",
     "long": "^5.2.3",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
+    "nice-grpc-error-details": "^0.2.4",
     "nice-grpc-web": "^3.3.2",
     "protobufjs": "^7.2.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.21.2",
     "socket.io-client": "^4.7.4",
     "vite-plugin-commonjs": "^0.10.1",

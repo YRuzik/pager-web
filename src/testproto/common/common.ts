@@ -15,8 +15,6 @@ export interface PagerProfile {
   Avatar: Uint8Array;
   /** Логин пользователя */
   Login: string;
-  /** Пользователь в сети или нет */
-  Online: boolean;
 }
 
 function createBaseEmpty(): Empty {
@@ -63,7 +61,7 @@ export const Empty = {
 };
 
 function createBasePagerProfile(): PagerProfile {
-  return { UserId: "", Email: "", Avatar: new Uint8Array(0), Login: "", Online: false };
+  return { UserId: "", Email: "", Avatar: new Uint8Array(0), Login: "" };
 }
 
 export const PagerProfile = {
@@ -79,9 +77,6 @@ export const PagerProfile = {
     }
     if (message.Login !== "") {
       writer.uint32(34).string(message.Login);
-    }
-    if (message.Online === true) {
-      writer.uint32(40).bool(message.Online);
     }
     return writer;
   },
@@ -121,13 +116,6 @@ export const PagerProfile = {
 
           message.Login = reader.string();
           continue;
-        case 5:
-          if (tag !== 40) {
-            break;
-          }
-
-          message.Online = reader.bool();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -143,7 +131,6 @@ export const PagerProfile = {
       Email: isSet(object.Email) ? globalThis.String(object.Email) : "",
       Avatar: isSet(object.Avatar) ? bytesFromBase64(object.Avatar) : new Uint8Array(0),
       Login: isSet(object.Login) ? globalThis.String(object.Login) : "",
-      Online: isSet(object.Online) ? globalThis.Boolean(object.Online) : false,
     };
   },
 
@@ -161,9 +148,6 @@ export const PagerProfile = {
     if (message.Login !== "") {
       obj.Login = message.Login;
     }
-    if (message.Online === true) {
-      obj.Online = message.Online;
-    }
     return obj;
   },
 
@@ -176,7 +160,6 @@ export const PagerProfile = {
     message.Email = object.Email ?? "";
     message.Avatar = object.Avatar ?? new Uint8Array(0);
     message.Login = object.Login ?? "";
-    message.Online = object.Online ?? false;
     return message;
   },
 };

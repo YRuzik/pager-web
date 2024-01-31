@@ -16,8 +16,11 @@ import {
     SearchUsersRequest
 } from "../testproto/auth/auth.ts";
 import {CallOptions} from "nice-grpc-common";
+import {errorDetailsClientMiddleware} from "nice-grpc-error-details";
+import {asyncFuncHandler} from "./utils/error.ts";
+import {useAuth} from "../hooks/useAuth.tsx";
 
-export const host = "http://localhost:8080";
+export const host = "http://localhost:4561";
 export const authHost = "http://localhost:5001";
 
 const websocketTransport = createChannel(host, WebsocketTransport())
@@ -33,29 +36,28 @@ async function* authMiddleware<Request, Response>(
     call: ClientMiddlewareCall<Request, Response>,
     options: CallOptions,
 ) {
-    const jwt = localStorage.getItem('jwt')
-    if (jwt) {
-        options.metadata?.set("jwt", jwt)
-    }
-    const response = yield* call.next(call.request, options);
-
-    return response;
+    const jwt = localStorage.getItem('jwt');
+    options.metadata?.set("jwt", jwt ?? "")
+    return yield * call.next(call.request, options);
 }
 
-const clientFactory = createClientFactory().use(authMiddleware)
-
-
+const clientFactory = createClientFactory().use(authMiddleware).use(errorDetailsClientMiddleware)
+const authFactory = createClientFactory().use(errorDetailsClientMiddleware)
 export class AuthActionsApi{
-    private api = createClient(
+    private api = authFactory.create(
         AuthServiceDefinition,
         authTransport
     )
 
     public login(request: LoginRequest){
-        return this.api.login(request)
+        return asyncFuncHandler(
+             async () => this.api.login(request)
+         )
     }
     public registration(request: RegistrationRequest){
-        return this.api.registration(request)
+        return asyncFuncHandler(
+            async () => this.api.registration(request)
+    )
     }
     public searchUsersByIdentifier(request: SearchUsersRequest){
         return this.api.searchUsersByIdentifier(request)
@@ -72,11 +74,17 @@ export class ChatActionsApi {
     )
 
     public createChat(request: CreateChatRequest) {
-        return this.api.createChat(request, authOptions);
+        return asyncFuncHandler(
+            async () => this.api.createChat(request, authOptions),
+            () => useAuth().logout()
+    )
     }
 
-    public sendMessage(request: ChatMessage) {
-        return this.api.sendMessage(request, authOptions);
+    public async sendMessage(request: ChatMessage, onLogout: () => Promise<void>) {
+        return asyncFuncHandler(
+            async () => await this.api.sendMessage(request, authOptions),
+            onLogout
+        )
     }
 }
 

@@ -4,9 +4,11 @@ import {FC, useCallback, useContext, useEffect, useMemo, useRef} from "react";
 import {ChatActionsApi} from "../../../data/api.ts";
 import {StreamsContext} from "../../contexts/StreamsContext.tsx";
 import {ChatMessage} from "../../../testproto/chat/chat_actions.ts";
+import {useAuth} from "../../../hooks/useAuth.tsx";
 
 const ChattingWindow = observer(() => {
     const {selectedChatId, profile} = useContext(StreamsContext)
+    const {logout} = useAuth()
 
     const {messages} = useContext(StreamsContext)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -20,15 +22,15 @@ const ChattingWindow = observer(() => {
         chatId: string
     ) => {
         if ((profile?.UserId !== undefined)) {
-            await new ChatActionsApi().sendMessage({
-                AuthorId: profile.UserId,
-                Id: "",
-                LinkedChatId: chatId,
-                StampMillis: new Date().getTime(),
-                Status: 4,
-                Text: inputRef.current!.value
-            })
-            inputRef.current!.value = ""
+                await new ChatActionsApi().sendMessage({
+                    AuthorId: profile.UserId,
+                    Id: "",
+                    LinkedChatId: chatId,
+                    StampMillis: new Date().getTime(),
+                    Status: 4,
+                    Text: inputRef.current!.value
+                },logout)
+                inputRef.current!.value = ""
         } else {
             console.log(`userid ${profile?.UserId} not valid`)
         }
