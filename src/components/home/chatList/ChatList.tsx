@@ -34,12 +34,11 @@ const ChatListEntity: FC<ChatListEntityProps> = observer(({chat, profileId, memb
 
     useEffect(() => {
         const memberId = chatInfo.MembersId.find((val) => val !== profileId)
-        if (memberId) {
+        if (memberId && members.has(memberId)) {
             setMember(members.get(memberId))
         }
     }, [chatInfo.MembersId, members, profileId]);
 
-    // const member = useMemo(() => , [members])
     const lastMessage = useMemo(() => messages.slice(-1)[0], [messages])
 
     return (

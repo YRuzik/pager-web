@@ -144,7 +144,7 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         if (!noChanges) {
             setChats(chatsMap)
         }
-    }, [chatRoles, chats])
+    }, [chatRoles, chats, handleSetMembers])
 
     useEffect(() => {
         startProfileStreaming()
