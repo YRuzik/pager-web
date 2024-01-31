@@ -29,7 +29,6 @@ interface IDataObject {
     members: Map<string, ChatMember>
     
     handleMessagesPagination: (messages: ChatMessage[], chatId: string) => void,
-    handleSetMembers: (memberId: string) => Promise<void>
 }
 
 const contextData: IDataObject = {
@@ -40,7 +39,6 @@ const contextData: IDataObject = {
     members: new Map(),
     
     handleMessagesPagination: () => {},
-    handleSetMembers: async () => {}
 };
 
 export const StreamsContext = createContext(contextData)
@@ -63,17 +61,23 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         }
     }, [chats])
 
-    const handleSetMembers = useCallback(async (memberId: string) => {
+    const handleSetMembers = useCallback(async (memberIdArr: string[]) => {
         const memberMapCopy = new Map(members)
-        if (!memberMapCopy.has(memberId)) {
-            await handleDownStream(false, StreamsApi.streamChatMember, {MemberId: memberId}).then((v) => {
-                const member: ChatMember = JSON.parse(new TextDecoder().decode(v[0].Data))
-                memberMapCopy.set(memberId, member)
-                handleDownStream(true, StreamsApi.streamChatMember, {MemberId: memberId})
-            })
+        let noChanges = true;
+        for (const memberId of memberIdArr) {
+            if (!memberMapCopy.has(memberId) && memberId !== profile.UserId) {
+                await handleDownStream(false, StreamsApi.streamChatMember, {MemberId: memberId}).then((v) => {
+                    const member: ChatMember = JSON.parse(new TextDecoder().decode(v[0].Data))
+                    memberMapCopy.set(memberId, member)
+                    noChanges = false;
+                    handleDownStream(true, StreamsApi.streamChatMember, {MemberId: memberId})
+                })
+            }
+        }
+        if (!noChanges) {
             setMembers(memberMapCopy)
         }
-    }, [members])
+    }, [members, profile.UserId])
 
     const handleSetMemberChanges = useCallback((obj: TransferObject) => {
         const member: ChatMember = JSON.parse(new TextDecoder().decode(obj.Data))
@@ -117,17 +121,18 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
 
     const startChatStreaming = useCallback(async () => {
         const chatsMap = new Map(chats)
+        const membersIdMap = new Map(members)
         let noChanges = true;
         for (const role of chatRoles) {
             if (!chatsMap.has(role.Id)) {
                 await handleDownStream<ChatStreamRequest>(false, StreamsApi.streamChat, {
                     ChatId: role.Id,
                     RequestedMessages: 1
-                }).then((v) => {
+                }).then(async (v) => {
                     const chat = getValueByType<Chat>(ChatStreamRequest_Type[1], v)
                     const messages = getListByType<ChatMessage>(ChatStreamRequest_Type[2], v)
-                    chat.MembersId.forEach((memberId) => {
-                        handleSetMembers(memberId)
+                    chat.MembersId.forEach((id) => {
+                        membersIdMap.set(id, ChatMember.create())
                     })
                     chatsMap.set(role.Id, {
                         messages: messages,
@@ -142,9 +147,10 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
             }
         }
         if (!noChanges) {
+            await handleSetMembers(Array.from(membersIdMap.keys()))
             setChats(chatsMap)
         }
-    }, [chatRoles, chats, handleSetMembers])
+    }, [chatRoles, chats, handleSetMembers, members, profile.UserId])
 
     useEffect(() => {
         startProfileStreaming()
@@ -185,8 +191,7 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         profile,
         members,
         handleMessagesPagination: handleChatMessagesPaginationUpdate,
-        handleSetMembers: handleSetMembers
-    }), [chatRoles, chats, handleChatMessagesPaginationUpdate, handleSetMembers, members, profile])
+    }), [chatRoles, chats, handleChatMessagesPaginationUpdate, members, profile])
 
     return (
         <StreamsContext.Provider

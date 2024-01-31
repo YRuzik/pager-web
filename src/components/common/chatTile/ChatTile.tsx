@@ -1,7 +1,7 @@
 import ListTile from "../listTile/ListTile.tsx";
 import './chatTile.scss'
 import {ChatMember, ChatMessage} from "../../../testproto/chat/chat_actions.ts";
-import {FC, memo} from "react";
+import {FC} from "react";
 import AvatarView from "../avatarView/AvatarView.tsx";
 
 type ChatTileProps = {
