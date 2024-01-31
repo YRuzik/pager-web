@@ -29,6 +29,7 @@ interface IDataObject {
     members: Map<string, ChatMember>
     
     handleMessagesPagination: (messages: ChatMessage[], chatId: string) => void,
+    handleSetMembers: (memberIdArr: string[]) => Promise<void>
 }
 
 const contextData: IDataObject = {
@@ -39,6 +40,7 @@ const contextData: IDataObject = {
     members: new Map(),
     
     handleMessagesPagination: () => {},
+    handleSetMembers: async () => {}
 };
 
 export const StreamsContext = createContext(contextData)
@@ -191,7 +193,8 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         profile,
         members,
         handleMessagesPagination: handleChatMessagesPaginationUpdate,
-    }), [chatRoles, chats, handleChatMessagesPaginationUpdate, members, profile])
+        handleSetMembers
+    }), [chatRoles, chats, handleChatMessagesPaginationUpdate, handleSetMembers, members, profile])
 
     return (
         <StreamsContext.Provider

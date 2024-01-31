@@ -1,4 +1,4 @@
-import {FC} from "react";
+import {FC, memo} from "react";
 import './messageEntity.scss'
 
 type MessageEntityProps = {
@@ -8,7 +8,7 @@ type MessageEntityProps = {
     profileId: string | undefined
 }
 
-const MessageEntity: FC<MessageEntityProps> = ({text, authorId, stampMillis, profileId}) => {
+const MessageEntity: FC<MessageEntityProps> = memo(({text, authorId, stampMillis, profileId}) => {
     const isMe = authorId === profileId
     const messageStamp = new Date(stampMillis).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     return (
@@ -29,6 +29,6 @@ const MessageEntity: FC<MessageEntityProps> = ({text, authorId, stampMillis, pro
             </div>
         </div>
     )
-}
+})
 
 export default MessageEntity

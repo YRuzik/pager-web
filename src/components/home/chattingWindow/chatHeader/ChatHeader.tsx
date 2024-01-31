@@ -1,15 +1,42 @@
 import {FC} from "react";
 import "./chatHeader.scss"
-import {ChatMember} from "../../../../testproto/chat/chat_actions.ts";
+import {Chat, ChatMember, ChatType} from "../../../../testproto/chat/chat_actions.ts";
 import AvatarView from "../../../common/avatarView/AvatarView.tsx";
 
 type ChatHeaderProps = {
-    chatId: string
+    chat?: Chat
     member: ChatMember
 }
 
-const ChatHeader: FC<ChatHeaderProps> = ({chatId, member}) => {
-    // const chatName = member ? member.Login : chatId ? chatId : ""
+const ChatHeader: FC<ChatHeaderProps> = ({chat, member}) => {
+    const {Login} = member
+
+    const PersonalHeader = () => {
+        return (
+            <>
+                <div>
+                    {Login}
+                </div>
+                <span>
+                        {member.Online ? "Online" : `last seen ${member.lastSeenMillis} ago`}
+                </span>
+            </>
+        )
+    }
+
+    const GroupHeader = () => {
+        return (
+            <>
+                <div>
+                    {chat?.Metadata?.Title}
+                </div>
+                <span>
+                        {`${chat?.MembersId.length} members`}
+                </span>
+            </>
+        )
+    }
+
     return (
         <div className={"middle-header"}>
             <div className={"chat-info"}>
@@ -17,12 +44,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({chatId, member}) => {
                     <AvatarView online={member.Online} size={35}/>
                 </div>
                 <div className={"info"}>
-                    <div>
-                        {member ? member.Login : chatId}
-                    </div>
-                    <span>
-                        {member.Online ? "Online" : `last seen ${member.lastSeenMillis} ago`}
-                    </span>
+                    {chat ? chat.Type === ChatType.personal ? <PersonalHeader/> : <GroupHeader/> : <PersonalHeader/>}
                 </div>
             </div>
         </div>

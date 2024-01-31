@@ -1,6 +1,6 @@
 import MessageEntity from "../messageEntity/MessageEntity.tsx";
 import {FC, useCallback, useContext, useEffect, useRef, useState} from "react";
-import {ChatMessage} from "../../../../testproto/chat/chat_actions.ts";
+import {ChatMember, ChatMessage} from "../../../../testproto/chat/chat_actions.ts";
 import {handleDownStream} from "../../../../data/utils.ts";
 import {StreamsApi} from "../../../../data/api.ts";
 import {getListByType} from "../../../../data/mobx/transfers.ts";
@@ -11,10 +11,11 @@ import './chatContent.scss'
 
 type ChatContentProps = {
     chat?: ChatInfo
-    profileId?: string
+    profileId: string
+    member?: ChatMember
 }
 
-const ChatContent: FC<ChatContentProps> = ({chat, profileId}) => {
+const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
     const {handleMessagesPagination} = useContext(StreamsContext)
     const messagesRef = useRef<HTMLDivElement>(null)
     const [fetching, setFetching] = useState(false)
@@ -41,7 +42,7 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId}) => {
     }, [handleInfiniteScroll, chat?.chatInfo]);
 
     useEffect(() => {
-        if ((fetching && chat?.messages) || firstInit) {
+        if ((chat) && ((fetching && chat?.messages) || firstInit)) {
             handleDownStream(false, StreamsApi.streamChat, {
                 ChatId: chat?.chatInfo?.Id,
                 RequestedMessages: (chat?.messages?.length ?? 0) + 50
@@ -71,7 +72,7 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId}) => {
                         </div>
                     </div>
                 </div>
-                <ChatFooter selectedChatId={chat?.chatInfo?.Id} profileId={profileId}/>
+                <ChatFooter selectedChatId={chat?.chatInfo?.Id} profileId={profileId} member={member}/>
             </div>
         </div>
     )

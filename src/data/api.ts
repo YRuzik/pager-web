@@ -13,12 +13,12 @@ import {
     LoginRequest,
     RefreshRequest,
     RegistrationRequest,
-    SearchUsersRequest
 } from "../testproto/auth/auth.ts";
 import {CallOptions} from "nice-grpc-common";
 import {errorDetailsClientMiddleware} from "nice-grpc-error-details";
 import {asyncFuncHandler} from "./utils/error.ts";
 import {useAuth} from "../hooks/useAuth.tsx";
+import {ClientServiceDefinition, SearchUsersRequest} from "../testproto/client/client.ts";
 
 export const host = "http://localhost:4561";
 export const authHost = "http://localhost:5001";
@@ -27,9 +27,7 @@ const websocketTransport = createChannel(host, WebsocketTransport())
 const authTransport = createChannel(authHost)
 
 const authOptions: CallOptions = {
-    metadata: new Metadata({
-
-    })
+    metadata: new Metadata({})
 }
 
 async function* authMiddleware<Request, Response>(
@@ -38,32 +36,45 @@ async function* authMiddleware<Request, Response>(
 ) {
     const jwt = localStorage.getItem('jwt');
     options.metadata?.set("jwt", jwt ?? "")
-    return yield * call.next(call.request, options);
+    return yield* call.next(call.request, options);
 }
 
 const clientFactory = createClientFactory().use(authMiddleware).use(errorDetailsClientMiddleware)
 const authFactory = createClientFactory().use(errorDetailsClientMiddleware)
-export class AuthActionsApi{
+
+export class AuthActionsApi {
     private api = authFactory.create(
         AuthServiceDefinition,
         authTransport
     )
 
-    public login(request: LoginRequest){
+    public login(request: LoginRequest) {
         return asyncFuncHandler(
-             async () => this.api.login(request)
-         )
+            async () => this.api.login(request)
+        )
     }
-    public registration(request: RegistrationRequest){
+
+    public registration(request: RegistrationRequest) {
         return asyncFuncHandler(
             async () => this.api.registration(request)
-    )
+        )
     }
-    public searchUsersByIdentifier(request: SearchUsersRequest){
-        return this.api.searchUsersByIdentifier(request)
-    }
-    public refresh(request: RefreshRequest){
+
+    public refresh(request: RefreshRequest) {
         return this.api.refresh(request)
+    }
+}
+
+export class ClientApi {
+    private api = clientFactory.create(
+        ClientServiceDefinition,
+        websocketTransport
+    )
+
+    public searchUsersByIdentifier(request: SearchUsersRequest) {
+        return asyncFuncHandler(
+            async () => this.api.searchUsersByIdentifier(request, authOptions),
+        )
     }
 }
 
@@ -77,7 +88,7 @@ export class ChatActionsApi {
         return asyncFuncHandler(
             async () => this.api.createChat(request, authOptions),
             () => useAuth().logout()
-    )
+        )
     }
 
     public async sendMessage(request: ChatMessage, onLogout: () => Promise<void>) {

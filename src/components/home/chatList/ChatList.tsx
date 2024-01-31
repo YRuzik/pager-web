@@ -1,7 +1,7 @@
 import "./chatList.scss"
-import {FC, useContext, useEffect, useMemo, useState} from "react";
+import {FC, useCallback, useContext, useEffect, useMemo, useState} from "react";
 import {ChatInfo, StreamsContext} from "../../contexts/StreamsContext.tsx";
-import {ChatMember} from "../../../testproto/chat/chat_actions.ts";
+import {ChatMember, ChatMessage} from "../../../testproto/chat/chat_actions.ts";
 import {v4 as uuidv4} from 'uuid';
 import {observer} from "mobx-react-lite";
 import actions from "../../../data/mobx/actions.ts";
@@ -10,7 +10,17 @@ import ChatTile from "../../common/chatTile/ChatTile.tsx";
 const ChatList = observer(() => {
     const {chats, members, profile} = useContext(StreamsContext)
 
-    const chatsMemo = useMemo(() => Array.from(chats.values()), [chats])
+    const filterChats = useCallback((chats: ChatInfo[]) => {
+        const copyChats = [...chats]
+        copyChats.sort((a, b) => {
+            const firstLastMessage: ChatMessage | undefined = a.messages.slice(-1)[0];
+            const secondLastMessage: ChatMessage | undefined = b.messages.slice(-1)[0];
+            return secondLastMessage.StampMillis - firstLastMessage.StampMillis;
+        })
+        return copyChats
+    }, [])
+
+    const chatsMemo = useMemo(() => filterChats(Array.from(chats.values())), [chats, filterChats])
 
     return (
         <div className={"chat-wrapper"}>
