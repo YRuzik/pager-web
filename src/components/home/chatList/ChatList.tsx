@@ -5,27 +5,31 @@ import {ChatMember, ChatMessage} from "../../../testproto/chat/chat_actions.ts";
 import {v4 as uuidv4} from 'uuid';
 import {observer} from "mobx-react-lite";
 import actions from "../../../data/mobx/actions.ts";
-import ChatTile from "../../common/chatTile/ChatTile.tsx";
+import ChatTile, {ChatTileSkeleton} from "../../common/chatTile/ChatTile.tsx";
 
 const ChatList = observer(() => {
-    const {chats, members, profile} = useContext(StreamsContext)
-
-    const filterChats = useCallback((chats: ChatInfo[]) => {
-        const copyChats = [...chats]
+    const {chats, members, profile, initList} = useContext(StreamsContext)
+    const filterChats = useCallback(() => {
+        console.log(chats)
+        const copyChats = Array.from(chats.values())
         copyChats.sort((a, b) => {
             const firstLastMessage: ChatMessage | undefined = a.messages.slice(-1)[0];
             const secondLastMessage: ChatMessage | undefined = b.messages.slice(-1)[0];
             return secondLastMessage.StampMillis - firstLastMessage.StampMillis;
         })
         return copyChats
-    }, [])
+    }, [chats])
 
-    const chatsMemo = useMemo(() => filterChats(Array.from(chats.values())), [chats, filterChats])
+    console.log(chats)
+    console.log(members)
+
+    const chatsMemo = useMemo(() => filterChats(), [filterChats])
 
     return (
         <div className={"chat-wrapper"}>
-            {chatsMemo.map((chat) => <ChatListEntity key={uuidv4()} chat={chat} profileId={profile?.UserId}
-                                       members={members}/>
+            {!initList.chats ? [...Array(10)].map(() => <ChatTileSkeleton key={uuidv4()}/>) : chatsMemo.map((chat) =>
+                <ChatListEntity key={uuidv4()} chat={chat} profileId={profile?.UserId}
+                                members={members}/>
             )}
         </div>
     )

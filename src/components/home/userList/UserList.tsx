@@ -2,7 +2,7 @@ import {FC, useContext, useEffect, useState} from "react";
 import {ChatMember} from "../../../testproto/chat/chat_actions.ts";
 import {ClientApi, StreamsApi} from "../../../data/api.ts";
 import {handleDownStream} from "../../../data/utils.ts";
-import ChatTile from "../../common/chatTile/ChatTile.tsx";
+import ChatTile, {ChatTileSkeleton} from "../../common/chatTile/ChatTile.tsx";
 import {v4 as uuidv4} from 'uuid';
 import "./userList.scss"
 import actions from "../../../data/mobx/actions.ts";
@@ -14,13 +14,15 @@ type UserListProps = {
 const UserList: FC<UserListProps> = ({searchValue}) => {
     const {members} = useContext(StreamsContext)
     const [foundedMembers, setFoundedMembers] = useState<ChatMember[]>([])
-    const [error, setError] = useState("")
+    const [fetching, setFetching] = useState(false)
+    const [notFound, setNotFound] = useState(false)
 
     useEffect(() => {
         let timerId: NodeJS.Timeout | undefined;
-        setError("")
         setFoundedMembers([])
-        if (searchValue.length > 3) {
+        setNotFound(false)
+        if (searchValue.length > 2) {
+            setFetching(true)
             timerId = setTimeout(async () => {
                 const membersArray: ChatMember[] = []
                 await new ClientApi().searchUsersByIdentifier({identifier: searchValue}).then(async (response) => {
@@ -35,6 +37,10 @@ const UserList: FC<UserListProps> = ({searchValue}) => {
                         }
                         setFoundedMembers(membersArray)
                     }
+                    if (membersArray.length === 0) {
+                        setNotFound(true)
+                    }
+                    setFetching(false)
                 })
             }, 500)
         }
@@ -45,13 +51,15 @@ const UserList: FC<UserListProps> = ({searchValue}) => {
 
     return (
         <div className={'user-list-wrapper'}>
-            <span className={'span-wrapper'}>Search results:</span>
-            <span>{error}</span>
-            {foundedMembers.map((member) => <ChatTile key={uuidv4()} online={false} title={member.Login}
-                                                      onClick={() => {
-                                                          actions.setMember(member)
-                                                          actions.toggleChatId(undefined)
-                                                      }} isSelected={false}/>)}
+            <span className={'span-wrapper'}>Результат поиска</span>
+            {!fetching && notFound ?
+                <div className={'span-wrapper'}>Пользователи не найдены</div> : null}
+            {fetching ? [0, 0, 0].map(() => <ChatTileSkeleton key={uuidv4()}/>) : foundedMembers.map((member) =>
+                <ChatTile key={uuidv4()} online={false} title={member.Login}
+                          onClick={() => {
+                              actions.setMember(member)
+                              actions.toggleChatId(undefined)
+                          }} isSelected={false}/>)}
         </div>
     )
 }

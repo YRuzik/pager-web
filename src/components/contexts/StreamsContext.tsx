@@ -27,7 +27,11 @@ interface IDataObject {
 
     chats: Map<string, ChatInfo>
     members: Map<string, ChatMember>
-    
+    initList: {
+        profile: boolean
+        chats: boolean
+    }
+
     handleMessagesPagination: (messages: ChatMessage[], chatId: string) => void,
     handleSetMembers: (memberIdArr: string[]) => Promise<void>
 }
@@ -37,8 +41,12 @@ const contextData: IDataObject = {
     chatRoles: [],
 
     chats: new Map(),
+    initList: {
+        profile: false,
+        chats: false
+    },
     members: new Map(),
-    
+
     handleMessagesPagination: () => {},
     handleSetMembers: async () => {}
 };
@@ -51,6 +59,8 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
     const [profile, setProfile] = useState<PagerProfile>(contextData.profile)
     const [chatRoles, setChatRoles] = useState<ChatRole[]>(contextData.chatRoles)
 
+    const [initList, setInitList] = useState(contextData.initList)
+
     const handleChatMessagesPaginationUpdate = useCallback((messages: ChatMessage[], chatId: string) => {
         const chatMapCopy = new Map(chats)
         const chatMd = chatMapCopy.get(chatId)
@@ -58,27 +68,28 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
             return
         } else if (chatMd) {
             chatMd.messages = messages;
-            chatMapCopy.set(chatId, chatMd)
-            setChats(chatMapCopy)
+            setChats((prevState) => prevState.set(chatId, chatMd))
+            // chatMapCopy.set(chatId, chatMd)
+            // setChats(chatMapCopy)
         }
     }, [chats])
 
     const handleSetMembers = useCallback(async (memberIdArr: string[]) => {
         const memberMapCopy = new Map(members)
-        let noChanges = true;
+        // let noChanges = true;
         for (const memberId of memberIdArr) {
             if (!memberMapCopy.has(memberId) && memberId !== profile.UserId) {
                 await handleDownStream(false, StreamsApi.streamChatMember, {MemberId: memberId}).then((v) => {
                     const member: ChatMember = JSON.parse(new TextDecoder().decode(v[0].Data))
-                    memberMapCopy.set(memberId, member)
-                    noChanges = false;
+                    setMembers((prevState) => prevState.set(memberId, member))
+                    // noChanges = false;
                     handleDownStream(true, StreamsApi.streamChatMember, {MemberId: memberId})
                 })
             }
         }
-        if (!noChanges) {
-            setMembers(memberMapCopy)
-        }
+        // if (!noChanges) {
+        //     setMembers(memberMapCopy)
+        // }
     }, [members, profile.UserId])
 
     const handleSetMemberChanges = useCallback((obj: TransferObject) => {
@@ -86,8 +97,8 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         const memberMapCopy = new Map(members)
         const existsMember = memberMapCopy.get(member.Id)
         if (!_.isEqual(existsMember, member)) {
-            memberMapCopy.set(member.Id, member)
-            setMembers(memberMapCopy)
+            // memberMapCopy.set(member.Id, member)
+            setMembers((prevState) => prevState.set(member.Id, member))
         }
     }, [members])
 
@@ -97,7 +108,8 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         const chatMd = chatMapCopy.get(message.LinkedChatId)
         if (chatMd?.messages && !chatMd?.messages.find((v) => v.Id === message.Id && v.Text === message.Text && v.Status === message.Status)) {
             chatMd.messages = handleArrayChangeValue(chatMd.messages, message)
-            chatMapCopy.set(message.LinkedChatId, chatMd)
+            setChats((prevState) => prevState.set(message.LinkedChatId, chatMd))
+            // chatMapCopy.set(message.LinkedChatId, chatMd)
             setChats(chatMapCopy)
         }
     }, [chats])
@@ -108,8 +120,9 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         const chatMd = chatMapCopy.get(newChat.Id)
         if (chatMd && !_.isEqual(chatMd, newChat)) {
             chatMd.chatInfo = newChat
-            chatMapCopy.set(newChat.Id, chatMd)
-            setChats(chatMapCopy)
+            setChats((prevState) => prevState.set(newChat.Id, chatMd))
+            // chatMapCopy.set(newChat.Id, chatMd)
+            // setChats(chatMapCopy)
         }
     }, [chats])
 
@@ -118,15 +131,18 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
             handleDownStream<ProfileStreamRequest>(true, StreamsApi.streamProfile, {})
             setProfile(getValueByType<PagerProfile>(ProfileStreamRequest_Type[1], v))
             setChatRoles(getListByType<ChatRole>(ProfileStreamRequest_Type[2], v))
+            if (!initList.profile) {
+                setInitList((prevState) => ({...prevState, profile: true}))
+            }
         })
-    }, [])
+    }, [initList.profile])
 
     const startChatStreaming = useCallback(async () => {
-        const chatsMap = new Map(chats)
+        // const chatsMap = new Map(chats)
         const membersIdMap = new Map(members)
         let noChanges = true;
         for (const role of chatRoles) {
-            if (!chatsMap.has(role.Id)) {
+            if (!chats.has(role.Id)) {
                 await handleDownStream<ChatStreamRequest>(false, StreamsApi.streamChat, {
                     ChatId: role.Id,
                     RequestedMessages: 1
@@ -136,10 +152,10 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
                     chat.MembersId.forEach((id) => {
                         membersIdMap.set(id, ChatMember.create())
                     })
-                    chatsMap.set(role.Id, {
+                    setChats((prevState) => prevState.set(role.Id, {
                         messages: messages,
                         chatInfo: chat
-                    })
+                    }))
                     handleDownStream<ChatStreamRequest>(true, StreamsApi.streamChat, {
                         ChatId: role.Id,
                         RequestedMessages: 0
@@ -150,9 +166,12 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         }
         if (!noChanges) {
             await handleSetMembers(Array.from(membersIdMap.keys()))
-            setChats(chatsMap)
+            if (!initList.chats) {
+                setInitList((prevState) => ({...prevState, chats: true}))
+            }
+            // setChats(chatsMap)
         }
-    }, [chatRoles, chats, handleSetMembers, members])
+    }, [chatRoles, chats, handleSetMembers, initList.chats, members])
 
     useEffect(() => {
         startProfileStreaming()
@@ -193,8 +212,9 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         profile,
         members,
         handleMessagesPagination: handleChatMessagesPaginationUpdate,
-        handleSetMembers
-    }), [chatRoles, chats, handleChatMessagesPaginationUpdate, handleSetMembers, members, profile])
+        handleSetMembers,
+        initList
+    }), [chatRoles, chats, handleChatMessagesPaginationUpdate, handleSetMembers, initList, members, profile])
 
     return (
         <StreamsContext.Provider

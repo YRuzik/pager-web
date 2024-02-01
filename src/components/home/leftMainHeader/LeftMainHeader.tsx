@@ -1,5 +1,6 @@
 import './leftMainHeader.scss'
 import {FC} from "react";
+import CustomInput, {InputStyles} from "../../common/customInput/CustomInput.tsx";
 
 type LeftMainHeaderProps = {
     searchOnChange: (val: string) => void
@@ -12,8 +13,7 @@ const LeftMainHeader: FC<LeftMainHeaderProps> = ({searchOnChange}) => {
 
             </div>
             <div className={'search-input-wrapper'}>
-                <input placeholder={'search...'} className={'search-input'}
-                       onChange={(e) => searchOnChange(e.currentTarget.value)}/>
+                <CustomInput style={InputStyles.colorizedFill} placeholder={'Поиск...'} onChanged={(e) => searchOnChange(e.currentTarget.value)}/>
             </div>
         </div>
     )

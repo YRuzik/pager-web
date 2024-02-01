@@ -3,6 +3,7 @@ import './chatTile.scss'
 import {ChatMessage} from "../../../testproto/chat/chat_actions.ts";
 import {FC} from "react";
 import AvatarView from "../avatarView/AvatarView.tsx";
+import SkeletonContainer from "../skeletonContainer/SkeletonContainer.tsx";
 
 type ChatTileProps = {
     online: boolean
@@ -28,7 +29,7 @@ const ChatTile: FC<ChatTileProps> = (props) => {
                         </div>
                         <div className={'chat-tile-separator'}></div>
                         <div className={'chat-tile-lastMd'}>
-                            {lastMessage ? messageStamp : ""}
+                            <span>{lastMessage ? messageStamp : ""}</span>
                         </div>
                     </div>
                     <div className={'chat-tile-info-subtitle'}>
@@ -41,3 +42,23 @@ const ChatTile: FC<ChatTileProps> = (props) => {
 }
 
 export default ChatTile
+
+export const ChatTileSkeleton = () => {
+    return (
+        <ListTile onClick={() => {}} isSelected={false}>
+            <div className={'chat-tile-wrapper'}>
+                <div className={'chat-avatar chat-skeleton-avatar'}>
+                    <SkeletonContainer height={50}/>
+                </div>
+                <div className={'chat-tile-info'}>
+                    <div className={'chat-tile-info-subtitle'} style={{paddingBottom: '5px'}}>
+                        <SkeletonContainer height={15}/>
+                    </div>
+                    <div className={'chat-tile-info-subtitle'}>
+                        <SkeletonContainer height={15}/>
+                    </div>
+                </div>
+            </div>
+        </ListTile>
+    )
+}

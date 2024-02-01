@@ -5,6 +5,7 @@ import {useAuth} from "../../../../hooks/useAuth.tsx";
 import actions from "../../../../data/mobx/actions.ts";
 import {ChatMember, ChatType} from "../../../../testproto/chat/chat_actions.ts";
 import {StreamsContext} from "../../../contexts/StreamsContext.tsx";
+import CustomInput from "../../../common/customInput/CustomInput.tsx";
 
 type ChatFooterProps = {
     selectedChatId?: string
@@ -39,7 +40,7 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId, profileId, member}) =>
         if (!selectedChatId && member) {
             const newChat = await new ChatActionsApi().createChat({
                 MembersId: [profileId, member.Id],
-                Metadata: {Title: '', AvatarUrl: ''},
+                Metadata: undefined,
                 Type: ChatType.personal,
             })
             if (newChat) {
@@ -76,7 +77,9 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId, profileId, member}) =>
     }, [handleEventListener, handleSendMessage, selectedChatId]);
     return (
         <div className={'middle-footer'}>
-            <input ref={inputRef} placeholder={"some text..."} className={"chatting-input"}/>
+            <div className={"chatting-input-wrapper"}>
+                <CustomInput innerRef={inputRef} placeholder={"Напишите сообщение..."}/>
+            </div>
             <button onClick={async () => {
                 if (selectedChatId) {
                     await handleSendMessage(selectedChatId)
