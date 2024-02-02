@@ -24,10 +24,16 @@ const ProfileModal: React.FC<Props> = ({isOpen, handleClose}) => {
     });
     const {logout} = useAuth()
     const checkKeyEscape = useCallback((event: KeyboardEvent) => {
-        if (event.key === "Escape") handleClose();
+        if (event.key === "Escape") {
+            handleClose()
+            setIsEditMode(false)
+        }
     }, [handleClose])
     const checkOutside = (event: any) => {
-        if (event.target?.contains(ref.current) && event.target !== ref.current) handleClose()
+        if (event.target?.contains(ref.current) && event.target !== ref.current) {
+            handleClose()
+            setIsEditMode(false)
+        }
     };
     useEffect(() => {
         document.body.addEventListener("keydown", checkKeyEscape);
@@ -58,7 +64,7 @@ const ProfileModal: React.FC<Props> = ({isOpen, handleClose}) => {
                 UserId: profile.UserId,
                 lastSeenMillis: 0
             }
-            ,logout
+            , logout
         )
         setIsEditMode(false);
     };
@@ -79,12 +85,15 @@ const ProfileModal: React.FC<Props> = ({isOpen, handleClose}) => {
                     <div className={"buttons-modal"}>
                         {isEditMode ? (
                             <>
-
+                                <Icon icon={AppIcons.checkmark} size={15} onClick={handleConfirmClick}/>
+                                <Icon icon={AppIcons.xSymbol} onClick={handleCancelClick} size={15}/>
                             </>
                         ) : (
-                            <Icon icon={AppIcons.pencil} size={15} onClick={handleEditClick}/>
+                            <>
+                                <Icon icon={AppIcons.pencil} size={15} onClick={handleEditClick}/>
+                                <Icon icon={AppIcons.xSymbol} onClick={handleClose} size={15}/>
+                            </>
                         )}
-                        <Icon icon={AppIcons.xSymbol} onClick={handleClose} size={15}/>
                     </div>
                 </div>
                 <div className={"profile-info"}>
@@ -94,27 +103,23 @@ const ProfileModal: React.FC<Props> = ({isOpen, handleClose}) => {
                             <>
                                 <input
                                     style={{padding: '.2rem .5rem'}}
-                                    className={"search-input-wrapper"}
+                                    className={"edit-input-wrapper"}
                                     type="text"
                                     value={editedProfile.login}
                                     onChange={(e) => setEditedProfile({...editedProfile, login: e.target.value})}
                                 />
                                 <input
                                     style={{padding: '.2rem .5rem'}}
-                                    className={"search-input-wrapper"}
+                                    className={"edit-input-wrapper"}
                                     type="text"
                                     value={editedProfile.email}
                                     onChange={(e) => setEditedProfile({...editedProfile, email: e.target.value})}
                                 />
-                                <div className={"edit-buttons"}>
-                                    <Icon icon={AppIcons.checkmark} size={15} onClick={handleConfirmClick}/>
-                                    <Icon icon={AppIcons.xSymbol} onClick={handleCancelClick} size={15}/>
-                                </div>
                             </>
                         ) : (
                             <>
-                                <div>{profile.Login}</div>
-                                <div>{profile.Email}</div>
+                                <div style={{padding: '.2rem .5rem'}}>{profile.Login}</div>
+                                <div style={{padding: '.2rem .5rem'}}>{profile.Email}</div>
                             </>
                         )}
                     </div>

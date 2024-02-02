@@ -1,3 +1,5 @@
+@use '../../../styles/global';
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -44,4 +46,9 @@
 .edit-buttons{
   display: flex;
   gap: 1rem;
+}
+
+.edit-input-wrapper {
+  background-color: global.$tinted-color;
+  border-radius: global.$med-br;
 }

@@ -1,41 +1,25 @@
 @use "../../styles/global";
 
-.container{
-  display: flex;
-  position: absolute;
-  z-index: 998;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  right: 0;
-  left: 0;
-  flex-direction: row;
-  background: linear-gradient(160deg, global.$brand-color 0%, global.$light-brand-color 100%) 70% 100%;
-  background-size: 500%;
-}
-
-.container-item{
-  margin: auto;
-  padding: 2rem;
-  width: 32rem;
-  border-radius: global.$default-br;
-  background: global.$secondary-color;
-}
-
 .form-header{
-  font-size: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5rem;
   font-weight: 700;
   font-style: normal;
-  margin-top: 1rem;
+  margin: 3rem auto 2rem auto;
 }
 
-.email-container{
+.field-container{
   display: flex;
   flex-wrap: wrap;
-  font-size: 1.4rem;
-  margin-top: 1rem;
+  font-size: 1.2rem;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center
 }
-.email-container .ErrorMessages{
+
+.field-container .ErrorMessages{
   color: red;
   font-size: 1rem;
 }
@@ -44,22 +28,11 @@
   background: white;
   border-radius: global.$default-br;
   border: .1rem solid #9f9f9f;
-  width: 34rem;
+  width: 20rem;
   height: 3rem;
   padding-left: 1rem;
   margin-top: .5rem;
   font-size: 1.2rem;
-}
-
-.password-container{
-  display: flex;
-  flex-wrap: wrap;
-  font-size: 1.2rem;
-  margin-top: .8rem;}
-
-.password-container .ErrorMessages{
-  color: red;
-  font-size: 1rem;
 }
 
 .submit-button{
@@ -77,4 +50,18 @@
 
 .container-temp{
   display: flex;
+}
+
+.form{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 70%;
+}
+
+.error-container{
+  padding-left: 1rem;
+  width: 100%;
+  height: 1.2rem;
 }

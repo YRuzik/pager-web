@@ -24,9 +24,10 @@ function Login() {
         await login(identity, password).catch((e) => toast.error(e)).then(() => navigate("/chat"))
     };
     return (
-        <div className={'container'}>
-            <div className={'container-item'}>
-                <div className={"form-header"}>Вход</div>
+        <>
+                <div className={"form-header"}>
+                    Вход
+                </div>
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
@@ -35,16 +36,18 @@ function Login() {
                     }}
                 >
                     {({isSubmitting, isValid, dirty}) => (
-                        <Form>
-                            <div className={'email-container'}>
-                                Логин / Почта
-                                <Field type="identity" name="identity" className="form-field"/>
-                                <ErrorMessage name="identity" component="div" className="ErrorMessages"/>
+                        <Form className={'form'}>
+                            <div className={'field-container'}>
+                                <Field type="identity" name="identity" className="form-field" placeholder={'Логин / Почта'}/>
+                               <div className={'error-container'}>
+                                   <ErrorMessage name="identity" component="div" className="ErrorMessages"/>
+                               </div>
                             </div>
-                            <div className={"password-container"}>
-                                Пароль
-                                <Field type="password" name="password" className="form-field"/>
+                            <div className={'field-container'}>
+                                <Field type="password" name="password" className="form-field" placeholder={'Пароль'}/>
+                                <div className={'error-container'}>
                                 <ErrorMessage name="password" component="div" className="ErrorMessages"/>
+                                </div>
                             </div>
                             <div className={"container-temp"}>
                                 <button className={"submit-button"}
@@ -57,8 +60,7 @@ function Login() {
                         </Form>
                     )}
                 </Formik>
-            </div>
-        </div>
+            </>
     )
 }
 

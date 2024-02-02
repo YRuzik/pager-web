@@ -3,6 +3,7 @@ import * as Yup from "yup";
 import {AuthActionsApi} from "../../data/api.ts";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
+import './AuthStyle.scss'
 
 function Register() {
     const navigate = useNavigate()
@@ -28,53 +29,58 @@ function Register() {
                 email: email,
                 password: password
             })
-            navigate('/login')
+            navigate('/auth/login')
         } catch (error) {
             toast.error("ошибка регистрации)")
         }
     }
     return (
-        <div className={'container'}>
-            <div className={'container-item'}>
-                <div className={"form-header"}>Регистрация</div>
-                <Formik initialValues={initialValues} validationSchema={validationSchema}
-                        onSubmit={async (values) =>
-                            await handleSubmit(values.email, values.password, values.name)}>
-                    {({isSubmitting, isValid, dirty}) => (
-                        <Form>
-                            <div className={"email-container"}>
-                                <Field placeholder={'Имя пользователя'} type='name' name='name'
-                                       className={"form-field"}/>
+        <>
+            <div className={"form-header"}>
+                Регистрация
+            </div>
+            <Formik initialValues={initialValues} validationSchema={validationSchema}
+                    onSubmit={async (values) =>
+                        await handleSubmit(values.email, values.password, values.name)}>
+                {({isSubmitting, isValid, dirty}) => (
+                    <Form className={'form'}>
+                        <div className={'field-container'}>
+                            <Field placeholder={'Имя пользователя'} type='name' name='name'
+                                   className={"form-field"}/>
+                            <div className={'error-container'}>
                                 <ErrorMessage name='name' component='div' className='ErrorMessages'/>
                             </div>
-                            <div className={'email-container'}>
-
-                                <Field placeholder={'Адрес электронной почты'} type="email" name="email"
-                                       className={"form-field"}/>
+                        </div>
+                        <div className={'field-container'}>
+                            <Field placeholder={'Адрес электронной почты'} type="email" name="email"
+                                   className={"form-field"}/>
+                            <div className={'error-container'}>
                                 <ErrorMessage name="email" component="div" className="ErrorMessages"/>
                             </div>
-                            <div className={'password-container'}>
-
-                                <Field placeholder={'Пароль'} type="password" name="password" className={"form-field"}/>
+                        </div>
+                        <div className={'field-container'}>
+                            <Field placeholder={'Пароль'} type="password" name="password" className={"form-field"}/>
+                            <div className={'error-container'}>
                                 <ErrorMessage name="password" component="div" className="ErrorMessages"/>
                             </div>
-                            <div className={'password-container'}>
-
-                                <Field placeholder={'Подтвердите пароль'} type="password" name="confirmPassword"
-                                       className={"form-field"}/>
+                        </div>
+                        <div className={'field-container'}>
+                            <Field placeholder={'Подтвердите пароль'} type="password" name="confirmPassword"
+                                   className={"form-field"}/>
+                            <div className={'error-container'}>
                                 <ErrorMessage name="confirmPassword" component="div" className="ErrorMessages"/>
                             </div>
-                            <div className={'container-temp'}>
-                                <button className={"submit-button"} type="submit"
-                                        disabled={!(isValid && dirty) || isSubmitting}>
-                                    {isSubmitting ? 'Загрузка...' : 'Регистрация'}
-                                </button>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </div>
-        </div>
+                        </div>
+                        <div className={'container-temp'}>
+                            <button className={"submit-button"} type="submit"
+                                    disabled={!(isValid && dirty) || isSubmitting}>
+                                {isSubmitting ? 'Загрузка...' : 'Регистрация'}
+                            </button>
+                        </div>
+                    </Form>
+                )}
+            </Formik>
+        </>
     )
 }
 

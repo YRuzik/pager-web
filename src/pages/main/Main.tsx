@@ -12,8 +12,8 @@ export function MainPage() {
                 <div className={"span-name-header"}>Pager</div>
                 <span className={"auth-wrapper"}>
                     {!authed && <>
-                        <Link to={'/registration'}>Регистрация</Link>
-                        <Link to={'/login'}>Авторизация</Link> </>}
+                        <Link to={'/auth/registration'}>Регистрация</Link>
+                        <Link to={'/auth/login'}>Авторизация</Link> </>}
                     {authed && <button onClick={() => logout()}>Выйти</button>}
                 </span>
             </header>
