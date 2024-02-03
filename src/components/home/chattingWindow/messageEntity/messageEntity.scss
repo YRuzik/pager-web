@@ -21,6 +21,10 @@
   padding: global.$default-inset;
 }
 
+.message-bubble span {
+  font-size: 0.7rem;
+}
+
 .message-status {
   width: 20px;
   display: flex;

@@ -1,7 +1,7 @@
 import {Metadata, ServerStreamingClientMethod} from "nice-grpc-web";
-import {TransferObject} from "../testproto/transfers/item.ts";
+import {TransferObject} from "../../testproto/transfers/item.ts";
 import {CallOptions} from "nice-grpc-common";
-import transfers from "./mobx/transfers.ts";
+import transfers from "../mobx/transfers.ts";
 
 export const handleArrayChangeValue = <T extends { Id: string }>(arr: T[], value: T) => {
     const copyOfArray = [...arr]

@@ -1,16 +1,17 @@
 import {FC, memo} from "react";
 import './messageEntity.scss'
+import {ChatMessage} from "../../../../testproto/chat/chat_actions.ts";
 
 type MessageEntityProps = {
-    text: string | undefined,
-    authorId: string,
-    stampMillis: number,
+    message: ChatMessage
     profileId: string | undefined
 }
 
-const MessageEntity: FC<MessageEntityProps> = memo(({text, authorId, stampMillis, profileId}) => {
-    const isMe = authorId === profileId
-    const messageStamp = new Date(stampMillis).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+const MessageEntity: FC<MessageEntityProps> = memo(({message, profileId}) => {
+    const {StampMillis, AuthorId, Text} = message
+    const isMe = AuthorId === profileId
+    const messageStamp = new Date(StampMillis).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    
     return (
         <div className={'message'} style={isMe ? {direction: "ltr"} : {direction: "rtl"}}>
             <div className={'message-outer'}>
@@ -20,7 +21,7 @@ const MessageEntity: FC<MessageEntityProps> = memo(({text, authorId, stampMillis
                     </div>
                     <div className={`message-bubble ${isMe ? 'my-message' : 'other-message'}`}>
                         <div>
-                            {text} <span>{messageStamp}</span>
+                            {Text} <span>{messageStamp}</span>
                         </div>
                     </div>
                     <div className={'message-spacer'}></div>

@@ -16,7 +16,7 @@ const ChattingWindow = observer(() => {
         if (chat) {
             const memberId = chat.chatInfo.MembersId.find((val) => val !== profile.UserId)
             if (memberId) {
-                actions.setMember(members.get(memberId))
+                actions.setMember(members[memberId])
             } else {
                 actions.setMember(undefined)
             }
@@ -25,7 +25,7 @@ const ChattingWindow = observer(() => {
     
     useEffect(() => {
         if (chats && selectedChatId) {
-            setChat(chats.get(selectedChatId))
+            setChat(chats[selectedChatId])
         } else {
             setChat(undefined)
         }

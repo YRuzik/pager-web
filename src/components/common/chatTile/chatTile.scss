@@ -1,3 +1,4 @@
+@use "../../../styles/global";
 .chat-tile-wrapper {
   display: flex;
   align-items: center;
@@ -38,9 +39,21 @@
 .chat-tile-info-subtitle {
   overflow: hidden;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   text-align: initial;
   unicode-bidi: plaintext;
   text-overflow: ellipsis;
+}
+
+.unread-message {
+  background-color: global.$brand-color;
+  color: global.$text-on-brand-color;
+  padding: 0.1rem 0.4rem;
+  display: flex;
+  align-items: center;
+  border-radius: global.$max-br;
+  font-size: 0.8rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
 }

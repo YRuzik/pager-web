@@ -15,7 +15,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({chat, member}) => {
         return (
             <>
                 <div>
-                    {Login}
+                    <h5>{Login}</h5>
                 </div>
                 <span>
                         {member.Online ? "Online" : `last seen ${member.lastSeenMillis} ago`}
@@ -28,7 +28,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({chat, member}) => {
         return (
             <>
                 <div>
-                    {chat?.Metadata?.Title}
+                    <h5>{chat?.Metadata?.Title}</h5>
                 </div>
                 <span>
                         {`${chat?.MembersId.length} members`}

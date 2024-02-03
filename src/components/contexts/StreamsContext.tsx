@@ -13,20 +13,28 @@ import {
     ProfileStreamRequest_Type
 } from "../../testproto/transfers/streams.ts";
 import {autorun} from "mobx";
-import {handleArrayChangeValue, handleDownStream} from "../../data/utils.ts";
 import * as _ from "lodash";
+import {handleArrayChangeValue, handleDownStream} from "../../data/utils/transfers.ts";
 
 export interface ChatInfo {
     chatInfo: Chat
     messages: ChatMessage[]
 }
 
+export interface ChatsData {
+    [id: string]: ChatInfo
+}
+
+export interface MembersData {
+    [id: string]: ChatMember
+}
+
 interface IDataObject {
     profile: PagerProfile
     chatRoles: ChatRole[]
 
-    chats: Map<string, ChatInfo>
-    members: Map<string, ChatMember>
+    chats: ChatsData
+    members: MembersData
     initList: {
         profile: boolean
         chats: boolean
@@ -40,89 +48,83 @@ const contextData: IDataObject = {
     profile: PagerProfile.create(),
     chatRoles: [],
 
-    chats: new Map(),
+    chats: {},
     initList: {
         profile: false,
         chats: false
     },
-    members: new Map(),
+    members: {},
 
-    handleMessagesPagination: () => {},
-    handleSetMembers: async () => {}
+    handleMessagesPagination: () => {
+    },
+    handleSetMembers: async () => {
+    }
 };
 
 export const StreamsContext = createContext(contextData)
 
 const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
-    const [chats, setChats] = useState<Map<string, ChatInfo>>(contextData.chats)
-    const [members, setMembers] = useState<Map<string, ChatMember>>(contextData.members)
+    const [chats, setChats] = useState<ChatsData>(contextData.chats)
+    const [members, setMembers] = useState<MembersData>(contextData.members)
     const [profile, setProfile] = useState<PagerProfile>(contextData.profile)
     const [chatRoles, setChatRoles] = useState<ChatRole[]>(contextData.chatRoles)
 
     const [initList, setInitList] = useState(contextData.initList)
 
     const handleChatMessagesPaginationUpdate = useCallback((messages: ChatMessage[], chatId: string) => {
-        const chatMapCopy = new Map(chats)
-        const chatMd = chatMapCopy.get(chatId)
+        const chatMd = chats[chatId]
         if (messages.length === chatMd?.messages?.length) {
             return
         } else if (chatMd) {
             chatMd.messages = messages;
-            setChats((prevState) => prevState.set(chatId, chatMd))
+            setChats((prevState) => ({...prevState, [chatId]: chatMd}))
             // chatMapCopy.set(chatId, chatMd)
             // setChats(chatMapCopy)
         }
     }, [chats])
 
     const handleSetMembers = useCallback(async (memberIdArr: string[]) => {
-        const memberMapCopy = new Map(members)
-        // let noChanges = true;
+        let noChanges = true;
+        const newData: MembersData = {}
         for (const memberId of memberIdArr) {
-            if (!memberMapCopy.has(memberId) && memberId !== profile.UserId) {
+            if (!members[memberId] && memberId !== profile.UserId) {
                 await handleDownStream(false, StreamsApi.streamChatMember, {MemberId: memberId}).then((v) => {
-                    const member: ChatMember = JSON.parse(new TextDecoder().decode(v[0].Data))
-                    setMembers((prevState) => prevState.set(memberId, member))
-                    // noChanges = false;
+                    newData[memberId] = JSON.parse(new TextDecoder().decode(v[0].Data))
+                    noChanges = false;
                     handleDownStream(true, StreamsApi.streamChatMember, {MemberId: memberId})
                 })
             }
         }
-        // if (!noChanges) {
-        //     setMembers(memberMapCopy)
-        // }
+        if (!noChanges) {
+            setMembers((prevState) => ({...prevState, ...newData}))
+        }
     }, [members, profile.UserId])
 
     const handleSetMemberChanges = useCallback((obj: TransferObject) => {
         const member: ChatMember = JSON.parse(new TextDecoder().decode(obj.Data))
-        const memberMapCopy = new Map(members)
-        const existsMember = memberMapCopy.get(member.Id)
+        const existsMember = members[member.Id]
         if (!_.isEqual(existsMember, member)) {
-            // memberMapCopy.set(member.Id, member)
-            setMembers((prevState) => prevState.set(member.Id, member))
+            setMembers((prevState) => ({...prevState, [member.Id]: member}))
         }
     }, [members])
 
     const handleChatMessagesChanges = useCallback((obj: TransferObject) => {
         const message: ChatMessage = JSON.parse(new TextDecoder().decode(obj.Data))
-        const chatMapCopy = new Map(chats)
-        const chatMd = chatMapCopy.get(message.LinkedChatId)
-        if (chatMd?.messages && !chatMd?.messages.find((v) => v.Id === message.Id && v.Text === message.Text && v.Status === message.Status)) {
-            chatMd.messages = handleArrayChangeValue(chatMd.messages, message)
-            setChats((prevState) => prevState.set(message.LinkedChatId, chatMd))
-            // chatMapCopy.set(message.LinkedChatId, chatMd)
-            setChats(chatMapCopy)
+        const chatMd = chats[message.LinkedChatId]
+        if (chatMd.messages && !chatMd.messages.find((v) => v.Id === message.Id && v.Text === message.Text && v.Status === message.Status)) {
+            setChats((prevState) => ({
+                ...prevState,
+                [message.LinkedChatId]: {...chatMd, messages: handleArrayChangeValue(chatMd.messages, message)}
+            }))
         }
     }, [chats])
 
     const handleChatChanges = useCallback((obj: TransferObject) => {
-        const chatMapCopy = new Map(chats)
         const newChat: Chat = JSON.parse(new TextDecoder().decode(obj.Data))
-        const chatMd = chatMapCopy.get(newChat.Id)
+        const chatMd = chats[newChat.Id]
         if (chatMd && !_.isEqual(chatMd, newChat)) {
             chatMd.chatInfo = newChat
-            setChats((prevState) => prevState.set(newChat.Id, chatMd))
-            // chatMapCopy.set(newChat.Id, chatMd)
-            // setChats(chatMapCopy)
+            setChats((prevState) => ({...prevState, [newChat.Id]: chatMd}))
         }
     }, [chats])
 
@@ -138,11 +140,11 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
     }, [initList.profile])
 
     const startChatStreaming = useCallback(async () => {
-        // const chatsMap = new Map(chats)
-        const membersIdMap = new Map(members)
+        const newMembersData: Map<string, ChatMember> = new Map()
+        const newChatsData: ChatsData = {}
         let noChanges = true;
         for (const role of chatRoles) {
-            if (!chats.has(role.Id)) {
+            if (!chats[role.Id]) {
                 await handleDownStream<ChatStreamRequest>(false, StreamsApi.streamChat, {
                     ChatId: role.Id,
                     RequestedMessages: 1
@@ -150,12 +152,12 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
                     const chat = getValueByType<Chat>(ChatStreamRequest_Type[1], v)
                     const messages = getListByType<ChatMessage>(ChatStreamRequest_Type[2], v)
                     chat.MembersId.forEach((id) => {
-                        membersIdMap.set(id, ChatMember.create())
+                        newMembersData.set(id, ChatMember.create())
                     })
-                    setChats((prevState) => prevState.set(role.Id, {
+                    newChatsData[chat.Id] = {
                         messages: messages,
                         chatInfo: chat
-                    }))
+                    }
                     handleDownStream<ChatStreamRequest>(true, StreamsApi.streamChat, {
                         ChatId: role.Id,
                         RequestedMessages: 0
@@ -165,13 +167,15 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
             }
         }
         if (!noChanges) {
-            await handleSetMembers(Array.from(membersIdMap.keys()))
+            setChats((prevState) => ({...prevState, ...newChatsData}))
+            await handleSetMembers(Array.from(newMembersData.keys()))
             if (!initList.chats) {
                 setInitList((prevState) => ({...prevState, chats: true}))
             }
-            // setChats(chatsMap)
+        } else if (initList.profile && !initList.chats && (chatRoles.length === 0)) {
+            setInitList((prevState) => ({...prevState, chats: true}))
         }
-    }, [chatRoles, chats, handleSetMembers, initList.chats, members])
+    }, [chatRoles, chats, handleSetMembers, initList.chats, initList.profile])
 
     useEffect(() => {
         startProfileStreaming()
