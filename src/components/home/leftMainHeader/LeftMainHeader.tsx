@@ -1,16 +1,16 @@
+
 import './leftMainHeader.scss'
-import {FC} from "react";
-import CustomInput, {InputStyles} from "../../common/customInput/CustomInput.tsx";
+import {AppIcons, Icon} from "../../common/icon/Icon.tsx";
+import React from "react";
 
-type LeftMainHeaderProps = {
-    searchOnChange: (val: string) => void
+interface LeftMainHeaderProps {
+    action: () => void;
 }
-
-const LeftMainHeader: FC<LeftMainHeaderProps> = ({searchOnChange}) => {
+const LeftMainHeader: React.FC<LeftMainHeaderProps> = ({ action }) => {
     return (
         <div className={'left-main-header-wrapper'}>
             <div className={'left-main-header-menu'}>
-
+                <Icon icon={AppIcons.burgerMenu} onClick={action}/>
             </div>
             <div className={'search-input-wrapper'}>
                 <CustomInput style={InputStyles.colorizedFill} placeholder={'Поиск...'} onChanged={(e) => searchOnChange(e.currentTarget.value)}/>

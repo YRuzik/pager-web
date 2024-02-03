@@ -1,7 +1,7 @@
 import "./main.scss"
 import logo from "../assets/logo.svg"
 import {Link} from "react-router-dom";
-import {useAuth} from "../hooks/useAuth.tsx";
+import {useAuth} from "../../hooks/useAuth.tsx";
 
 export function MainPage() {
     const {authed,logout} = useAuth();
@@ -12,8 +12,8 @@ export function MainPage() {
                 <div className={"span-name-header"}>Pager</div>
                 <span className={"auth-wrapper"}>
                     {!authed && <>
-                        <Link to={'/registration'}>Регистрация</Link>
-                        <Link to={'/login'}>Авторизация</Link> </>}
+                        <Link to={'/auth/registration'}>Регистрация</Link>
+                        <Link to={'/auth/login'}>Авторизация</Link> </>}
                     {authed && <button onClick={() => logout()}>Выйти</button>}
                 </span>
             </header>

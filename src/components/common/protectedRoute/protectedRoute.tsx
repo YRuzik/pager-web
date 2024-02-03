@@ -1,4 +1,4 @@
-import {useAuth} from "../../hooks/useAuth.tsx";
+import {useAuth} from "../../../hooks/useAuth.tsx";
 import {Navigate, useLocation} from "react-router-dom";
 
 function RequireAuth({ children }:any) {
@@ -8,7 +8,7 @@ function RequireAuth({ children }:any) {
     return authed ? (
         children
     ) : (
-        <Navigate to="/login" replace state={{ path: location.pathname }} />
+        <Navigate to="/auth/login" replace state={{ path: location.pathname }} />
     );
 }
 

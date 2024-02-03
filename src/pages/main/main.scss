@@ -1,4 +1,4 @@
-@use '../styles/global';
+@use '../../styles/global';
 
 
 .header-main-page {
@@ -51,6 +51,6 @@
 .background-present {
   background: linear-gradient(1deg, global.$brand-color 0%, global.$light-brand-color 100%);
   border-radius: global.$default-br;
-  margin: 0 10vw;
-  height: 40vw;
+  margin: 0 10rem;
+  height: 40rem;
 }

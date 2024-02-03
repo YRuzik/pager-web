@@ -2,6 +2,7 @@ import {FC, useCallback, useContext, useEffect, useRef} from "react";
 import {ChatActionsApi} from "../../../../data/api.ts";
 import './chatFooter.scss'
 import {useAuth} from "../../../../hooks/useAuth.tsx";
+import {useAuth} from "../../../../hooks/useAuth.tsx";
 import actions from "../../../../data/mobx/actions.ts";
 import {ChatMember, ChatType} from "../../../../testproto/chat/chat_actions.ts";
 import {StreamsContext} from "../../../contexts/StreamsContext.tsx";
@@ -17,7 +18,7 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId, profileId, member}) =>
     const {handleSetMembers} = useContext(StreamsContext)
     const {logout} = useAuth()
     const inputRef = useRef<HTMLInputElement>(null)
-
+    const {logout} = useAuth();
     const handleSendMessage = useCallback(async (
         chatId: string
     ) => {
@@ -29,7 +30,7 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId, profileId, member}) =>
                 StampMillis: new Date().getTime(),
                 Status: 4,
                 Text: inputRef.current!.value
-            }, logout)
+            },logout)
             inputRef.current!.value = ""
         } else {
             console.log(`userid ${profileId} not valid`)

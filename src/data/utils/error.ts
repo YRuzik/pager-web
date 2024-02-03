@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 export const asyncFuncHandler = async <T>(
     func: () => Promise<T>,
-    onError?: () => Promise<void>
+    onError?: () => void
 ) => {
     try {
         return await func();
@@ -34,10 +34,10 @@ export const asyncFuncHandler = async <T>(
 
 const handleSpecificError = async (
     error: RichClientError,
-    onError?: () => Promise<void>
+    onError?: () => void
 ) => {
     if (onError) {
-        await onError();
+        onError();
     }
     toast.error(error.details);
 };
