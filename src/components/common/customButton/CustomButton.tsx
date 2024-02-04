@@ -17,6 +17,7 @@ type CustomButtonProps = {
     onClick: () => void;
     type?: "button" | "submit" | "reset";
     disabled?: boolean;
+    className?: string
 }
 
 const CustomButton: FC<CustomButtonProps> = ({
@@ -24,10 +25,11 @@ const CustomButton: FC<CustomButtonProps> = ({
                                                  onClick,
                                                  type = "button",
                                                  style = ButtonStyles.elevatedButtonDefault,
-                                                 disabled = false
+                                                 disabled = false,
+                                                 className
                                              }) => {
     return <button type={type} onClick={() => onClick()} disabled={disabled}
-                   className={`base-button ${style}`}>{children}</button>
+                   className={`base-button ${style} ${className}`}>{children}</button>
 }
 
 export default CustomButton

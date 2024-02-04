@@ -1,5 +1,8 @@
 @use '../../styles/global';
-
+.main-container{
+  max-height: 100vh;
+  overflow-y: scroll;
+}
 
 .header-main-page {
   display: flex;
@@ -31,11 +34,11 @@
 .main-slogan {
   display: flex;
   flex-wrap: wrap;
-  width: 45vh;
+  width: 50rem;
   margin: 4vh auto;
   text-align: center;
   font-weight: bold;
-  font-size: .9rem;
+  font-size: 1.5rem;
 }
 
 .main-slogan-text{
@@ -82,13 +85,14 @@
   width: 20rem;
   span{
     font-weight: bold;
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: global.$text-color;
     text-align: center;
   }
   h2{
     white-space: normal;
     text-align: center;
+    font-weight: normal;
   }
 }
 .login-link{
@@ -148,9 +152,17 @@
   align-items: center;
   font-size: 2rem;
   justify-content: space-between;
+  h1{
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(global.$brand-gradient);
+  }
   h2{
     display: flex;
     font-size: 1.25rem;
     text-align: right;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(global.$brand-gradient);
   }
 }

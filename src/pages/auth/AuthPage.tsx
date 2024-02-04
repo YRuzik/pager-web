@@ -1,9 +1,10 @@
 import './authV2.scss';
-import { useState } from "react";
+import {useState} from "react";
 import Register from "./Register.tsx";
 import Login from "./Login.tsx";
-import Icon, { AppIcons } from "../../components/common/icon/Icon.tsx";
-import { useNavigate, useParams } from "react-router-dom";
+import Icon, {AppIcons} from "../../components/common/icon/Icon.tsx";
+import {useNavigate, useParams} from "react-router-dom";
+import CustomButton, {ButtonStyles} from '../../components/common/customButton/CustomButton.tsx';
 
 const AuthPage = () => {
     const navigate = useNavigate();
@@ -37,12 +38,16 @@ const AuthPage = () => {
                         <div className="overlay-panel overlay-left">
                             <h1>С возвращением!</h1><br />
                             <p>Чтобы оставаться на связи с нами, пожалуйста, войдите в систему, указав свои личные данные</p>
-                            <button className="submit-buttonV2 ghost" onClick={handleSignInClick}>Вход</button>
+                            <CustomButton className={"submit-buttonV2"} style={ButtonStyles.outlinedButtonDefault}  onClick={() => handleSignInClick()}>
+                                Вход
+                            </CustomButton>
                         </div>
                         <div className="overlay-panel overlay-right">
                             <h1>Привет, друг!</h1> <br />
                             <p> Введите свои личные данные и начните общение с кем либо!</p>
-                            <button className="submit-buttonV2 ghost" onClick={handleSignUpClick}>Зарегистрироваться</button>
+                            <CustomButton className={"submit-buttonV2"} style={ButtonStyles.outlinedButtonDefault}  onClick={() => handleSignUpClick()}>
+                                Зарегистрироваться
+                            </CustomButton>
                         </div>
                     </div>
                 </div>

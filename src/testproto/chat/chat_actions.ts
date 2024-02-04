@@ -125,7 +125,11 @@ export interface ChatMessage {
   /** связанный чат */
   LinkedChatId: string;
   /** связанное сообщение */
-  LinkedMessage?: ChatMessage | undefined;
+  LinkedMessage?:
+    | ChatMessage
+    | undefined;
+  /** было ли изменено сообщение */
+  Updated: string;
 }
 
 /** статус сообщения */
@@ -521,6 +525,7 @@ function createBaseChatMessage(): ChatMessage {
     AuthorId: "",
     LinkedChatId: "",
     LinkedMessage: undefined,
+    Updated: "",
   };
 }
 
@@ -546,6 +551,9 @@ export const ChatMessage = {
     }
     if (message.LinkedMessage !== undefined) {
       ChatMessage.encode(message.LinkedMessage, writer.uint32(58).fork()).ldelim();
+    }
+    if (message.Updated !== "") {
+      writer.uint32(66).string(message.Updated);
     }
     return writer;
   },
@@ -606,6 +614,13 @@ export const ChatMessage = {
 
           message.LinkedMessage = ChatMessage.decode(reader, reader.uint32());
           continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.Updated = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -624,6 +639,7 @@ export const ChatMessage = {
       AuthorId: isSet(object.AuthorId) ? globalThis.String(object.AuthorId) : "",
       LinkedChatId: isSet(object.LinkedChatId) ? globalThis.String(object.LinkedChatId) : "",
       LinkedMessage: isSet(object.LinkedMessage) ? ChatMessage.fromJSON(object.LinkedMessage) : undefined,
+      Updated: isSet(object.Updated) ? globalThis.String(object.Updated) : "",
     };
   },
 
@@ -650,6 +666,9 @@ export const ChatMessage = {
     if (message.LinkedMessage !== undefined) {
       obj.LinkedMessage = ChatMessage.toJSON(message.LinkedMessage);
     }
+    if (message.Updated !== "") {
+      obj.Updated = message.Updated;
+    }
     return obj;
   },
 
@@ -667,6 +686,7 @@ export const ChatMessage = {
     message.LinkedMessage = (object.LinkedMessage !== undefined && object.LinkedMessage !== null)
       ? ChatMessage.fromPartial(object.LinkedMessage)
       : undefined;
+    message.Updated = object.Updated ?? "";
     return message;
   },
 };

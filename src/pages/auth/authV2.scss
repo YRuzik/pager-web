@@ -3,16 +3,9 @@
 
 
 .submit-buttonV2{
-  display: flex;
-  justify-content: center;
-  align-items: center;
   margin-top: 1.6rem;
-  height: 2.8rem;
-  border-radius: global.$default-br;
-  font-size: 1.3rem;
   padding: 0 1rem;
   transition: transform 80ms ease-in;
-  border: 1px solid global.$button-color;
 }
 
 .submit-buttonV2:active {

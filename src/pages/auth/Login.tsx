@@ -4,6 +4,7 @@ import {useAuth} from "../../hooks/useAuth.tsx";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
+import CustomButton from "../../components/common/customButton/CustomButton.tsx";
 
 function Login() {
     const {login} = useAuth();
@@ -25,42 +26,42 @@ function Login() {
     };
     return (
         <>
-                <div className={"form-header"}>
-                    Вход
-                </div>
-                <Formik
-                    initialValues={initialValues}
-                    validationSchema={validationSchema}
-                    onSubmit={async (values) => {
-                        await handleLogin(values.identity, values.password);
-                    }}
-                >
-                    {({isSubmitting, isValid, dirty}) => (
-                        <Form className={'form'}>
-                            <div className={'field-container'}>
-                                <Field type="identity" name="identity" className="form-field" placeholder={'Логин / Почта'}/>
-                               <div className={'error-container'}>
-                                   <ErrorMessage name="identity" component="div" className="ErrorMessages"/>
-                               </div>
+            <div className={"form-header"}>
+                Вход
+            </div>
+            <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={async (values) => {
+                    await handleLogin(values.identity, values.password);
+                }}
+            >
+                {({isSubmitting, isValid, dirty}) => (
+                    <Form className={'form'}>
+                        <div className={'field-container'}>
+                            <Field type="identity" name="identity" className="form-field"
+                                   placeholder={'Логин / Почта'}/>
+                            <div className={'error-container'}>
+                                <ErrorMessage name="identity" component="div" className="ErrorMessages"/>
                             </div>
-                            <div className={'field-container'}>
-                                <Field type="password" name="password" className="form-field" placeholder={'Пароль'}/>
-                                <div className={'error-container'}>
+                        </div>
+                        <div className={'field-container'}>
+                            <Field type="password" name="password" className="form-field" placeholder={'Пароль'}/>
+                            <div className={'error-container'}>
                                 <ErrorMessage name="password" component="div" className="ErrorMessages"/>
-                                </div>
                             </div>
-                            <div className={"container-temp"}>
-                                <button className={"submit-button"}
-                                        type="submit"
-                                        disabled={!(isValid && dirty) || isSubmitting}
-                                >
+                        </div>
+                        <div className={"container-temp"}>
+                            <CustomButton type="submit" disabled={!(isValid && dirty) || isSubmitting} onClick={() => {}}>
+                                <div>
                                     {isSubmitting ? 'Загрузка...' : 'Войти'}
-                                </button>
-                            </div>
-                        </Form>
-                    )}
-                </Formik>
-            </>
+                                </div>
+                            </CustomButton>
+                        </div>
+                    </Form>
+                )}
+            </Formik>
+        </>
     )
 }
 

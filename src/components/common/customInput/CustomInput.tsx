@@ -25,7 +25,7 @@ const CustomInput: FC<CustomInputProps> = (
         onChanged,
         type = "text",
         value,
-        style = InputStyles.fill,
+        style = InputStyles.underline,
         disabled = false
     }
 ) => <input placeholder={placeholder} disabled={disabled} ref={innerRef} onChange={onChanged} type={type} value={value}

@@ -4,6 +4,7 @@ import {AuthActionsApi} from "../../data/api.ts";
 import './AuthStyle.scss'
 import React from "react";
 import toast from "react-hot-toast";
+import CustomButton from "../../components/common/customButton/CustomButton.tsx";
 
 interface RegisterProps{
     action:() =>void;
@@ -73,10 +74,11 @@ const Register: React.FC<RegisterProps> = ({ action }) => {
                             </div>
                         </div>
                         <div className={'container-temp'}>
-                            <button className={"submit-button"} type="submit"
-                                    disabled={!(isValid && dirty) || isSubmitting}>
-                                {isSubmitting ? 'Загрузка...' : 'Регистрация'}
-                            </button>
+                            <CustomButton type="submit" disabled={!(isValid && dirty) || isSubmitting} onClick={() => {}}>
+                                <div>
+                                    {isSubmitting ? 'Загрузка...' : 'Регистрация'}
+                                </div>
+                            </CustomButton>
                         </div>
                     </Form>
                 )}

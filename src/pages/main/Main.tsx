@@ -6,7 +6,7 @@ import Icon, {AppIcons} from "../../components/common/icon/Icon.tsx";
 
 export function MainPage() {
     return (
-        <div>
+        <div className={'main-container'}>
             <header className={"header-main-page"}>
                 <img className={"logo-header"} src={logo} alt={'logo'}/>
                 <div className={"span-name-header"}>Pager</div>
@@ -63,7 +63,7 @@ export function MainPage() {
                         Выполните данные пункты и начните свое захватывающее общение с Pager, мессенджера, который делает общение простым и увлекательным.
                     </h2>
                     <ul>
-                     <li><Link to={'/auth/registration'}>  Зарегистрируйте новый аккаунт в Pager! </Link></li>
+                     <li><Link to={'/auth/registration'} style={{textDecoration:"underline"}}>  Зарегистрируйте</Link> новый аккаунт в Pager! </li>
                         <li>Зайдите в свой аккаунт.</li>
                         <li>С помощью поиска найдите с кем поболтать.</li>
                         <li>Начинайте общение!</li>
@@ -72,7 +72,7 @@ export function MainPage() {
                     <img className={'FAQ-image'} alt={'chatting'} src={'https://img.freepik.com/free-vector/hand-drawn-flat-people-talking_23-2149060076.jpg?w=826&t=st=1707051192~exp=1707051792~hmac=0dcfa33bcf8e797680f2f57469719ff4557beebed0828b0c38140b558721c4e6'}/>
             </div>
             <footer className={'footer'}>
-                <div className={"span-name-header"}>Pager</div>
+                <h1 className={"span-name-header"}>Pager</h1>
                 <h2 className={"span-name-header"}> 2024г.<br/> Над проектом трудились Андрей и Евгений)</h2>
             </footer>
         </div>
