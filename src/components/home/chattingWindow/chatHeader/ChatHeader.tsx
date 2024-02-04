@@ -8,7 +8,7 @@ type ChatHeaderProps = {
     member: ChatMember
 }
 
-const ChatHeader: FC<ChatHeaderProps> = ({chat, member}) => {
+const ChatHeader: FC<ChatHeaderProps> = ({member}) => {
     return (
         <div className={"middle-header"}>
             <div className={"chat-info"}>
@@ -73,17 +73,17 @@ const PersonalHeader: FC<ChatMember> = ({Login, Online, lastSeenMillis}) => {
     )
 }
 
-const GroupHeader: FC<Chat> = ({Metadata, MembersId}) => {
-    return (
-        <>
-            <div>
-                <h5>{Metadata?.Title}</h5>
-            </div>
-            <span>
-                        {`${MembersId.length} members`}
-                </span>
-        </>
-    )
-}
+// const GroupHeader: FC<Chat> = ({Metadata, MembersId}) => {
+//     return (
+//         <>
+//             <div>
+//                 <h5>{Metadata?.Title}</h5>
+//             </div>
+//             <span>
+//                         {`${MembersId.length} members`}
+//                 </span>
+//         </>
+//     )
+// }
 
 export default ChatHeader
