@@ -2,11 +2,13 @@
 import './leftMainHeader.scss'
 import {AppIcons, Icon} from "../../common/icon/Icon.tsx";
 import React from "react";
+import CustomInput, {InputStyles} from "../../common/customInput/CustomInput.tsx";
 
 interface LeftMainHeaderProps {
     action: () => void;
+    searchOnChange: (value: string) => void
 }
-const LeftMainHeader: React.FC<LeftMainHeaderProps> = ({ action }) => {
+const LeftMainHeader: React.FC<LeftMainHeaderProps> = ({ action, searchOnChange }) => {
     return (
         <div className={'left-main-header-wrapper'}>
             <div className={'left-main-header-menu'}>

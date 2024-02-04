@@ -1,10 +1,10 @@
 import "./main.scss"
-import logo from "../assets/logo.svg"
+import logo from "../../assets/logo.svg"
 import {Link} from "react-router-dom";
 import {useAuth} from "../../hooks/useAuth.tsx";
 
 export function MainPage() {
-    const {authed,logout} = useAuth();
+    const {authed, logout} = useAuth();
     return (
         <div>
             <header className={"header-main-page"}>

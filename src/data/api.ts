@@ -7,7 +7,7 @@ import {
     WebsocketTransport
 } from "nice-grpc-web";
 import {PagerStreamsDefinition} from "../testproto/transfers/streams.ts";
-import {ChatActionsDefinition, ChatMessage, CreateChatRequest} from "../testproto/chat/chat_actions.ts";
+import {Chat, ChatActionsDefinition, ChatMessage, ManyMessagesRequest} from "../testproto/chat/chat_actions.ts";
 import {
     AuthServiceDefinition,
     LoginRequest,
@@ -17,7 +17,7 @@ import {
 import {CallOptions} from "nice-grpc-common";
 import {errorDetailsClientMiddleware} from "nice-grpc-error-details";
 import {asyncFuncHandler} from "./utils/error.ts";
-import {ClientServiceDefinition, SearchUsersRequest} from "../testproto/client/client.ts";
+import {ClientServiceDefinition, ConnectionRequest, SearchUsersRequest} from "../testproto/client/client.ts";
 import {PagerProfile} from "../testproto/common/common.ts";
 
 export const host = "http://localhost:4561";
@@ -59,21 +59,9 @@ export class AuthActionsApi {
             async () => this.api.registration(request)
         )
     }
-    public refresh(request: RefreshRequest){
+
+    public refresh(request: RefreshRequest) {
         return this.api.refresh(request)
-    }
-}
-
-export class ClientApi {
-    private api = clientFactory.create(
-        ClientServiceDefinition,
-        websocketTransport
-    )
-
-    public searchUsersByIdentifier(request: SearchUsersRequest) {
-        return asyncFuncHandler(
-            async () => this.api.searchUsersByIdentifier(request, authOptions),
-        )
     }
 }
 
@@ -83,10 +71,16 @@ export class ChatActionsApi {
         websocketTransport
     )
 
-    public createChat(request: CreateChatRequest) {
+    public updateChat(request: Chat) {
         return asyncFuncHandler(
-            async () => this.api.createChat(request, authOptions)
-    )
+            async () => this.api.updateChat(request, authOptions),
+        )
+    }
+
+    public updateManyMessages(request: ManyMessagesRequest) {
+        return asyncFuncHandler(
+            async () => this.api.updateManyMessages(request, authOptions),
+        )
     }
 
     public async sendMessage(request: ChatMessage, onLogout: () => void) {
@@ -102,15 +96,23 @@ export class ClientActionsApi {
         ClientServiceDefinition,
         websocketTransport
     )
-    public searchUsersByIdentifier(request:SearchUsersRequest){
+
+    public searchUsersByIdentifier(request: SearchUsersRequest) {
         return asyncFuncHandler(
-            async () => await this.api.searchUsersByIdentifier(request,authOptions)
+            async () => await this.api.searchUsersByIdentifier(request, authOptions)
         )
     }
-    public UpdateData(request: PagerProfile, onLogout: () => void){
+
+    public UpdateData(request: PagerProfile, onLogout: () => void) {
         return asyncFuncHandler(
-            async () => await this.api.changeDataProfile(request,authOptions),
+            async () => await this.api.changeDataProfile(request, authOptions),
             onLogout
+        )
+    }
+
+    public UpdateConnectionState(request: ConnectionRequest) {
+        return asyncFuncHandler(
+            async () => await this.api.changeConnectionState(request, authOptions)
         )
     }
 

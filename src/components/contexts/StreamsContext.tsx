@@ -15,6 +15,7 @@ import {
 import {autorun} from "mobx";
 import * as _ from "lodash";
 import {handleArrayChangeValue, handleDownStream} from "../../data/utils/transfers.ts";
+import {closeWebSocket, connectToWebSocket} from "../../data/sockets.ts";
 
 export interface ChatInfo {
     chatInfo: Chat
@@ -58,7 +59,7 @@ const contextData: IDataObject = {
     handleMessagesPagination: () => {
     },
     handleSetMembers: async () => {
-    }
+    },
 };
 
 export const StreamsContext = createContext(contextData)
@@ -82,6 +83,11 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
             // setChats(chatMapCopy)
         }
     }, [chats])
+
+    // const handleLocalChatMessagesChanges = useCallback((messages: ChatMessage[], chatId: string) => {
+    //     const chatMd = chats[chatId]
+    //     setChats((prevState) => ({...prevState, [chatId]: {...chatMd, messages: hand}}))
+    // }, [])
 
     const handleSetMembers = useCallback(async (memberIdArr: string[]) => {
         let noChanges = true;
@@ -128,15 +134,16 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         }
     }, [chats])
 
-    const startProfileStreaming = useCallback(() => {
-        handleDownStream<ProfileStreamRequest>(false, StreamsApi.streamProfile, {}).then((v) => {
-            handleDownStream<ProfileStreamRequest>(true, StreamsApi.streamProfile, {})
-            setProfile(getValueByType<PagerProfile>(ProfileStreamRequest_Type[1], v))
-            setChatRoles(getListByType<ChatRole>(ProfileStreamRequest_Type[2], v))
-            if (!initList.profile) {
+    const startProfileStreaming = useCallback(async () => {
+        if (!initList.profile) {
+            await handleDownStream<ProfileStreamRequest>(false, StreamsApi.streamProfile, {}).then((v) => {
+                handleDownStream<ProfileStreamRequest>(true, StreamsApi.streamProfile, {})
+                const profile = getValueByType<PagerProfile>(ProfileStreamRequest_Type[1], v)
+                setProfile(profile)
+                setChatRoles(getListByType<ChatRole>(ProfileStreamRequest_Type[2], v))
                 setInitList((prevState) => ({...prevState, profile: true}))
-            }
-        })
+            })
+        }
     }, [initList.profile])
 
     const startChatStreaming = useCallback(async () => {
@@ -184,6 +191,17 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
     useEffect(() => {
         startChatStreaming()
     }, [startChatStreaming]);
+
+    useEffect(() => {
+        if (profile.UserId) {
+            connectToWebSocket(profile.UserId)
+            window.addEventListener('beforeunload', closeWebSocket)
+        }
+        return () => {
+            closeWebSocket()
+            window.removeEventListener('beforeunload', closeWebSocket)
+        }
+    }, [profile.UserId]);
 
     //change states from watching streams (all streams are initialized)
     useEffect(() => autorun(() => {

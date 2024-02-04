@@ -1,6 +1,6 @@
 import {FC, useCallback, useContext, useEffect, useState} from "react";
 import {ChatMember, ChatType} from "../../../testproto/chat/chat_actions.ts";
-import {ClientApi, StreamsApi} from "../../../data/api.ts";
+import {ClientActionsApi, StreamsApi} from "../../../data/api.ts";
 import ChatTile from "../../common/chatTile/ChatTile.tsx";
 import {v4 as uuidv4} from 'uuid';
 import "./userList.scss"
@@ -57,7 +57,7 @@ const UserList: FC<UserListProps> = ({searchValue}) => {
 
     const handleGlobalItems = useCallback(async () => {
         const membersArray: ChatMember[] = []
-        await new ClientApi().searchUsersByIdentifier({identifier: searchValue}).then(async (response) => {
+        await new ClientActionsApi().searchUsersByIdentifier({identifier: searchValue}).then(async (response) => {
             if (response) {
                 for (const id of response.userIds) {
                     await handleDownStream(false, StreamsApi.streamChatMember, {MemberId: id}).then((v) => {

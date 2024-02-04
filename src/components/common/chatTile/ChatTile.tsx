@@ -37,10 +37,10 @@ const ChatTile: FC<ChatTileProps> = memo((props) => {
                         </div>
                     </div>
                     <div className={'chat-tile-info-subtitle'}>
-                        <span>
-                            {lastMessage?.Text ?? ""}
-                        </span>
-                        {unreadMessages !== 0 && <div className={'unread-message'}>
+                        <div className={'chat-tile-last-message'}>
+                            <span>{lastMessage?.Text ?? ""}</span>
+                        </div>
+                        {unreadMessages !== 0 && <div className={'unread-message-badge'}>
                             {unreadMessages}
                         </div>}
                     </div>

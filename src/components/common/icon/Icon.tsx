@@ -4,13 +4,17 @@ import IPencil from '../../../assets/pencil.svg'
 import IXsymbol from '../../../assets/x-symbol.svg'
 import ICheckMark from '../../../assets/checkmark.svg'
 import ArrowBack from '../../../assets/arrow-back.svg'
+import Send from '../../../assets/send.svg'
+import Reply from '../../../assets/reply.svg'
 import "./icon.scss"
 export enum AppIcons {
     burgerMenu = iBurgerMenu,
     pencil = IPencil,
     xSymbol = IXsymbol,
     checkmark = ICheckMark,
-    back = ArrowBack
+    back = ArrowBack,
+    send = Send,
+    reply = Reply
 }
 
 type IconProps = {

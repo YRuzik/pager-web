@@ -39,6 +39,10 @@ export function chatTypeToJSON(object: ChatType): string {
   }
 }
 
+export interface ManyMessagesRequest {
+  messages: ChatMessage[];
+}
+
 export interface Chat {
   /** идентификатор чата */
   Id: string;
@@ -120,6 +124,8 @@ export interface ChatMessage {
   AuthorId: string;
   /** связанный чат */
   LinkedChatId: string;
+  /** связанное сообщение */
+  LinkedMessage?: ChatMessage | undefined;
 }
 
 /** статус сообщения */
@@ -174,17 +180,6 @@ export function chatMessage_MessageStatusToJSON(object: ChatMessage_MessageStatu
   }
 }
 
-export interface CreateChatRequest {
-  /** тип чата */
-  Type: ChatType;
-  /** дополнительная информация */
-  Metadata?:
-    | ChatMetadata
-    | undefined;
-  /** идентификаторы участников */
-  MembersId: string[];
-}
-
 export interface ChatMember {
   /** Индетификатор пользователя */
   Id: string;
@@ -199,6 +194,67 @@ export interface ChatMember {
   /** когда последний раз заходил */
   lastSeenMillis: number;
 }
+
+function createBaseManyMessagesRequest(): ManyMessagesRequest {
+  return { messages: [] };
+}
+
+export const ManyMessagesRequest = {
+  encode(message: ManyMessagesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.messages) {
+      ChatMessage.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ManyMessagesRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseManyMessagesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.messages.push(ChatMessage.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ManyMessagesRequest {
+    return {
+      messages: globalThis.Array.isArray(object?.messages)
+        ? object.messages.map((e: any) => ChatMessage.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ManyMessagesRequest): unknown {
+    const obj: any = {};
+    if (message.messages?.length) {
+      obj.messages = message.messages.map((e) => ChatMessage.toJSON(e));
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ManyMessagesRequest>): ManyMessagesRequest {
+    return ManyMessagesRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ManyMessagesRequest>): ManyMessagesRequest {
+    const message = createBaseManyMessagesRequest();
+    message.messages = object.messages?.map((e) => ChatMessage.fromPartial(e)) || [];
+    return message;
+  },
+};
 
 function createBaseChat(): Chat {
   return { Id: "", Type: 0, Metadata: undefined, MembersId: [] };
@@ -457,7 +513,15 @@ export const ChatRole = {
 };
 
 function createBaseChatMessage(): ChatMessage {
-  return { Id: "", Text: undefined, StampMillis: 0, Status: 0, AuthorId: "", LinkedChatId: "" };
+  return {
+    Id: "",
+    Text: undefined,
+    StampMillis: 0,
+    Status: 0,
+    AuthorId: "",
+    LinkedChatId: "",
+    LinkedMessage: undefined,
+  };
 }
 
 export const ChatMessage = {
@@ -479,6 +543,9 @@ export const ChatMessage = {
     }
     if (message.LinkedChatId !== "") {
       writer.uint32(50).string(message.LinkedChatId);
+    }
+    if (message.LinkedMessage !== undefined) {
+      ChatMessage.encode(message.LinkedMessage, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -532,6 +599,13 @@ export const ChatMessage = {
 
           message.LinkedChatId = reader.string();
           continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.LinkedMessage = ChatMessage.decode(reader, reader.uint32());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -549,6 +623,7 @@ export const ChatMessage = {
       Status: isSet(object.Status) ? chatMessage_MessageStatusFromJSON(object.Status) : 0,
       AuthorId: isSet(object.AuthorId) ? globalThis.String(object.AuthorId) : "",
       LinkedChatId: isSet(object.LinkedChatId) ? globalThis.String(object.LinkedChatId) : "",
+      LinkedMessage: isSet(object.LinkedMessage) ? ChatMessage.fromJSON(object.LinkedMessage) : undefined,
     };
   },
 
@@ -572,6 +647,9 @@ export const ChatMessage = {
     if (message.LinkedChatId !== "") {
       obj.LinkedChatId = message.LinkedChatId;
     }
+    if (message.LinkedMessage !== undefined) {
+      obj.LinkedMessage = ChatMessage.toJSON(message.LinkedMessage);
+    }
     return obj;
   },
 
@@ -586,99 +664,9 @@ export const ChatMessage = {
     message.Status = object.Status ?? 0;
     message.AuthorId = object.AuthorId ?? "";
     message.LinkedChatId = object.LinkedChatId ?? "";
-    return message;
-  },
-};
-
-function createBaseCreateChatRequest(): CreateChatRequest {
-  return { Type: 0, Metadata: undefined, MembersId: [] };
-}
-
-export const CreateChatRequest = {
-  encode(message: CreateChatRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.Type !== 0) {
-      writer.uint32(8).int32(message.Type);
-    }
-    if (message.Metadata !== undefined) {
-      ChatMetadata.encode(message.Metadata, writer.uint32(18).fork()).ldelim();
-    }
-    for (const v of message.MembersId) {
-      writer.uint32(26).string(v!);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateChatRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateChatRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 8) {
-            break;
-          }
-
-          message.Type = reader.int32() as any;
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.Metadata = ChatMetadata.decode(reader, reader.uint32());
-          continue;
-        case 3:
-          if (tag !== 26) {
-            break;
-          }
-
-          message.MembersId.push(reader.string());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CreateChatRequest {
-    return {
-      Type: isSet(object.Type) ? chatTypeFromJSON(object.Type) : 0,
-      Metadata: isSet(object.Metadata) ? ChatMetadata.fromJSON(object.Metadata) : undefined,
-      MembersId: globalThis.Array.isArray(object?.MembersId)
-        ? object.MembersId.map((e: any) => globalThis.String(e))
-        : [],
-    };
-  },
-
-  toJSON(message: CreateChatRequest): unknown {
-    const obj: any = {};
-    if (message.Type !== 0) {
-      obj.Type = chatTypeToJSON(message.Type);
-    }
-    if (message.Metadata !== undefined) {
-      obj.Metadata = ChatMetadata.toJSON(message.Metadata);
-    }
-    if (message.MembersId?.length) {
-      obj.MembersId = message.MembersId;
-    }
-    return obj;
-  },
-
-  create(base?: DeepPartial<CreateChatRequest>): CreateChatRequest {
-    return CreateChatRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<CreateChatRequest>): CreateChatRequest {
-    const message = createBaseCreateChatRequest();
-    message.Type = object.Type ?? 0;
-    message.Metadata = (object.Metadata !== undefined && object.Metadata !== null)
-      ? ChatMetadata.fromPartial(object.Metadata)
+    message.LinkedMessage = (object.LinkedMessage !== undefined && object.LinkedMessage !== null)
+      ? ChatMessage.fromPartial(object.LinkedMessage)
       : undefined;
-    message.MembersId = object.MembersId?.map((e) => e) || [];
     return message;
   },
 };
@@ -822,9 +810,9 @@ export const ChatActionsDefinition = {
   name: "ChatActions",
   fullName: "com.pager.api.ChatActions",
   methods: {
-    createChat: {
-      name: "CreateChat",
-      requestType: CreateChatRequest,
+    updateChat: {
+      name: "UpdateChat",
+      requestType: Chat,
       requestStream: false,
       responseType: Chat,
       responseStream: false,
@@ -838,17 +826,27 @@ export const ChatActionsDefinition = {
       responseStream: false,
       options: {},
     },
+    updateManyMessages: {
+      name: "UpdateManyMessages",
+      requestType: ManyMessagesRequest,
+      requestStream: false,
+      responseType: Empty,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const;
 
 export interface ChatActionsServiceImplementation<CallContextExt = {}> {
-  createChat(request: CreateChatRequest, context: CallContext & CallContextExt): Promise<DeepPartial<Chat>>;
+  updateChat(request: Chat, context: CallContext & CallContextExt): Promise<DeepPartial<Chat>>;
   sendMessage(request: ChatMessage, context: CallContext & CallContextExt): Promise<DeepPartial<Empty>>;
+  updateManyMessages(request: ManyMessagesRequest, context: CallContext & CallContextExt): Promise<DeepPartial<Empty>>;
 }
 
 export interface ChatActionsClient<CallOptionsExt = {}> {
-  createChat(request: DeepPartial<CreateChatRequest>, options?: CallOptions & CallOptionsExt): Promise<Chat>;
+  updateChat(request: DeepPartial<Chat>, options?: CallOptions & CallOptionsExt): Promise<Chat>;
   sendMessage(request: DeepPartial<ChatMessage>, options?: CallOptions & CallOptionsExt): Promise<Empty>;
+  updateManyMessages(request: DeepPartial<ManyMessagesRequest>, options?: CallOptions & CallOptionsExt): Promise<Empty>;
 }
 
 function bytesFromBase64(b64: string): Uint8Array {

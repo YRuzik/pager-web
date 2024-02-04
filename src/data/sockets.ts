@@ -1,4 +1,6 @@
-let webSocketConnection = null;
+import {ClientActionsApi} from "./api.ts";
+
+let webSocketConnection: WebSocket | null = null;
 
 export function connectToWebSocket(userID: string) {
     if (userID === "" && userID === null) {
@@ -14,9 +16,25 @@ export function connectToWebSocket(userID: string) {
     }
     if (window["WebSocket"]) {
         webSocketConnection = new WebSocket(`ws://localhost:4001/ws/${userID}/`);
-        return {
-            message: "You are connected to Chat Server",
-            webSocketConnection
+
+        webSocketConnection.onopen = function () {
+            new ClientActionsApi().UpdateConnectionState({
+                Online: true,
+                LastStampMillis: Date.now()
+            })
         }
+
+        webSocketConnection.onclose = function () {
+            new ClientActionsApi().UpdateConnectionState({
+                Online: false,
+                LastStampMillis: Date.now()
+            })
+        }
+    }
+}
+
+export const closeWebSocket = () => {
+    if (webSocketConnection !== null) {
+        webSocketConnection.close()
     }
 }

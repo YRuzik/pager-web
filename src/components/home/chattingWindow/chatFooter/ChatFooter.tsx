@@ -2,11 +2,11 @@ import {FC, useCallback, useContext, useEffect, useRef} from "react";
 import {ChatActionsApi} from "../../../../data/api.ts";
 import './chatFooter.scss'
 import {useAuth} from "../../../../hooks/useAuth.tsx";
-import {useAuth} from "../../../../hooks/useAuth.tsx";
 import actions from "../../../../data/mobx/actions.ts";
 import {ChatMember, ChatType} from "../../../../testproto/chat/chat_actions.ts";
 import {StreamsContext} from "../../../contexts/StreamsContext.tsx";
 import CustomInput from "../../../common/customInput/CustomInput.tsx";
+import Icon, {AppIcons} from "../../../common/icon/Icon.tsx";
 
 type ChatFooterProps = {
     selectedChatId?: string
@@ -16,9 +16,9 @@ type ChatFooterProps = {
 
 const ChatFooter: FC<ChatFooterProps> = ({selectedChatId, profileId, member}) => {
     const {handleSetMembers} = useContext(StreamsContext)
-    const {logout} = useAuth()
     const inputRef = useRef<HTMLInputElement>(null)
     const {logout} = useAuth();
+
     const handleSendMessage = useCallback(async (
         chatId: string
     ) => {
@@ -39,7 +39,8 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId, profileId, member}) =>
 
     const handleCreateChat = useCallback(async () => {
         if (!selectedChatId && member) {
-            const newChat = await new ChatActionsApi().createChat({
+            const newChat = await new ChatActionsApi().updateChat({
+                Id: "",
                 MembersId: [profileId, member.Id],
                 Metadata: undefined,
                 Type: ChatType.personal,
@@ -87,7 +88,7 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId, profileId, member}) =>
                 } else if (!selectedChatId && member) {
                     await handleCreateChat()
                 }
-            }} type={"submit"} className={'chatting-button'}> send
+            }} type={"submit"} className={'chatting-button'}> <Icon icon={AppIcons.send} size={30}/>
             </button>
         </div>
     )

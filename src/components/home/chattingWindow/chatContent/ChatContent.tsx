@@ -9,7 +9,6 @@ import ChatFooter from "../chatFooter/ChatFooter.tsx";
 import './chatContent.scss'
 import {handleDownStream} from "../../../../data/utils/transfers.ts";
 import {v4 as uuidv4} from 'uuid';
-import {useAuth} from "../../../../hooks/useAuth.tsx";
 
 type ChatContentProps = {
     chat?: ChatInfo
@@ -19,7 +18,6 @@ type ChatContentProps = {
 
 const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
     const {handleMessagesPagination} = useContext(StreamsContext)
-    const {logout} = useAuth()
     const messagesRef = useRef<HTMLDivElement>(null)
     const [fetching, setFetching] = useState(false)
     const [firstInit, setFirstInit] = useState(true)
@@ -45,15 +43,19 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
     }, [handleInfiniteScroll, chat?.chatInfo]);
 
     const handleUpdateMessages = useCallback(async () => {
+        const unreadedMessages: ChatMessage[] = []
         if (chat) {
             for (const message of chat.messages) {
                 if (message.Status === ChatMessage_MessageStatus.unread && message.AuthorId !== profileId) {
-                    const readedMessage: ChatMessage = {...message, Status: ChatMessage_MessageStatus.seen}
-                    await new ChatActionsApi().sendMessage(readedMessage, logout)
+                    const nMessage: ChatMessage = {...message, Status: ChatMessage_MessageStatus.seen}
+                    unreadedMessages.push(nMessage)
                 }
             }
         }
-    }, [chat, logout, profileId])
+        if (unreadedMessages.length > 0) {
+            new ChatActionsApi().updateManyMessages({messages: unreadedMessages})
+        }
+    }, [chat, profileId])
     
     useEffect(() => {
         handleUpdateMessages()

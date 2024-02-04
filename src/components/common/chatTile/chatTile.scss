@@ -39,21 +39,27 @@
 .chat-tile-info-subtitle {
   overflow: hidden;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   text-align: initial;
   unicode-bidi: plaintext;
   text-overflow: ellipsis;
 }
 
-.unread-message {
+.chat-tile-last-message {
+  text-align: left;
+  padding-right: 0.25rem;
+  flex-grow: 1;
+}
+
+.unread-message-badge {
   background-color: global.$brand-color;
   color: global.$text-on-brand-color;
-  padding: 0.1rem 0.4rem;
-  display: flex;
-  align-items: center;
+  padding: 0 0.4375rem;
+  text-align: center;
+  line-height: 1.5625rem;
   border-radius: global.$max-br;
   font-size: 0.8rem;
-  height: 1.25rem;
-  min-width: 1.25rem;
+  height: 1.5rem;
+  min-width: 1.5rem;
 }

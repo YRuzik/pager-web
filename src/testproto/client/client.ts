@@ -2,8 +2,14 @@
 import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";
 import { PagerProfile } from "../common/common";
+import Long = require("long");
 
 export const protobufPackage = "com.pager.api";
+
+export interface ConnectionRequest {
+  LastStampMillis: number;
+  Online: boolean;
+}
 
 export interface SearchUsersRequest {
   /** Логин для поиска */
@@ -14,6 +20,80 @@ export interface SearchUsersResponse {
   /** Список ID найденных пользователей */
   userIds: string[];
 }
+
+function createBaseConnectionRequest(): ConnectionRequest {
+  return { LastStampMillis: 0, Online: false };
+}
+
+export const ConnectionRequest = {
+  encode(message: ConnectionRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.LastStampMillis !== 0) {
+      writer.uint32(8).int64(message.LastStampMillis);
+    }
+    if (message.Online === true) {
+      writer.uint32(16).bool(message.Online);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ConnectionRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConnectionRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.LastStampMillis = longToNumber(reader.int64() as Long);
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.Online = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ConnectionRequest {
+    return {
+      LastStampMillis: isSet(object.LastStampMillis) ? globalThis.Number(object.LastStampMillis) : 0,
+      Online: isSet(object.Online) ? globalThis.Boolean(object.Online) : false,
+    };
+  },
+
+  toJSON(message: ConnectionRequest): unknown {
+    const obj: any = {};
+    if (message.LastStampMillis !== 0) {
+      obj.LastStampMillis = Math.round(message.LastStampMillis);
+    }
+    if (message.Online === true) {
+      obj.Online = message.Online;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ConnectionRequest>): ConnectionRequest {
+    return ConnectionRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ConnectionRequest>): ConnectionRequest {
+    const message = createBaseConnectionRequest();
+    message.LastStampMillis = object.LastStampMillis ?? 0;
+    message.Online = object.Online ?? false;
+    return message;
+  },
+};
 
 function createBaseSearchUsersRequest(): SearchUsersRequest {
   return { identifier: "" };
@@ -152,6 +232,14 @@ export const ClientServiceDefinition = {
       responseStream: false,
       options: {},
     },
+    changeConnectionState: {
+      name: "ChangeConnectionState",
+      requestType: ConnectionRequest,
+      requestStream: false,
+      responseType: ConnectionRequest,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const;
 
@@ -161,6 +249,10 @@ export interface ClientServiceImplementation<CallContextExt = {}> {
     context: CallContext & CallContextExt,
   ): Promise<DeepPartial<SearchUsersResponse>>;
   changeDataProfile(request: PagerProfile, context: CallContext & CallContextExt): Promise<DeepPartial<PagerProfile>>;
+  changeConnectionState(
+    request: ConnectionRequest,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<ConnectionRequest>>;
 }
 
 export interface ClientServiceClient<CallOptionsExt = {}> {
@@ -169,6 +261,10 @@ export interface ClientServiceClient<CallOptionsExt = {}> {
     options?: CallOptions & CallOptionsExt,
   ): Promise<SearchUsersResponse>;
   changeDataProfile(request: DeepPartial<PagerProfile>, options?: CallOptions & CallOptionsExt): Promise<PagerProfile>;
+  changeConnectionState(
+    request: DeepPartial<ConnectionRequest>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<ConnectionRequest>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -178,6 +274,18 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

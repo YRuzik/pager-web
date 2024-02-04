@@ -9,7 +9,7 @@ type AvatarViewProps = {
 const AvatarView: FC<AvatarViewProps> = ({online, size = 50}) => {
     return (
         <div className={"avatar-wrapper"} style={{height: size, width: size}}>
-            <div className={"avatar-img"}></div>
+            <div className={`avatar-img ${online && "crop-avatar"}`}></div>
             {online && <div className={"avatar-online"}></div>}
         </div>
     )
