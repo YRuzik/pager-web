@@ -17,10 +17,12 @@ type ChatContentProps = {
 }
 
 const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
-    const {handleMessagesPagination} = useContext(StreamsContext)
+    const {handleMessagesPagination, members} = useContext(StreamsContext)
     const messagesRef = useRef<HTMLDivElement>(null)
     const [fetching, setFetching] = useState(false)
     const [firstInit, setFirstInit] = useState(true)
+    const [linkedMessage, setLinkedMessage] = useState<ChatMessage | undefined>(undefined)
+    const [editMessage, setEditMessage] = useState<ChatMessage | undefined>(undefined)
 
     const handleInfiniteScroll = useCallback(async () => {
         const calculatedHeight = messagesRef.current!.scrollHeight + messagesRef.current!.scrollTop - window.innerHeight;
@@ -56,7 +58,7 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
             new ChatActionsApi().updateManyMessages({messages: unreadedMessages})
         }
     }, [chat, profileId])
-    
+
     useEffect(() => {
         handleUpdateMessages()
     }, [handleUpdateMessages]);
@@ -86,12 +88,17 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
                     <div className={'messages-container'}>
                         <div className={'messages-container'}>
                             {chat?.messages ? chat?.messages.map((message) =>
-                                <MessageEntity
-                                    key={uuidv4()} profileId={profileId} message={message}/>) : null}
+                                <MessageEntity onEdit={(message) => setEditMessage(message)}
+                                               member={message.LinkedMessage && members[message.LinkedMessage?.AuthorId]}
+                                               onReply={(message) => setLinkedMessage(message)}
+                                               key={uuidv4()} profileId={profileId} message={message}/>) : null}
                         </div>
                     </div>
                 </div>
-                <ChatFooter selectedChatId={chat?.chatInfo?.Id} profileId={profileId} member={member}/>
+                <ChatFooter selectedChatId={chat?.chatInfo?.Id} profileId={profileId} member={member}
+                            editMessage={editMessage}
+                            cancelEdit={() => setEditMessage(undefined)}
+                            selectedMessage={linkedMessage} cancelSelectedMessage={() => setLinkedMessage(undefined)}/>
             </div>
         </div>
     )

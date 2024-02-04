@@ -12,6 +12,42 @@
   margin-bottom: 0.5rem;
 }
 
+.edit-message-wrapper {
+  position: absolute;
+  background-color: global.$bg-color;
+  bottom: 110%;
+  left: 50%;
+  max-width: 40%;
+  transform: translateX(-50%);
+  padding: 0.5rem;
+  overflow-wrap: break-word;
+  border-radius: global.$med-br;
+}
+
+.edit-message-wrapper div {
+  color: global.$brand-color;
+  display: flex;
+  justify-content: space-between;
+}
+
+.selected-message-wrapper {
+  position: absolute;
+  background-color: global.$bg-color;
+  bottom: 110%;
+  left: 50%;
+  max-width: 40%;
+  transform: translateX(-50%);
+  padding: 0.5rem;
+  overflow-wrap: break-word;
+  border-radius: global.$med-br;
+}
+
+.selected-message-wrapper div {
+  color: global.$brand-color;
+  display: flex;
+  justify-content: space-between;
+}
+
 .chatting-input-wrapper {
   flex-grow: 1;
   height: 100%;
