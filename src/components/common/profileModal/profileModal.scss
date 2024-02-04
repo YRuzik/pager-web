@@ -18,7 +18,8 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  width: 25rem;
+  width: 32rem;
+  min-height: 10rem;
 }
 
 .header-modal{
@@ -32,7 +33,6 @@
 
 }
 .profile-data{
-  width: 15rem;
   display: flex;
   flex-direction: column;
   gap: .5rem;
@@ -51,4 +51,22 @@
 .edit-input-wrapper {
   background-color: global.$tinted-color;
   border-radius: global.$med-br;
+  padding: 0 .5rem;
+}
+
+.info-profile{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.5rem;
+  padding: .1rem .5rem;
+  div{
+   display: flex;
+  }
+  img{
+    max-width: none;
+  }
+  text{
+    padding-left: .5rem;
+  }
 }

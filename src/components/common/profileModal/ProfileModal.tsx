@@ -101,25 +101,35 @@ const ProfileModal: React.FC<Props> = ({isOpen, handleClose}) => {
                     <div className={"profile-data"}>
                         {isEditMode ? (
                             <>
+                                <div className={"info-profile"}>
+                                    <Icon icon={AppIcons.profileName} size={28}/>
+                                    <input
+                                        className={"edit-input-wrapper"}
+                                        type="text"
+                                        value={editedProfile.login}
+                                        onChange={(e) => setEditedProfile({...editedProfile, login: e.target.value})}
+                                    />
+                                </div>
+                                <div className={"info-profile"}>
+                                    <Icon icon={AppIcons.email} size={25} />
                                 <input
-                                    style={{padding: '.2rem .5rem'}}
-                                    className={"edit-input-wrapper"}
-                                    type="text"
-                                    value={editedProfile.login}
-                                    onChange={(e) => setEditedProfile({...editedProfile, login: e.target.value})}
-                                />
-                                <input
-                                    style={{padding: '.2rem .5rem'}}
                                     className={"edit-input-wrapper"}
                                     type="text"
                                     value={editedProfile.email}
                                     onChange={(e) => setEditedProfile({...editedProfile, email: e.target.value})}
                                 />
+                                </div>
                             </>
                         ) : (
                             <>
-                                <div style={{padding: '.2rem .5rem'}}>{profile.Login}</div>
-                                <div style={{padding: '.2rem .5rem'}}>{profile.Email}</div>
+                                <div className={"info-profile"}>
+                                    <Icon icon={AppIcons.profileName} size={28}/>
+                                    <text>{profile.Login}</text>
+                                </div>
+                                <div className={"info-profile"}>
+                                    <Icon icon={AppIcons.email} size={25} />
+                                    <text>{profile.Email}</text>
+                                </div>
                             </>
                         )}
                     </div>

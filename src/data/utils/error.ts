@@ -20,13 +20,15 @@ export const asyncFuncHandler = async <T>(
                     } catch (e: unknown) {
                         if (e instanceof RichClientError) {
                             await handleSpecificError(e, onError);
+                            throw error;
                         }
                     }
                     break;
                 case PagerError_ErrorCode.OK:
-                    break;
+                    throw error;
                 default:
                     await handleSpecificError(e, onError);
+                    throw error;
             }
         }
     }

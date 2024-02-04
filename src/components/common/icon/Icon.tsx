@@ -1,16 +1,26 @@
 import {FC} from "react";
 import iBurgerMenu from '../../../assets/burger-menu.svg'
-import IPencil from '../../../assets/pencil.svg'
-import IXsymbol from '../../../assets/x-symbol.svg'
-import ICheckMark from '../../../assets/checkmark.svg'
+import iPencil from '../../../assets/pencil.svg'
+import iXsymbol from '../../../assets/x-symbol.svg'
+import iCheckMark from '../../../assets/checkmark.svg'
 import ArrowBack from '../../../assets/arrow-back.svg'
+import iChat from '../../../assets/chat.svg'
+import iStream from '../../../assets/stream.svg'
+import iApps from '../../../assets/apps.svg'
+import IEmail from '../../../assets/email.svg'
+import IProfileName from '../../../assets/profileName.svg'
 import "./icon.scss"
 export enum AppIcons {
     burgerMenu = iBurgerMenu,
-    pencil = IPencil,
-    xSymbol = IXsymbol,
-    checkmark = ICheckMark,
-    back = ArrowBack
+    pencil = iPencil,
+    xSymbol = iXsymbol,
+    checkmark = iCheckMark,
+    back = ArrowBack,
+    ChatIcon=iChat,
+    stream =iStream,
+    apps =iApps,
+    profileName = IProfileName,
+    email = IEmail
 }
 
 type IconProps = {

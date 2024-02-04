@@ -1,12 +1,15 @@
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
 import {AuthActionsApi} from "../../data/api.ts";
-import toast from "react-hot-toast";
-import {useNavigate} from "react-router-dom";
 import './AuthStyle.scss'
+import React from "react";
+import toast from "react-hot-toast";
 
-function Register() {
-    const navigate = useNavigate()
+interface RegisterProps{
+    action:() =>void;
+}
+
+const Register: React.FC<RegisterProps> = ({ action }) => {
     const initialValues = {
         email: '',
         password: '',
@@ -20,19 +23,17 @@ function Register() {
         confirmPassword: Yup.string().required('Это поле обязательно для заполнения')
             .oneOf([Yup.ref('password')], 'Пароли не совпадают'),
         name: Yup.string().required('Это поле обязательно для заполнения').min(4, 'Имя слишком короткое')
-            .matches(/^[a-zA-Z]+$/, 'Используйте только латинские буквы a-z')
+            .matches(/^[a-zA-Z0-9]+$/, 'Используйте только латинские буквы и цифры')
     });
     const handleSubmit = async (email: string, password: string, name: string) => {
-        try {
-            await new AuthActionsApi().registration({
-                login: name,
-                email: email,
-                password: password
-            })
-            navigate('/auth/login')
-        } catch (error) {
-            toast.error("ошибка регистрации)")
-        }
+        await new AuthActionsApi().registration({
+            login: name,
+            email: email,
+            password: password
+        }).then(() => {
+            action();
+            toast.success("Замечательно! Теперь авторизуйтесь");
+        });
     }
     return (
         <>

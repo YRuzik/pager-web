@@ -22,24 +22,27 @@
   display: flex;
   gap: 2vh;
   align-items: center;
+  opacity: 1;
 }
 
 .main-slogan{
   display: flex;
   flex-wrap: wrap;
   width: 45vh;
-  margin: 5vh auto;
+  margin: 4vh auto;
   text-align: center;
+  font-weight: bold;
+  font-size: .9rem;
 }
 
 .main-slogan-text{
+  font-size: 3rem;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   width: 60vh;
-  margin: 5vh auto;
+  margin: 4vh auto;
   text-align: center;
-  font-size: xx-large;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-image: linear-gradient(global.$brand-gradient);
@@ -48,5 +51,102 @@
   background: linear-gradient(1deg, global.$brand-color 0%, global.$light-brand-color 100%);
   border-radius: global.$default-br;
   margin: 0 10rem;
-  height: 40rem;
+  height: 50rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chats-image{
+  position: relative;
+  width: 75rem;
+  top: 5rem;
+  box-shadow: 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.feature-wrapper{
+  display: flex;
+  justify-content: space-evenly;
+  margin: 10rem 10rem;
+}
+
+.feature-card{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 20rem;
+  span{
+    font-weight: bold;
+    font-size: 2rem;
+    color: global.$text-color;
+    text-align: center;
+  }
+  h2{
+    white-space: normal;
+    text-align: center;
+  }
+}
+.login-link{
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(global.$brand-gradient);
+}
+
+.registration-link{
+  color: white;
+  padding: .3rem .8rem;
+  background: black;
+  border-radius: global.$default-br;
+}
+
+.FAQ-container{
+  display: flex;
+  margin: 10rem 10rem;
+  gap: 5rem;
+}
+
+.FAQ-wrapper{
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  h1{
+    color: global.$text-color;
+    font-size: 3.5rem;
+    font-weight: bold;
+  }
+  h2{
+    font-size: 1.3rem;
+    color: global.$text-secondary-color;
+  }
+  ul{
+    margin-left: 3.5rem;
+    font-size: 1.7rem;
+    list-style: decimal;
+    li{
+      margin-bottom: 1rem;
+      list-style: decimal;
+    }
+  }
+}
+
+.FAQ-image{
+  position: relative;
+  width: 35rem;
+  padding: 3rem 0 0 3rem;
+}
+
+.footer{
+  height: 5rem;
+  background: global.$bg-dark-color;
+  display: flex;
+  padding: 0  10rem;
+  align-items: center;
+  font-size: 2rem;
+  justify-content: space-between;
+  h2{
+    display: flex;
+    font-size: 1.25rem;
+    text-align: right;
+  }
 }

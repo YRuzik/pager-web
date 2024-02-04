@@ -27,10 +27,10 @@ const AuthPage = () => {
                     <Icon icon={AppIcons.back} onClick={() => navigate("/")} />
                 </div>
                 <div className="form-container sign-up-container">
-                    <Register />
+                    <Register action={()=> handleSignInClick()}/>
                 </div>
                 <div className="form-container sign-in-container">
-                    <Login />
+                    <Login/>
                 </div>
                 <div className="overlay-container">
                     <div className="overlay">
