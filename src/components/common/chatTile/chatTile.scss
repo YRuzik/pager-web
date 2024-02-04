@@ -3,6 +3,7 @@
   display: flex;
   align-items: center;
   overflow: hidden;
+  width: 100%;
 }
 
 .chat-tile-avatar {
@@ -37,19 +38,19 @@
 }
 
 .chat-tile-info-subtitle {
-  overflow: hidden;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  text-align: initial;
-  unicode-bidi: plaintext;
   text-overflow: ellipsis;
 }
 
 .chat-tile-last-message {
+  overflow: hidden;
   text-align: left;
   padding-right: 0.25rem;
   flex-grow: 1;
+  unicode-bidi: plaintext;
+  text-overflow: ellipsis;
 }
 
 .unread-message-badge {

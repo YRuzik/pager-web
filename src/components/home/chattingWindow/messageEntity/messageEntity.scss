@@ -6,6 +6,7 @@
 
 .message-inner {
   flex: 1;
+  width: 100%;
   display: flex;
   align-items: flex-end;
   flex-direction: row-reverse;
@@ -16,6 +17,7 @@
 }
 
 .message-bubble {
+  position: relative;
   max-width: 70%;
   overflow-wrap: break-word;
   padding: global.$default-inset;
@@ -26,11 +28,12 @@
 }
 
 .message-status {
-  width: 20px;
+  width: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+  padding: 0 0.3rem;
 }
 
 .message-avatar {
