@@ -12,15 +12,10 @@
   margin-bottom: 0.5rem;
 }
 
-.chatting-input {
+.chatting-input-wrapper {
   flex-grow: 1;
   height: 100%;
   max-width: calc(100% - 4rem);
-  background: global.$bg-color;
-  position: relative;
-  z-index: 1;
-  border-radius: global.$default-inset;
-  padding: 0 1rem;
 }
 
 .chatting-button {
@@ -29,4 +24,8 @@
   width: 2.5rem;
   border-radius: global.$max-br;
   cursor: pointer;
+}
+
+.chatting-button div {
+  opacity: 0.5;
 }

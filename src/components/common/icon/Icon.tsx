@@ -4,6 +4,8 @@ import iPencil from '../../../assets/pencil.svg'
 import iXsymbol from '../../../assets/x-symbol.svg'
 import iCheckMark from '../../../assets/checkmark.svg'
 import ArrowBack from '../../../assets/arrow-back.svg'
+import Send from '../../../assets/send.svg'
+import Reply from '../../../assets/reply.svg'
 import iChat from '../../../assets/chat.svg'
 import iStream from '../../../assets/stream.svg'
 import iApps from '../../../assets/apps.svg'
@@ -12,6 +14,12 @@ import IProfileName from '../../../assets/profileName.svg'
 import "./icon.scss"
 export enum AppIcons {
     burgerMenu = iBurgerMenu,
+    pencil = IPencil,
+    xSymbol = IXsymbol,
+    checkmark = ICheckMark,
+    back = ArrowBack,
+    send = Send,
+    reply = Reply
     pencil = iPencil,
     xSymbol = iXsymbol,
     checkmark = iCheckMark,

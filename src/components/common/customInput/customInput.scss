@@ -1,0 +1,33 @@
+@use "../../../styles/global";
+
+.base-input {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  padding: 0 1rem;
+}
+
+.base-input:disabled {
+  background-color: global.$disabled-color;
+  cursor: not-allowed;
+  border: none;
+  color: global.$disabled-color-text;
+}
+
+.underline-input {
+  border-bottom: {
+    width: 2px;
+    color: global.$brand-color;
+    style: solid;
+  };
+}
+
+.fill-input {
+  background: global.$bg-color;
+  border-radius: global.$max-br;
+}
+
+.colorized-input {
+  background: global.$light-brand-color;
+  border-radius: global.$med-br;
+}

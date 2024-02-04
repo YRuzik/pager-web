@@ -1,20 +1,22 @@
 import MessageEntity from "../messageEntity/MessageEntity.tsx";
 import {FC, useCallback, useContext, useEffect, useRef, useState} from "react";
-import {ChatMessage} from "../../../../testproto/chat/chat_actions.ts";
-import {handleDownStream} from "../../../../data/utils.ts";
-import {StreamsApi} from "../../../../data/api.ts";
+import {ChatMember, ChatMessage, ChatMessage_MessageStatus} from "../../../../testproto/chat/chat_actions.ts";
+import {ChatActionsApi, StreamsApi} from "../../../../data/api.ts";
 import {getListByType} from "../../../../data/mobx/transfers.ts";
 import {ChatStreamRequest_Type} from "../../../../testproto/transfers/streams.ts";
 import {ChatInfo, StreamsContext} from "../../../contexts/StreamsContext.tsx";
 import ChatFooter from "../chatFooter/ChatFooter.tsx";
 import './chatContent.scss'
+import {handleDownStream} from "../../../../data/utils/transfers.ts";
+import {v4 as uuidv4} from 'uuid';
 
 type ChatContentProps = {
     chat?: ChatInfo
-    profileId?: string
+    profileId: string
+    member?: ChatMember
 }
 
-const ChatContent: FC<ChatContentProps> = ({chat, profileId}) => {
+const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
     const {handleMessagesPagination} = useContext(StreamsContext)
     const messagesRef = useRef<HTMLDivElement>(null)
     const [fetching, setFetching] = useState(false)
@@ -40,8 +42,27 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId}) => {
         }
     }, [handleInfiniteScroll, chat?.chatInfo]);
 
+    const handleUpdateMessages = useCallback(async () => {
+        const unreadedMessages: ChatMessage[] = []
+        if (chat) {
+            for (const message of chat.messages) {
+                if (message.Status === ChatMessage_MessageStatus.unread && message.AuthorId !== profileId) {
+                    const nMessage: ChatMessage = {...message, Status: ChatMessage_MessageStatus.seen}
+                    unreadedMessages.push(nMessage)
+                }
+            }
+        }
+        if (unreadedMessages.length > 0) {
+            new ChatActionsApi().updateManyMessages({messages: unreadedMessages})
+        }
+    }, [chat, profileId])
+    
     useEffect(() => {
-        if ((fetching && chat?.messages) || firstInit) {
+        handleUpdateMessages()
+    }, [handleUpdateMessages]);
+
+    useEffect(() => {
+        if ((chat) && ((fetching && chat?.messages) || firstInit)) {
             handleDownStream(false, StreamsApi.streamChat, {
                 ChatId: chat?.chatInfo?.Id,
                 RequestedMessages: (chat?.messages?.length ?? 0) + 50
@@ -64,14 +85,13 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId}) => {
                 <div ref={messagesRef} className={"messages-list"}>
                     <div className={'messages-container'}>
                         <div className={'messages-container'}>
-                            {chat?.messages ? chat?.messages.map(({Text, StampMillis, AuthorId, Id}) =>
+                            {chat?.messages ? chat?.messages.map((message) =>
                                 <MessageEntity
-                                    key={Id} profileId={profileId} authorId={AuthorId} text={Text}
-                                    stampMillis={StampMillis}/>) : null}
+                                    key={uuidv4()} profileId={profileId} message={message}/>) : null}
                         </div>
                     </div>
                 </div>
-                <ChatFooter selectedChatId={chat?.chatInfo?.Id} profileId={profileId}/>
+                <ChatFooter selectedChatId={chat?.chatInfo?.Id} profileId={profileId} member={member}/>
             </div>
         </div>
     )

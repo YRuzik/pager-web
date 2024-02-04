@@ -1,20 +1,28 @@
-import {FC, useCallback, useEffect, useRef} from "react";
+import {FC, useCallback, useContext, useEffect, useRef} from "react";
 import {ChatActionsApi} from "../../../../data/api.ts";
 import './chatFooter.scss'
 import {useAuth} from "../../../../hooks/useAuth.tsx";
+import actions from "../../../../data/mobx/actions.ts";
+import {ChatMember, ChatType} from "../../../../testproto/chat/chat_actions.ts";
+import {StreamsContext} from "../../../contexts/StreamsContext.tsx";
+import CustomInput from "../../../common/customInput/CustomInput.tsx";
+import Icon, {AppIcons} from "../../../common/icon/Icon.tsx";
 
 type ChatFooterProps = {
     selectedChatId?: string
-    profileId?: string
+    profileId: string
+    member?: ChatMember
 }
 
-const ChatFooter: FC<ChatFooterProps> = ({selectedChatId,profileId}) => {
+const ChatFooter: FC<ChatFooterProps> = ({selectedChatId, profileId, member}) => {
+    const {handleSetMembers} = useContext(StreamsContext)
     const inputRef = useRef<HTMLInputElement>(null)
     const {logout} = useAuth();
+
     const handleSendMessage = useCallback(async (
         chatId: string
     ) => {
-        if ((profileId !== undefined) && (inputRef.current!.value !== "")) {
+        if ((inputRef.current!.value !== "")) {
             await new ChatActionsApi().sendMessage({
                 AuthorId: profileId,
                 Id: "",
@@ -27,15 +35,35 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId,profileId}) => {
         } else {
             console.log(`userid ${profileId} not valid`)
         }
-    }, [profileId])
+    }, [logout, profileId])
+
+    const handleCreateChat = useCallback(async () => {
+        if (!selectedChatId && member) {
+            const newChat = await new ChatActionsApi().updateChat({
+                Id: "",
+                MembersId: [profileId, member.Id],
+                Metadata: undefined,
+                Type: ChatType.personal,
+            })
+            if (newChat) {
+                await handleSetMembers([member.Id])
+                await handleSendMessage(newChat.Id)
+                actions.toggleChatId(newChat.Id)
+            }
+        }
+    }, [handleSendMessage, handleSetMembers, member, profileId, selectedChatId])
 
     const handleEventListener = useCallback(async (
         e: KeyboardEvent,
     ) => {
         if (e.code === "Enter") {
-            if (selectedChatId) await handleSendMessage(selectedChatId)
+            if (selectedChatId) {
+                await handleSendMessage(selectedChatId)
+            } else if (!selectedChatId && member) {
+                await handleCreateChat()
+            }
         }
-    }, [handleSendMessage, selectedChatId])
+    }, [handleCreateChat, handleSendMessage, member, selectedChatId])
 
 
     useEffect(() => {
@@ -51,12 +79,16 @@ const ChatFooter: FC<ChatFooterProps> = ({selectedChatId,profileId}) => {
     }, [handleEventListener, handleSendMessage, selectedChatId]);
     return (
         <div className={'middle-footer'}>
-            <input ref={inputRef} placeholder={"some text..."} className={"chatting-input"}/>
-            <button onClick={() => {
+            <div className={"chatting-input-wrapper"}>
+                <CustomInput innerRef={inputRef} placeholder={"Напишите сообщение..."}/>
+            </div>
+            <button onClick={async () => {
                 if (selectedChatId) {
-                    handleSendMessage(selectedChatId)
+                    await handleSendMessage(selectedChatId)
+                } else if (!selectedChatId && member) {
+                    await handleCreateChat()
                 }
-            }} type={"submit"} className={'chatting-button'}> send
+            }} type={"submit"} className={'chatting-button'}> <Icon icon={AppIcons.send} size={30}/>
             </button>
         </div>
     )
