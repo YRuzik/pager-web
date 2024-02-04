@@ -27,10 +27,41 @@
   background-color: rgba(0,0,0,0.1);
   border-radius: global.$min-br;
   padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  transition: global.$default-transition;
+}
+
+.reply-message:hover {
+  background-color: rgba(0,0,0,0.2);
 }
 
 .reply-message-login {
   color: global.$light-brand-color;
+}
+
+.list-tile-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.list-tile-wrap div {
+  padding-right: 0.3rem;
+}
+
+.highlight-animation {
+  animation: highlight 1s ease-in-out;
+  @keyframes highlight {
+    0% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: rgba(118, 148, 241, 0.29);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
 }
 
 .reply-message-text {
@@ -40,6 +71,7 @@
   overflow-wrap: normal;
   overflow: hidden;
   direction: ltr;
+  text-align: start;
 }
 
 .message-bubble span {

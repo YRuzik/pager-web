@@ -7,6 +7,7 @@ import {ChatMember, ChatMessage, ChatMessage_MessageStatus, ChatType} from "../.
 import {StreamsContext} from "../../../contexts/StreamsContext.tsx";
 import CustomInput from "../../../common/customInput/CustomInput.tsx";
 import Icon, {AppIcons} from "../../../common/icon/Icon.tsx";
+import {MessageActions} from "../chatContent/ChatContent.tsx";
 
 type ChatFooterProps = {
     selectedChatId?: string
@@ -14,8 +15,8 @@ type ChatFooterProps = {
     member?: ChatMember
     selectedMessage?: ChatMessage
     cancelSelectedMessage: () => void
-    editMessage?: ChatMessage
-    cancelEdit: () => void
+    messageAction: MessageActions
+    cancelMessageAction: () => void
 }
 
 const ChatFooter: FC<ChatFooterProps> = (
@@ -25,8 +26,8 @@ const ChatFooter: FC<ChatFooterProps> = (
         member,
         selectedMessage,
         cancelSelectedMessage,
-        editMessage,
-        cancelEdit
+        messageAction,
+        cancelMessageAction
     }
 ) => {
     const {handleSetMembers, members} = useContext(StreamsContext)
@@ -37,15 +38,15 @@ const ChatFooter: FC<ChatFooterProps> = (
         chatId: string
     ) => {
         if ((inputRef.current!.value !== "")) {
-            if (editMessage && inputRef.current!.value !== editMessage.Text) {
+            if (selectedMessage && (messageAction === MessageActions.edit) && (inputRef.current!.value !== selectedMessage.Text)) {
                 await new ChatActionsApi().sendMessage({
-                    AuthorId: editMessage.AuthorId,
-                    Id: editMessage.Id,
-                    LinkedChatId: editMessage.LinkedChatId,
-                    StampMillis: editMessage.StampMillis,
-                    Status: editMessage.Status,
+                    AuthorId: selectedMessage.AuthorId,
+                    Id: selectedMessage.Id,
+                    LinkedChatId: selectedMessage.LinkedChatId,
+                    StampMillis: selectedMessage.StampMillis,
+                    Status: selectedMessage.Status,
                     Text: inputRef.current!.value,
-                    LinkedMessage: editMessage.LinkedMessage,
+                    LinkedMessage: selectedMessage.LinkedMessage,
                     Updated: true
                 }, logout)
             } else {
@@ -62,23 +63,21 @@ const ChatFooter: FC<ChatFooterProps> = (
             }
             if (selectedMessage) {
                 cancelSelectedMessage()
-            }
-            if (editMessage) {
-                cancelEdit()
+                cancelMessageAction()
             }
             inputRef.current!.value = ""
         } else {
             console.log(`userid ${profileId} not valid`)
         }
-    }, [cancelEdit, cancelSelectedMessage, editMessage, logout, profileId, selectedMessage])
+    }, [cancelMessageAction, cancelSelectedMessage, logout, messageAction, profileId, selectedMessage])
 
     useEffect(() => {
-        if (editMessage) {
-            inputRef.current!.value = editMessage.Text!
+        if (messageAction === MessageActions.edit && selectedMessage) {
+            inputRef.current!.value = selectedMessage.Text!
         } else {
             inputRef.current!.value = ""
         }
-    }, [editMessage]);
+    }, [messageAction, selectedMessage]);
 
     const handleCreateChat = useCallback(async () => {
         if (!selectedChatId && member) {
@@ -121,31 +120,12 @@ const ChatFooter: FC<ChatFooterProps> = (
         }
     }, [handleEventListener, handleSendMessage, selectedChatId]);
     return (
+        <div className={'middle-footer-wrapper'}>
+            {selectedMessage &&
+                <MessageActionTab cancelSelectedMessage={cancelSelectedMessage} messageText={selectedMessage.Text!}
+                                  action={messageAction} cancelMessageAction={cancelMessageAction}
+                                  title={members[selectedMessage.AuthorId].Login}/>}
         <div className={'middle-footer'}>
-            {editMessage && <div className={'edit-message-wrapper'}>
-                <div>
-                    <div>
-                        Редактирование
-                    </div>
-                    <Icon icon={AppIcons.xSymbol} size={10} className={'gray-filter'} onClick={() => {
-                        cancelEdit()
-                    }}/>
-                </div>
-
-                {editMessage.Text}
-            </div>}
-            {selectedMessage && <div className={'selected-message-wrapper'}>
-                <div>
-                    <div>
-                        В ответ {members[selectedMessage.AuthorId].Login}
-                    </div>
-                    <Icon icon={AppIcons.xSymbol} size={10} className={'gray-filter'} onClick={() => {
-                        cancelSelectedMessage()
-                    }}/>
-                </div>
-
-                {selectedMessage.Text}
-            </div>}
             <div className={"chatting-input-wrapper"}>
                 <CustomInput innerRef={inputRef} placeholder={"Напишите сообщение..."}/>
             </div>
@@ -158,7 +138,50 @@ const ChatFooter: FC<ChatFooterProps> = (
             }} type={"submit"} className={'chatting-button'}><Icon icon={AppIcons.send} size={30}/>
             </button>
         </div>
+        </div>
     )
 }
 
 export default ChatFooter
+
+type MessageActionTabProps = {
+    cancelSelectedMessage: () => void
+    cancelMessageAction: () => void
+    messageText: string
+    title?: string
+    action: MessageActions
+}
+const MessageActionTab: FC<MessageActionTabProps> = ({
+                                                         cancelSelectedMessage,
+                                                         action,
+                                                         messageText,
+                                                         title,
+                                                         cancelMessageAction
+                                                     }) => {
+    let headTitle = "";
+    switch (action) {
+        case MessageActions.edit:
+            headTitle = "Редактировать";
+            break;
+        case MessageActions.reply:
+            headTitle = `В ответ ${title}`;
+            break;
+    }
+    return (
+        <div className={'action-message-wrapper'}>
+            <div className={'action-message-title'}>
+                <div>
+                    {headTitle}
+                </div>
+                <Icon icon={AppIcons.xSymbol} size={10} className={'gray-filter'} onClick={() => {
+                    cancelSelectedMessage()
+                    cancelMessageAction()
+                }}/>
+            </div>
+
+            <div className={'action-message-subtitle'}>
+                {messageText}
+            </div>
+        </div>
+    )
+}
