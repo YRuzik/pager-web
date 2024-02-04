@@ -6,6 +6,8 @@ import ICheckMark from '../../../assets/checkmark.svg'
 import ArrowBack from '../../../assets/arrow-back.svg'
 import Send from '../../../assets/send.svg'
 import Reply from '../../../assets/reply.svg'
+import Done from '../../../assets/done.svg'
+import DoneAll from '../../../assets/done_all.svg'
 import "./icon.scss"
 export enum AppIcons {
     burgerMenu = iBurgerMenu,
@@ -14,19 +16,22 @@ export enum AppIcons {
     checkmark = ICheckMark,
     back = ArrowBack,
     send = Send,
-    reply = Reply
+    reply = Reply,
+    done = Done,
+    doneAll = DoneAll
 }
 
 type IconProps = {
     size?: number;
     onClick?: () => void;
     icon: AppIcons;
+    className?: string;
 }
 
-export const Icon: FC<IconProps> = ({icon, size = 36, onClick}) => {
+export const Icon: FC<IconProps> = ({icon, size = 36, onClick, className}) => {
     return (
         <div onClick={onClick} className={onClick ? "icon-button" : undefined}>
-            <img src={icon} alt={icon.toString()} width={size} height={size}/>
+            <img src={icon} alt={icon.toString()} width={size} height={size} className={className}/>
         </div>
     )
 }

@@ -9,6 +9,14 @@
   cursor: pointer;
 }
 
+.blue-filter {
+  filter: invert(38%) sepia(99%) saturate(976%) hue-rotate(207deg) brightness(98%) contrast(94%);
+}
+
+.gray-filter {
+  filter: invert(59%) sepia(2%) saturate(3897%) hue-rotate(189deg) brightness(88%) contrast(86%);
+}
+
 .icon-button:hover {
   background-color: rgba(0,0,0,.2);
 }

@@ -79,15 +79,8 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         } else if (chatMd) {
             chatMd.messages = messages;
             setChats((prevState) => ({...prevState, [chatId]: chatMd}))
-            // chatMapCopy.set(chatId, chatMd)
-            // setChats(chatMapCopy)
         }
     }, [chats])
-
-    // const handleLocalChatMessagesChanges = useCallback((messages: ChatMessage[], chatId: string) => {
-    //     const chatMd = chats[chatId]
-    //     setChats((prevState) => ({...prevState, [chatId]: {...chatMd, messages: hand}}))
-    // }, [])
 
     const handleSetMembers = useCallback(async (memberIdArr: string[]) => {
         let noChanges = true;
