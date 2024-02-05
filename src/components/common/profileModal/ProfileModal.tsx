@@ -79,7 +79,7 @@ const ProfileModal: React.FC<Props> = ({isOpen, handleClose}) => {
 
     return createPortal(
         <div className="modal-overlay">
-            <div className="modal" ref={ref}>
+            <div className="profile-modal" ref={ref}>
                 <div className={"header-modal"}>
                     Настройки
                     <div className={"buttons-modal"}>

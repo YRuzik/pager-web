@@ -13,12 +13,12 @@
   z-index: 999;
 }
 
-.modal {
+.profile-modal {
   background: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  width: 32rem;
+  min-width: 29rem;
   min-height: 10rem;
 }
 
