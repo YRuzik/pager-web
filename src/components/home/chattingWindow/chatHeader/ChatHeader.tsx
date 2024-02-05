@@ -1,6 +1,6 @@
 import {FC, useCallback, useEffect, useState} from "react";
 import "./chatHeader.scss"
-import {Chat, ChatMember, ChatType} from "../../../../testproto/chat/chat_actions.ts";
+import {Chat, ChatMember} from "../../../../testproto/chat/chat_actions.ts";
 import AvatarView from "../../../common/avatarView/AvatarView.tsx";
 
 type ChatHeaderProps = {
@@ -8,8 +8,7 @@ type ChatHeaderProps = {
     member: ChatMember
 }
 
-const ChatHeader: FC<ChatHeaderProps> = ({chat, member}) => {
-
+const ChatHeader: FC<ChatHeaderProps> = ({member}) => {
     return (
         <div className={"middle-header"}>
             <div className={"chat-info"}>
@@ -17,7 +16,7 @@ const ChatHeader: FC<ChatHeaderProps> = ({chat, member}) => {
                     <AvatarView online={member.Online} size={35}/>
                 </div>
                 <div className={"info"}>
-                    {chat ? chat.Type === ChatType.personal ? <PersonalHeader {...member}/> : <GroupHeader {...chat}/> : <PersonalHeader {...member}/>}
+                    <PersonalHeader {...member}/>
                 </div>
             </div>
         </div>
@@ -61,7 +60,7 @@ const PersonalHeader: FC<ChatMember> = ({Login, Online, lastSeenMillis}) => {
             clearInterval(timerId)
         }
         
-    }, [millisToString]);
+    }, [Online, millisToString]);
     return (
         <>
             <div>
@@ -74,17 +73,17 @@ const PersonalHeader: FC<ChatMember> = ({Login, Online, lastSeenMillis}) => {
     )
 }
 
-const GroupHeader: FC<Chat> = ({Metadata, MembersId}) => {
-    return (
-        <>
-            <div>
-                <h5>{Metadata?.Title}</h5>
-            </div>
-            <span>
-                        {`${MembersId.length} members`}
-                </span>
-        </>
-    )
-}
+// const GroupHeader: FC<Chat> = ({Metadata, MembersId}) => {
+//     return (
+//         <>
+//             <div>
+//                 <h5>{Metadata?.Title}</h5>
+//             </div>
+//             <span>
+//                         {`${MembersId.length} members`}
+//                 </span>
+//         </>
+//     )
+// }
 
 export default ChatHeader

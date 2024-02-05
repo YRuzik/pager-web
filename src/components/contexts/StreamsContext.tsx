@@ -86,7 +86,7 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         let noChanges = true;
         const newData: MembersData = {}
         for (const memberId of memberIdArr) {
-            if (!members[memberId] && memberId !== profile.UserId) {
+            if (!members[memberId]) {
                 await handleDownStream(false, StreamsApi.streamChatMember, {MemberId: memberId}).then((v) => {
                     newData[memberId] = JSON.parse(new TextDecoder().decode(v[0].Data))
                     noChanges = false;
@@ -97,7 +97,7 @@ const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
         if (!noChanges) {
             setMembers((prevState) => ({...prevState, ...newData}))
         }
-    }, [members, profile.UserId])
+    }, [members])
 
     const handleSetMemberChanges = useCallback((obj: TransferObject) => {
         const member: ChatMember = JSON.parse(new TextDecoder().decode(obj.Data))

@@ -129,7 +129,7 @@ export interface ChatMessage {
     | ChatMessage
     | undefined;
   /** было ли изменено сообщение */
-  Updated: string;
+  Updated: boolean;
 }
 
 /** статус сообщения */
@@ -525,7 +525,7 @@ function createBaseChatMessage(): ChatMessage {
     AuthorId: "",
     LinkedChatId: "",
     LinkedMessage: undefined,
-    Updated: "",
+    Updated: false,
   };
 }
 
@@ -552,8 +552,8 @@ export const ChatMessage = {
     if (message.LinkedMessage !== undefined) {
       ChatMessage.encode(message.LinkedMessage, writer.uint32(58).fork()).ldelim();
     }
-    if (message.Updated !== "") {
-      writer.uint32(66).string(message.Updated);
+    if (message.Updated === true) {
+      writer.uint32(64).bool(message.Updated);
     }
     return writer;
   },
@@ -615,11 +615,11 @@ export const ChatMessage = {
           message.LinkedMessage = ChatMessage.decode(reader, reader.uint32());
           continue;
         case 8:
-          if (tag !== 66) {
+          if (tag !== 64) {
             break;
           }
 
-          message.Updated = reader.string();
+          message.Updated = reader.bool();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -639,7 +639,7 @@ export const ChatMessage = {
       AuthorId: isSet(object.AuthorId) ? globalThis.String(object.AuthorId) : "",
       LinkedChatId: isSet(object.LinkedChatId) ? globalThis.String(object.LinkedChatId) : "",
       LinkedMessage: isSet(object.LinkedMessage) ? ChatMessage.fromJSON(object.LinkedMessage) : undefined,
-      Updated: isSet(object.Updated) ? globalThis.String(object.Updated) : "",
+      Updated: isSet(object.Updated) ? globalThis.Boolean(object.Updated) : false,
     };
   },
 
@@ -666,7 +666,7 @@ export const ChatMessage = {
     if (message.LinkedMessage !== undefined) {
       obj.LinkedMessage = ChatMessage.toJSON(message.LinkedMessage);
     }
-    if (message.Updated !== "") {
+    if (message.Updated === true) {
       obj.Updated = message.Updated;
     }
     return obj;
@@ -686,7 +686,7 @@ export const ChatMessage = {
     message.LinkedMessage = (object.LinkedMessage !== undefined && object.LinkedMessage !== null)
       ? ChatMessage.fromPartial(object.LinkedMessage)
       : undefined;
-    message.Updated = object.Updated ?? "";
+    message.Updated = object.Updated ?? false;
     return message;
   },
 };

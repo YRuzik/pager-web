@@ -16,16 +16,33 @@ type ChatContentProps = {
     member?: ChatMember
 }
 
+export enum MessageActions {
+    none = 0,
+    edit = 1,
+    reply = 2
+}
+
 const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
-    const {handleMessagesPagination} = useContext(StreamsContext)
+    const {handleMessagesPagination, members} = useContext(StreamsContext)
     const messagesRef = useRef<HTMLDivElement>(null)
     const [fetching, setFetching] = useState(false)
     const [firstInit, setFirstInit] = useState(true)
+    const [selectedMessage, setSelectedMessage] = useState<ChatMessage | undefined>(undefined)
+    const [messageAction, setMessageAction] = useState<MessageActions>(MessageActions.none)
 
     const handleInfiniteScroll = useCallback(async () => {
         const calculatedHeight = messagesRef.current!.scrollHeight + messagesRef.current!.scrollTop - window.innerHeight;
         if (messagesRef && (calculatedHeight < 0)) {
             setFetching(true)
+        }
+    }, [])
+
+    const handleScrollToMessage = useCallback((id: string) => {
+        const message = document.getElementById(id)
+        if (message !== null) {
+            message.scrollIntoView({behavior: 'smooth', block: 'center', inline: "center"})
+            message.classList.add('highlight-animation')
+            setTimeout(() => message.classList.remove('highlight-animation'), 1000)
         }
     }, [])
 
@@ -56,7 +73,7 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
             new ChatActionsApi().updateManyMessages({messages: unreadedMessages})
         }
     }, [chat, profileId])
-    
+
     useEffect(() => {
         handleUpdateMessages()
     }, [handleUpdateMessages]);
@@ -84,14 +101,21 @@ const ChatContent: FC<ChatContentProps> = ({chat, profileId, member}) => {
             <div className={"content-container"}>
                 <div ref={messagesRef} className={"messages-list"}>
                     <div className={'messages-container'}>
-                        <div className={'messages-container'}>
-                            {chat?.messages ? chat?.messages.map((message) =>
-                                <MessageEntity
-                                    key={uuidv4()} profileId={profileId} message={message}/>) : null}
-                        </div>
+                        {chat?.messages ? chat?.messages.map((message) =>
+                            <MessageEntity
+                                scrollToMessage={handleScrollToMessage}
+                                id={message.Id}
+                                setMessageAction={setMessageAction}
+                                member={message.LinkedMessage && members[message.LinkedMessage?.AuthorId]}
+                                selectMessage={(message) => setSelectedMessage(message)}
+                                key={uuidv4()} profileId={profileId} message={message}/>) : null}
                     </div>
                 </div>
-                <ChatFooter selectedChatId={chat?.chatInfo?.Id} profileId={profileId} member={member}/>
+                <ChatFooter selectedChatId={chat?.chatInfo?.Id} profileId={profileId} member={member}
+                            selectedMessage={selectedMessage}
+                            cancelSelectedMessage={() => setSelectedMessage(undefined)}
+                            cancelMessageAction={() => setMessageAction(MessageActions.none)}
+                            messageAction={messageAction}/>
             </div>
         </div>
     )

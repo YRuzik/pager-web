@@ -26,6 +26,7 @@
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.21.2",
+    "reactjs-popup": "^2.0.6",
     "socket.io-client": "^4.7.4",
     "uuid": "^9.0.1",
     "vite-plugin-commonjs": "^0.10.1",

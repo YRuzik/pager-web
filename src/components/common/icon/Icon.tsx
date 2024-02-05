@@ -13,6 +13,19 @@ import IEmail from '../../../assets/email.svg'
 import IProfileName from '../../../assets/profileName.svg'
 import Done from '../../../assets/done.svg'
 import DoneAll from '../../../assets/done_all.svg'
+import iBurgerMenu from '../../../assets/icons/burger-menu.svg'
+import IPencil from '../../../assets/icons/pencil.svg'
+import IXsymbol from '../../../assets/icons/close.svg'
+import ICheckMark from '../../../assets/icons/checkmark.svg'
+import ArrowBack from '../../../assets/icons/arrow-back.svg'
+import Send from '../../../assets/icons/send.svg'
+import Reply from '../../../assets/icons/reply.svg'
+import Done from '../../../assets/icons/done.svg'
+import DoneAll from '../../../assets/icons/done_all.svg'
+import Edit from '../../../assets/icons/edit.svg'
+import GroupAdd from '../../../assets/icons/group_add.svg'
+import Logout from '../../../assets/icons/logout.svg'
+import Settings from '../../../assets/icons/settings.svg'
 import "./icon.scss"
 export enum AppIcons {
     burgerMenu = iBurgerMenu,
@@ -28,7 +41,11 @@ export enum AppIcons {
     profileName = IProfileName,
     email = IEmail,
     done = Done,
-    doneAll = DoneAll
+    doneAll = DoneAll,
+    edit = Edit,
+    groupAdd = GroupAdd,
+    logout = Logout,
+    settings = Settings
 }
 
 type IconProps = {
