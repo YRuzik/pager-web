@@ -5,7 +5,7 @@ import {useAuth} from "../../../../hooks/useAuth.tsx";
 import actions from "../../../../data/mobx/actions.ts";
 import {ChatMember, ChatMessage, ChatMessage_MessageStatus, ChatType} from "../../../../testproto/chat/chat_actions.ts";
 import {StreamsContext} from "../../../contexts/StreamsContext.tsx";
-import CustomInput from "../../../common/customInput/CustomInput.tsx";
+import CustomInput, {InputStyles} from "../../../common/customInput/CustomInput.tsx";
 import Icon, {AppIcons} from "../../../common/icon/Icon.tsx";
 import {MessageActions} from "../chatContent/ChatContent.tsx";
 
@@ -127,7 +127,7 @@ const ChatFooter: FC<ChatFooterProps> = (
                                   title={members[selectedMessage.AuthorId].Login}/>}
         <div className={'middle-footer'}>
             <div className={"chatting-input-wrapper"}>
-                <CustomInput innerRef={inputRef} placeholder={"Напишите сообщение..."}/>
+                <CustomInput innerRef={inputRef} placeholder={"Напишите сообщение..."} style={InputStyles.fill}/>
             </div>
             <button onClick={async () => {
                 if (selectedChatId) {
