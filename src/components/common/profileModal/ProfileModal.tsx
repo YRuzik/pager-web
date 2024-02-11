@@ -29,7 +29,7 @@ const ProfileModal: React.FC<Props> = ({isOpen, handleClose}) => {
             setIsEditMode(false)
         }
     }, [handleClose])
-    const checkOutside = (event: MouseEvent) => {
+    const checkOutside = (event: any) => {
         if (event.target?.contains(ref.current) && event.target !== ref.current) {
             handleClose()
             setIsEditMode(false)

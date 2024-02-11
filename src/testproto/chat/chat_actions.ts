@@ -1,3 +1,4 @@
+//@ts-nocheck
 /* eslint-disable */
 import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";

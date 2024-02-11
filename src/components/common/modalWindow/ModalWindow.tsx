@@ -24,7 +24,7 @@ const ModalWindow: FC<Props> = ({isOpen, handleClose, children, title, headerAct
             }, 350)
         }
     }, [handleClose])
-    const checkOutside = useCallback((event: MouseEvent) => {
+    const checkOutside = useCallback((event: any) => {
         if (event.target?.contains(ref.current) && event.target !== ref.current) {
             setIsOut(true)
             setTimeout(() => {

@@ -19,7 +19,6 @@ const LeftMenu: React.FC<LeftMenuProps> = ({action, state}) => {
     const {logout} = useAuth()
     const node = useRef<HTMLDivElement>(null);
     const {profile} = useContext(StreamsContext)
-    const [isOpen, setIsOpen] = useState(false);
     const [modalsList, setModalsList] = useState<{ settings: boolean, createChat: boolean }>({
         settings: false,
         createChat: false

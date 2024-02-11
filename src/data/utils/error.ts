@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {RichClientError} from "nice-grpc-error-details";
 import {PagerError, PagerError_ErrorCode} from "../../testproto/common/errors.ts";
 import {refreshAccessToken} from "./refresh.ts";
