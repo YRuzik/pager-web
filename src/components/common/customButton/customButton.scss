@@ -1,0 +1,48 @@
+@use "../../../styles/global";
+.elevated-button {
+  background-color: global.$brand-color;
+  color: global.$text-on-brand-color;
+  box-shadow: 0 5px 10px 0 rgba(0,0,0,.15);
+}
+
+.outlined-button {
+  border: 1px solid global.$bg-color;
+  color: global.$text-on-brand-color;
+  background-color: transparent;
+}
+
+.base-button {
+  appearance: none;
+  border-radius: global.$med-br;
+  cursor: pointer;
+  transition: global.$default-transition ease-in-out;
+}
+
+.base-button:hover {
+  opacity: 0.95;
+}
+
+.base-button:focus {
+  outline: none;
+}
+
+.base-button:disabled {
+  background-color: global.$disabled-color;
+  cursor: not-allowed;
+  color: global.$disabled-color-text;
+}
+
+.min-width {
+  width: auto;
+}
+
+.base-width {
+  min-width: 100px;
+  padding: 0.5rem 1rem;
+}
+
+.max-width {
+  width: 100%;
+  border-radius: global.$min-br;
+  padding: 0.5rem 1rem;
+}

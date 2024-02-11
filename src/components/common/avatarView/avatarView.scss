@@ -1,0 +1,26 @@
+@use "../../../styles/global";
+.avatar-wrapper {
+  position: relative;
+}
+
+.avatar-img {
+  background-color: global.$text-color;
+  border-radius: global.$max-br;
+  width: 100%;
+  height: 100%;
+}
+
+.crop-avatar {
+  //clip-path: circle(20% at 90% 90%);
+  //mask-composite: revert;
+}
+
+.avatar-online {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 25%;
+  height: 25%;
+  background-color: global.$success-color;
+  border-radius: global.$max-br;
+}

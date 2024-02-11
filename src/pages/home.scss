@@ -1,0 +1,23 @@
+.home-wrapper {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 100%;
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.home-chat-list-container {
+  width: 420px;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.home-chat-container {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+  min-width: 0;
+}

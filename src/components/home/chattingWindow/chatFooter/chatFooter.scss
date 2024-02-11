@@ -1,0 +1,76 @@
+@use "../../../../styles/global";
+.middle-footer-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.middle-footer {
+  top: 0;
+  width: 100%;
+  padding: 0 1rem;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  z-index: 2;
+  height: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.action-message-wrapper {
+  position: relative;
+  background-color: global.$secondary-color;
+  margin: 0 1rem 1rem 1rem;
+  border-radius: global.$med-br;
+  padding: 0.5rem 1rem;
+  overflow: hidden;
+}
+
+.action-message-title {
+  color: global.$brand-color;
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-message-subtitle {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.selected-message-wrapper {
+  position: absolute;
+  background-color: global.$bg-color;
+  bottom: 110%;
+  left: 50%;
+  max-width: 40%;
+  transform: translateX(-50%);
+  padding: 0.5rem;
+  overflow-wrap: break-word;
+  border-radius: global.$med-br;
+}
+
+.selected-message-wrapper div {
+  color: global.$brand-color;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chatting-input-wrapper {
+  flex-grow: 1;
+  height: 100%;
+  max-width: calc(100% - 4rem);
+}
+
+.chatting-button {
+  background: global.$bg-color;
+  height: 100%;
+  width: 2.5rem;
+  border-radius: global.$max-br;
+  cursor: pointer;
+}
+
+.chatting-button div {
+  opacity: 0.5;
+}

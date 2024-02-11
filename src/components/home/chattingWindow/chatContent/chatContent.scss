@@ -1,0 +1,40 @@
+.content-wrapper {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+//.content-containerr {
+//  display: flex;
+//  flex-direction: column-reverse;
+//  align-items: center;
+//  height: 100%;
+//  width: 100%;
+//}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.messages-list {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  margin-bottom: 0.5rem;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.messages-container {
+  min-height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
