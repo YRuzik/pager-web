@@ -20,8 +20,8 @@ import {asyncFuncHandler} from "./utils/error.ts";
 import {ClientServiceDefinition, ConnectionRequest, SearchUsersRequest} from "../testproto/client/client.ts";
 import {PagerProfile} from "../testproto/common/common.ts";
 
-export const host = "http://localhost:4561";
-export const authHost = "http://localhost:5001";
+export const host = "http://158.160.115.228:4561";
+export const authHost = "http://158.160.115.228:5001";
 
 const websocketTransport = createChannel(host, WebsocketTransport())
 const authTransport = createChannel(authHost)
