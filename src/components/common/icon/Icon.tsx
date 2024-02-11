@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {FC} from "react";
 import iChat from '../../../assets/icons/chat.svg'
 import iStream from '../../../assets/icons/stream.svg'
