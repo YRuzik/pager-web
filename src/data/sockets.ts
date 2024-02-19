@@ -15,7 +15,7 @@ export function connectToWebSocket(userID: string) {
         };
     }
     if (window['WebSocket']) {
-        webSocketConnection = new WebSocket(`ws://localhost:4001/ws/${userID}/`);
+        webSocketConnection = new WebSocket(`ws://api.pagerw.ru/ws/${userID}/`);
 
         webSocketConnection.onopen = function () {
             new ClientActionsApi().UpdateConnectionState({
