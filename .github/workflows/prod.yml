@@ -13,7 +13,6 @@ jobs:
         uses: actions/checkout@v3
       - name: build docker container
         run: docker build -t yruzik/pager-web .
-      - name: docker login
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login docker.pkg.github.com -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      - name: publish docker container
-        run: docker push yruzik/pager-web
+      - name: docker login && push
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login docker.pkg.github.com -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin && docker push yruzik/pager-web
+
