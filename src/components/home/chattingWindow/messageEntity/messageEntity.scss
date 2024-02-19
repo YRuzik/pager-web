@@ -1,0 +1,116 @@
+@use '../../../../styles/global';
+.message-outer {
+  display: flex;
+  padding-bottom: 4px;
+}
+
+.message-inner {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-spacer {
+  flex: 1;
+}
+
+.message-bubble {
+  position: relative;
+  max-width: 70%;
+  overflow-wrap: break-word;
+  padding: global.$default-inset;
+}
+
+.reply-message {
+  background-color: rgba(0,0,0,0.1);
+  border-radius: global.$min-br;
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  transition: global.$default-transition;
+}
+
+.reply-message:hover {
+  background-color: rgba(0,0,0,0.2);
+}
+
+.reply-message-login {
+  color: global.$light-brand-color;
+}
+
+.list-tile-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.list-tile-wrap div {
+  padding-right: 0.3rem;
+}
+
+.highlight-animation {
+  animation: highlight 1s ease-in-out;
+  @keyframes highlight {
+    0% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: rgba(118, 148, 241, 0.29);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+}
+
+.reply-message-text {
+  opacity: 0.8;
+  text-overflow: ellipsis;
+  height: 1.5rem;
+  overflow-wrap: normal;
+  overflow: hidden;
+  direction: ltr;
+  text-align: start;
+}
+
+.message-bubble span {
+  font-size: 0.7rem;
+}
+
+.message-status {
+  width: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 0.3rem;
+}
+
+.message-avatar {
+  padding-left: 6px;
+  padding-right: 8px;
+}
+
+.message-avatar-handle {
+  width: 20px;
+  height: 20px;
+  border-radius: global.$max-br;
+  background-color: #557BF3;
+}
+
+.my-message {
+  background-color: global.$brand-color;
+  color: global.$text-on-brand-color;
+  border-radius: global.$default-br global.$default-br 0 global.$default-br;
+}
+
+.other-message {
+  background-color: global.$secondary-color;
+  color: global.$text-color;
+  border-radius: global.$default-br global.$default-br global.$default-br 0;
+}
+
+.popup-custom {
+  background-color: global.$bg-color;
+}

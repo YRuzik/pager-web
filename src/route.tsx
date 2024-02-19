@@ -1,18 +1,16 @@
-import { Route, Routes } from 'react-router-dom';
-import RequireAuth from "./components/protectedRoute/protectedRoute.tsx";
+import {Route, Routes} from 'react-router-dom';
+import RequireAuth from "./components/common/protectedRoute/protectedRoute.tsx";
 import Home from "./pages/Home.tsx";
-import Login from "./components/auth/Login.tsx";
-import Register from "./components/auth/Register.tsx";
-import {MainPage} from "./pages/Main.tsx";
-import NotFoundRedirect from "./pages/notFound.tsx";
+import {MainPage} from "./pages/main/Main.tsx";
+import NotFoundRedirect from "./pages/RedirectPage.tsx";
+import AuthPage from "./pages/auth/AuthPage.tsx";
 
 const AppRoutes = () => (
     <Routes>
-        <Route path="/chat" element={<RequireAuth><Home/></RequireAuth>} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/registration" element={<Register />} />
-        <Route path="/" element={<MainPage />} />
-        <Route path="*" element={<NotFoundRedirect />} />
+        <Route path="/chat" element={<RequireAuth><Home/></RequireAuth>}/>
+        <Route path="/" element={<MainPage/>}/>
+        <Route path="*" element={<NotFoundRedirect/>}/>
+        <Route path='/auth/:action' element={<AuthPage/>}/>
     </Routes>
 );
 

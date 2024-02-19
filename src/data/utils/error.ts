@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 export const asyncFuncHandler = async <T>(
     func: () => Promise<T>,
-    onError?: () => Promise<void>
+    onError?: () => void
 ) => {
     try {
         return await func();
@@ -20,13 +20,15 @@ export const asyncFuncHandler = async <T>(
                     } catch (e: unknown) {
                         if (e instanceof RichClientError) {
                             await handleSpecificError(e, onError);
+                            throw error;
                         }
                     }
                     break;
                 case PagerError_ErrorCode.OK:
-                    break;
+                    throw error;
                 default:
                     await handleSpecificError(e, onError);
+                    throw error;
             }
         }
     }
@@ -34,10 +36,10 @@ export const asyncFuncHandler = async <T>(
 
 const handleSpecificError = async (
     error: RichClientError,
-    onError?: () => Promise<void>
+    onError?: () => void
 ) => {
     if (onError) {
-        await onError();
+        onError();
     }
     toast.error(error.details);
 };

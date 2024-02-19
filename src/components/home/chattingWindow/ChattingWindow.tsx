@@ -1,103 +1,42 @@
-import {observer} from "mobx-react-lite";
 import "./chattingWindow.scss"
-import {FC, useCallback, useContext, useEffect, useMemo, useRef} from "react";
-import {ChatActionsApi} from "../../../data/api.ts";
-import {StreamsContext} from "../../contexts/StreamsContext.tsx";
-import {ChatMessage} from "../../../testproto/chat/chat_actions.ts";
-import {useAuth} from "../../../hooks/useAuth.tsx";
+import {useContext, useEffect, useState} from "react";
+import {ChatInfo, StreamsContext} from "../../contexts/StreamsContext.tsx";
+import {observer} from "mobx-react-lite";
+import actions from "../../../data/mobx/actions.ts";
+import ChatContent from "./chatContent/ChatContent.tsx";
+import ChatHeader from "./chatHeader/ChatHeader.tsx";
 
 const ChattingWindow = observer(() => {
-    const {selectedChatId, profile} = useContext(StreamsContext)
-    const {logout} = useAuth()
+    const selectedChatId = actions.selectedChatId
+    const member = actions.selectedMember
+    const {profile, chats, members} = useContext(StreamsContext)
+    const [chat, setChat] = useState<ChatInfo | undefined>(undefined)
 
-    const {messages} = useContext(StreamsContext)
-    const inputRef = useRef<HTMLInputElement>(null)
-    const messagesRef = useRef<HTMLDivElement>(null)
-
-    const visibleMessages = useMemo(() =>
-            messages.filter((message) => message.LinkedChatId == selectedChatId).reverse()
-        , [selectedChatId, messages])
-
-    const handleSendMessage = useCallback(async (
-        chatId: string
-    ) => {
-        if ((profile?.UserId !== undefined)) {
-                await new ChatActionsApi().sendMessage({
-                    AuthorId: profile.UserId,
-                    Id: "",
-                    LinkedChatId: chatId,
-                    StampMillis: new Date().getTime(),
-                    Status: 4,
-                    Text: inputRef.current!.value
-                },logout)
-                inputRef.current!.value = ""
-        } else {
-            console.log(`userid ${profile?.UserId} not valid`)
+    useEffect(() => {
+        if (chat) {
+            const memberId = chat.chatInfo.MembersId.find((val) => val !== profile.UserId)
+            if (memberId) {
+                actions.setMember(members[memberId])
+            } else {
+                actions.setMember(undefined)
+            }
         }
-    }, [profile])
+    }, [chat, members, profile.UserId]);
     
-    const handleEventListener = useCallback(async (
-        e: KeyboardEvent,
-    ) => {
-        if (e.code === "Enter") {
-            if (selectedChatId) await handleSendMessage(selectedChatId)
-        }
-    }, [handleSendMessage, selectedChatId])
-
     useEffect(() => {
-        const currentRef = inputRef.current;
-        if (currentRef !== null && selectedChatId !== null) {
-            currentRef.addEventListener("keydown", handleEventListener)
+        if (chats && selectedChatId) {
+            setChat(chats[selectedChatId])
+        } else {
+            setChat(undefined)
         }
-        return () => {
-            if (currentRef !== null && selectedChatId !== null) {
-                currentRef.removeEventListener("keydown", handleEventListener)
-            }
-        }
-    }, [handleEventListener, handleSendMessage, inputRef, selectedChatId]);
-
-    useEffect(() => {
-        if (messagesRef !== null) {
-            if ((messagesRef.current!.scrollTop - 50) !== messagesRef.current!.scrollHeight) {
-                messagesRef.current!.scrollTop = messagesRef.current!.scrollHeight
-            }
-        }
-    }, [messagesRef, messages]);
+    }, [chats, selectedChatId]);
 
     return (
-        <div className={"chatting-window-wrapper"}>
-            <div ref={messagesRef} className={'all-messages-wrapper'}>
-                {visibleMessages.map((message) => <MessageEntity key={message.Id} {...message}/>)}
-            </div>
-            <div className={'input-wrapper'}>
-                <input
-                    ref={inputRef} placeholder={"some text..."} className={"chatting-input"}/>
-            </div>
-        </div>
-    )
-})
-
-const MessageEntity: FC<ChatMessage> = observer(({Text, AuthorId, StampMillis}) => {
-    const {profile} = useContext(StreamsContext)
-    const profileId = profile?.UserId;
-    const isMe = AuthorId === profileId
-    const messageStamp = new Date(StampMillis).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
-    return (
-        <div className={'message'} style={isMe ? {direction: "ltr"} : {direction: "rtl"}}>
-            <div className={'message-outer'}>
-                <div className={'message-inner'}>
-                    <div className={'message-avatar'}>
-                        <div className={'message-avatar-handle'}></div>
-                    </div>
-                    <div className={`message-bubble ${isMe ? 'my-message' : 'other-message'}`}>
-                        <div>
-                            {Text} <span>{messageStamp}</span>
-                        </div>
-                    </div>
-                    <div className={'message-spacer'}></div>
-                </div>
-                <div className={'message-status'}></div>
-            </div>
+        <div className={"messages-layout"}>
+            {((selectedChatId && chat && member) || (selectedChatId === undefined && member !== undefined)) && <>
+                <ChatHeader chat={chat?.chatInfo} member={member}/>
+                <ChatContent chat={chat} profileId={profile.UserId} member={member}/>
+            </>}
         </div>
     )
 })

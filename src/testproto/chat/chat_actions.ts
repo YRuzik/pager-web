@@ -39,6 +39,10 @@ export function chatTypeToJSON(object: ChatType): string {
   }
 }
 
+export interface ManyMessagesRequest {
+  messages: ChatMessage[];
+}
+
 export interface Chat {
   /** идентификатор чата */
   Id: string;
@@ -120,12 +124,18 @@ export interface ChatMessage {
   AuthorId: string;
   /** связанный чат */
   LinkedChatId: string;
+  /** связанное сообщение */
+  LinkedMessage?:
+    | ChatMessage
+    | undefined;
+  /** было ли изменено сообщение */
+  Updated: boolean;
 }
 
 /** статус сообщения */
 export enum ChatMessage_MessageStatus {
   uploading = 0,
-  sent = 1,
+  unread = 1,
   seen = 2,
   error = 3,
   deleted = 4,
@@ -138,8 +148,8 @@ export function chatMessage_MessageStatusFromJSON(object: any): ChatMessage_Mess
     case "uploading":
       return ChatMessage_MessageStatus.uploading;
     case 1:
-    case "sent":
-      return ChatMessage_MessageStatus.sent;
+    case "unread":
+      return ChatMessage_MessageStatus.unread;
     case 2:
     case "seen":
       return ChatMessage_MessageStatus.seen;
@@ -160,8 +170,8 @@ export function chatMessage_MessageStatusToJSON(object: ChatMessage_MessageStatu
   switch (object) {
     case ChatMessage_MessageStatus.uploading:
       return "uploading";
-    case ChatMessage_MessageStatus.sent:
-      return "sent";
+    case ChatMessage_MessageStatus.unread:
+      return "unread";
     case ChatMessage_MessageStatus.seen:
       return "seen";
     case ChatMessage_MessageStatus.error:
@@ -174,16 +184,81 @@ export function chatMessage_MessageStatusToJSON(object: ChatMessage_MessageStatu
   }
 }
 
-export interface CreateChatRequest {
-  /** тип чата */
-  Type: ChatType;
-  /** дополнительная информация */
-  Metadata?:
-    | ChatMetadata
-    | undefined;
-  /** идентификаторы участников */
-  MembersId: string[];
+export interface ChatMember {
+  /** Индетификатор пользователя */
+  Id: string;
+  /** Почта пользователя */
+  Email: string;
+  /** Картинка профиля пользователя */
+  Avatar: Uint8Array;
+  /** Логин пользователя */
+  Login: string;
+  /** метка онлайна */
+  Online: boolean;
+  /** когда последний раз заходил */
+  lastSeenMillis: number;
 }
+
+function createBaseManyMessagesRequest(): ManyMessagesRequest {
+  return { messages: [] };
+}
+
+export const ManyMessagesRequest = {
+  encode(message: ManyMessagesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.messages) {
+      ChatMessage.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ManyMessagesRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseManyMessagesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.messages.push(ChatMessage.decode(reader, reader.uint32()));
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ManyMessagesRequest {
+    return {
+      messages: globalThis.Array.isArray(object?.messages)
+        ? object.messages.map((e: any) => ChatMessage.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: ManyMessagesRequest): unknown {
+    const obj: any = {};
+    if (message.messages?.length) {
+      obj.messages = message.messages.map((e) => ChatMessage.toJSON(e));
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ManyMessagesRequest>): ManyMessagesRequest {
+    return ManyMessagesRequest.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ManyMessagesRequest>): ManyMessagesRequest {
+    const message = createBaseManyMessagesRequest();
+    message.messages = object.messages?.map((e) => ChatMessage.fromPartial(e)) || [];
+    return message;
+  },
+};
 
 function createBaseChat(): Chat {
   return { Id: "", Type: 0, Metadata: undefined, MembersId: [] };
@@ -442,7 +517,16 @@ export const ChatRole = {
 };
 
 function createBaseChatMessage(): ChatMessage {
-  return { Id: "", Text: undefined, StampMillis: 0, Status: 0, AuthorId: "", LinkedChatId: "" };
+  return {
+    Id: "",
+    Text: undefined,
+    StampMillis: 0,
+    Status: 0,
+    AuthorId: "",
+    LinkedChatId: "",
+    LinkedMessage: undefined,
+    Updated: false,
+  };
 }
 
 export const ChatMessage = {
@@ -464,6 +548,12 @@ export const ChatMessage = {
     }
     if (message.LinkedChatId !== "") {
       writer.uint32(50).string(message.LinkedChatId);
+    }
+    if (message.LinkedMessage !== undefined) {
+      ChatMessage.encode(message.LinkedMessage, writer.uint32(58).fork()).ldelim();
+    }
+    if (message.Updated === true) {
+      writer.uint32(64).bool(message.Updated);
     }
     return writer;
   },
@@ -517,6 +607,20 @@ export const ChatMessage = {
 
           message.LinkedChatId = reader.string();
           continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.LinkedMessage = ChatMessage.decode(reader, reader.uint32());
+          continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.Updated = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -534,6 +638,8 @@ export const ChatMessage = {
       Status: isSet(object.Status) ? chatMessage_MessageStatusFromJSON(object.Status) : 0,
       AuthorId: isSet(object.AuthorId) ? globalThis.String(object.AuthorId) : "",
       LinkedChatId: isSet(object.LinkedChatId) ? globalThis.String(object.LinkedChatId) : "",
+      LinkedMessage: isSet(object.LinkedMessage) ? ChatMessage.fromJSON(object.LinkedMessage) : undefined,
+      Updated: isSet(object.Updated) ? globalThis.Boolean(object.Updated) : false,
     };
   },
 
@@ -557,6 +663,12 @@ export const ChatMessage = {
     if (message.LinkedChatId !== "") {
       obj.LinkedChatId = message.LinkedChatId;
     }
+    if (message.LinkedMessage !== undefined) {
+      obj.LinkedMessage = ChatMessage.toJSON(message.LinkedMessage);
+    }
+    if (message.Updated === true) {
+      obj.Updated = message.Updated;
+    }
     return obj;
   },
 
@@ -571,55 +683,89 @@ export const ChatMessage = {
     message.Status = object.Status ?? 0;
     message.AuthorId = object.AuthorId ?? "";
     message.LinkedChatId = object.LinkedChatId ?? "";
+    message.LinkedMessage = (object.LinkedMessage !== undefined && object.LinkedMessage !== null)
+      ? ChatMessage.fromPartial(object.LinkedMessage)
+      : undefined;
+    message.Updated = object.Updated ?? false;
     return message;
   },
 };
 
-function createBaseCreateChatRequest(): CreateChatRequest {
-  return { Type: 0, Metadata: undefined, MembersId: [] };
+function createBaseChatMember(): ChatMember {
+  return { Id: "", Email: "", Avatar: new Uint8Array(0), Login: "", Online: false, lastSeenMillis: 0 };
 }
 
-export const CreateChatRequest = {
-  encode(message: CreateChatRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.Type !== 0) {
-      writer.uint32(8).int32(message.Type);
+export const ChatMember = {
+  encode(message: ChatMember, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.Id !== "") {
+      writer.uint32(10).string(message.Id);
     }
-    if (message.Metadata !== undefined) {
-      ChatMetadata.encode(message.Metadata, writer.uint32(18).fork()).ldelim();
+    if (message.Email !== "") {
+      writer.uint32(18).string(message.Email);
     }
-    for (const v of message.MembersId) {
-      writer.uint32(26).string(v!);
+    if (message.Avatar.length !== 0) {
+      writer.uint32(26).bytes(message.Avatar);
+    }
+    if (message.Login !== "") {
+      writer.uint32(34).string(message.Login);
+    }
+    if (message.Online === true) {
+      writer.uint32(40).bool(message.Online);
+    }
+    if (message.lastSeenMillis !== 0) {
+      writer.uint32(48).int64(message.lastSeenMillis);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateChatRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ChatMember {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreateChatRequest();
+    const message = createBaseChatMember();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag !== 8) {
+          if (tag !== 10) {
             break;
           }
 
-          message.Type = reader.int32() as any;
+          message.Id = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.Metadata = ChatMetadata.decode(reader, reader.uint32());
+          message.Email = reader.string();
           continue;
         case 3:
           if (tag !== 26) {
             break;
           }
 
-          message.MembersId.push(reader.string());
+          message.Avatar = reader.bytes();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.Login = reader.string();
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.Online = reader.bool();
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.lastSeenMillis = longToNumber(reader.int64() as Long);
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -630,40 +776,51 @@ export const CreateChatRequest = {
     return message;
   },
 
-  fromJSON(object: any): CreateChatRequest {
+  fromJSON(object: any): ChatMember {
     return {
-      Type: isSet(object.Type) ? chatTypeFromJSON(object.Type) : 0,
-      Metadata: isSet(object.Metadata) ? ChatMetadata.fromJSON(object.Metadata) : undefined,
-      MembersId: globalThis.Array.isArray(object?.MembersId)
-        ? object.MembersId.map((e: any) => globalThis.String(e))
-        : [],
+      Id: isSet(object.Id) ? globalThis.String(object.Id) : "",
+      Email: isSet(object.Email) ? globalThis.String(object.Email) : "",
+      Avatar: isSet(object.Avatar) ? bytesFromBase64(object.Avatar) : new Uint8Array(0),
+      Login: isSet(object.Login) ? globalThis.String(object.Login) : "",
+      Online: isSet(object.Online) ? globalThis.Boolean(object.Online) : false,
+      lastSeenMillis: isSet(object.lastSeenMillis) ? globalThis.Number(object.lastSeenMillis) : 0,
     };
   },
 
-  toJSON(message: CreateChatRequest): unknown {
+  toJSON(message: ChatMember): unknown {
     const obj: any = {};
-    if (message.Type !== 0) {
-      obj.Type = chatTypeToJSON(message.Type);
+    if (message.Id !== "") {
+      obj.Id = message.Id;
     }
-    if (message.Metadata !== undefined) {
-      obj.Metadata = ChatMetadata.toJSON(message.Metadata);
+    if (message.Email !== "") {
+      obj.Email = message.Email;
     }
-    if (message.MembersId?.length) {
-      obj.MembersId = message.MembersId;
+    if (message.Avatar.length !== 0) {
+      obj.Avatar = base64FromBytes(message.Avatar);
+    }
+    if (message.Login !== "") {
+      obj.Login = message.Login;
+    }
+    if (message.Online === true) {
+      obj.Online = message.Online;
+    }
+    if (message.lastSeenMillis !== 0) {
+      obj.lastSeenMillis = Math.round(message.lastSeenMillis);
     }
     return obj;
   },
 
-  create(base?: DeepPartial<CreateChatRequest>): CreateChatRequest {
-    return CreateChatRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<ChatMember>): ChatMember {
+    return ChatMember.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<CreateChatRequest>): CreateChatRequest {
-    const message = createBaseCreateChatRequest();
-    message.Type = object.Type ?? 0;
-    message.Metadata = (object.Metadata !== undefined && object.Metadata !== null)
-      ? ChatMetadata.fromPartial(object.Metadata)
-      : undefined;
-    message.MembersId = object.MembersId?.map((e) => e) || [];
+  fromPartial(object: DeepPartial<ChatMember>): ChatMember {
+    const message = createBaseChatMember();
+    message.Id = object.Id ?? "";
+    message.Email = object.Email ?? "";
+    message.Avatar = object.Avatar ?? new Uint8Array(0);
+    message.Login = object.Login ?? "";
+    message.Online = object.Online ?? false;
+    message.lastSeenMillis = object.lastSeenMillis ?? 0;
     return message;
   },
 };
@@ -673,9 +830,9 @@ export const ChatActionsDefinition = {
   name: "ChatActions",
   fullName: "com.pager.api.ChatActions",
   methods: {
-    createChat: {
-      name: "CreateChat",
-      requestType: CreateChatRequest,
+    updateChat: {
+      name: "UpdateChat",
+      requestType: Chat,
       requestStream: false,
       responseType: Chat,
       responseStream: false,
@@ -689,17 +846,52 @@ export const ChatActionsDefinition = {
       responseStream: false,
       options: {},
     },
+    updateManyMessages: {
+      name: "UpdateManyMessages",
+      requestType: ManyMessagesRequest,
+      requestStream: false,
+      responseType: Empty,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const;
 
 export interface ChatActionsServiceImplementation<CallContextExt = {}> {
-  createChat(request: CreateChatRequest, context: CallContext & CallContextExt): Promise<DeepPartial<Chat>>;
+  updateChat(request: Chat, context: CallContext & CallContextExt): Promise<DeepPartial<Chat>>;
   sendMessage(request: ChatMessage, context: CallContext & CallContextExt): Promise<DeepPartial<Empty>>;
+  updateManyMessages(request: ManyMessagesRequest, context: CallContext & CallContextExt): Promise<DeepPartial<Empty>>;
 }
 
 export interface ChatActionsClient<CallOptionsExt = {}> {
-  createChat(request: DeepPartial<CreateChatRequest>, options?: CallOptions & CallOptionsExt): Promise<Chat>;
+  updateChat(request: DeepPartial<Chat>, options?: CallOptions & CallOptionsExt): Promise<Chat>;
   sendMessage(request: DeepPartial<ChatMessage>, options?: CallOptions & CallOptionsExt): Promise<Empty>;
+  updateManyMessages(request: DeepPartial<ManyMessagesRequest>, options?: CallOptions & CallOptionsExt): Promise<Empty>;
+}
+
+function bytesFromBase64(b64: string): Uint8Array {
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
+  }
+}
+
+function base64FromBytes(arr: Uint8Array): string {
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(globalThis.String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
+  }
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

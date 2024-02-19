@@ -1,224 +1,235 @@
 import {createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState} from "react";
 import {StreamsApi} from "../../data/api.ts";
-import transfers from "../../data/mobx/transfers.ts";
+import transfers, {getListByType, getValueByType} from "../../data/mobx/transfers.ts";
 import {observer} from "mobx-react-lite";
-import {IInitialList} from "../../interfaces/ICommon.ts";
-import {autorun} from "mobx";
-import {Metadata, ServerStreamingClientMethod} from "nice-grpc-web";
-import {CallOptions} from "nice-grpc-common";
 import {PagerProfile} from "../../testproto/common/common.ts";
-import {Chat, ChatMessage, ChatRole} from "../../testproto/chat/chat_actions.ts";
+import {Chat, ChatMember, ChatMessage, ChatRole} from "../../testproto/chat/chat_actions.ts";
 import {TransferObject} from "../../testproto/transfers/item.ts";
 import {
+    ChatMemberRequest_Type,
     ChatStreamRequest,
     ChatStreamRequest_Type,
     ProfileStreamRequest,
     ProfileStreamRequest_Type
 } from "../../testproto/transfers/streams.ts";
-import {connectToWebSocket} from "../../data/sockets.ts";
+import {autorun} from "mobx";
+import * as _ from "lodash";
+import {handleArrayChangeValue, handleDownStream} from "../../data/utils/transfers.ts";
+import {closeWebSocket, connectToWebSocket} from "../../data/sockets.ts";
+
+export interface ChatInfo {
+    chatInfo: Chat
+    messages: ChatMessage[]
+}
+
+export interface ChatsData {
+    [id: string]: ChatInfo
+}
+
+export interface MembersData {
+    [id: string]: ChatMember
+}
 
 interface IDataObject {
-    profile: PagerProfile | undefined
+    profile: PagerProfile
     chatRoles: ChatRole[]
 
-    chats: Chat[]
-    messages: ChatMessage[]
+    chats: ChatsData
+    members: MembersData
+    initList: {
+        profile: boolean
+        chats: boolean
+    }
 
-    selectedChatId: string | undefined
-    setSelectedChatId: (chatId: string) => void
+    handleMessagesPagination: (messages: ChatMessage[], chatId: string) => void,
+    handleSetMembers: (memberIdArr: string[]) => Promise<void>
 }
 
 const contextData: IDataObject = {
-    profile: undefined,
+    profile: PagerProfile.create(),
     chatRoles: [],
 
-    chats: [],
-    messages: [],
+    chats: {},
+    initList: {
+        profile: false,
+        chats: false
+    },
+    members: {},
 
-    selectedChatId: undefined,
-    setSelectedChatId: () => {
-    }
+    handleMessagesPagination: () => {
+    },
+    handleSetMembers: async () => {
+    },
 };
 
 export const StreamsContext = createContext(contextData)
 
 const GlobalContext: FC<{ children: ReactNode }> = observer(({children}) => {
-    const [messages, setMessages] = useState<ChatMessage[]>([])
-    const [chats, setChats] = useState<Chat[]>([])
-    const [profile, setProfile] = useState<PagerProfile | undefined>(undefined)
-    const [chatRoles, setChatRoles] = useState<ChatRole[]>([])
-    const [selectedChatId, setSelectedChatId] = useState<string | undefined>(undefined)
+    const [chats, setChats] = useState<ChatsData>(contextData.chats)
+    const [members, setMembers] = useState<MembersData>(contextData.members)
+    const [profile, setProfile] = useState<PagerProfile>(contextData.profile)
+    const [chatRoles, setChatRoles] = useState<ChatRole[]>(contextData.chatRoles)
 
-    const [chatsInitMap, setChatsInitMap] = useState<Map<string, {
-        initialized: boolean,
-        watching: boolean
-    }> | undefined>(undefined)
+    const [initList, setInitList] = useState(contextData.initList)
 
-    const [initList, setInitList] = useState<IInitialList>({
-        profile: false,
-        chat: false
-    })
-
-    //memo for context objs
-    const contextProperties = useMemo((): IDataObject => ({
-        messages,
-        chats,
-        chatRoles,
-        profile,
-        selectedChatId,
-        setSelectedChatId
-    }), [chatRoles, chats, messages, profile, selectedChatId])
-
-    //main handler for all streams in application
-    const handleDownStream = useCallback(async <T extends object>(
-        init: boolean,
-        toggleInit: () => void,
-        stream: ServerStreamingClientMethod<T, TransferObject>,
-        requestBody: T,
-    ) => {
-        const jwt = localStorage.getItem("jwt");
-        let ops = {}
-        if (init) {
-            ops = {watch: "watch"}
+    const handleChatMessagesPaginationUpdate = useCallback((messages: ChatMessage[], chatId: string) => {
+        const chatMd = chats[chatId]
+        if (messages.length === chatMd?.messages?.length) {
+            return
+        } else if (chatMd) {
+            chatMd.messages = messages;
+            setChats((prevState) => ({...prevState, [chatId]: chatMd}))
         }
-        if (jwt) {
-            ops = {...ops, jwt: jwt}
-        }
-        const test: CallOptions = {
-            metadata: new Metadata(ops)
-        }
+    }, [chats])
 
-        const responses = stream(requestBody, test)
-
-        for await (const response of responses) {
-            try {
-                transfers.setToMap(response)
-            } catch (e) {
-                console.log(e)
+    const handleSetMembers = useCallback(async (memberIdArr: string[]) => {
+        let noChanges = true;
+        const newData: MembersData = {}
+        for (const memberId of memberIdArr) {
+            if (!members[memberId]) {
+                await handleDownStream(false, StreamsApi.streamChatMember, {MemberId: memberId}).then((v) => {
+                    newData[memberId] = JSON.parse(new TextDecoder().decode(v[0].Data))
+                    noChanges = false;
+                    handleDownStream(true, StreamsApi.streamChatMember, {MemberId: memberId})
+                })
             }
         }
-
-        if (!init) {
-            toggleInit()
+        if (!noChanges) {
+            setMembers((prevState) => ({...prevState, ...newData}))
         }
+    }, [members])
 
-    }, [])
-
-    //start profile stream by initialization data
-    const handleProfileContextStream = useCallback(async () => {
-        handleDownStream<ProfileStreamRequest>(initList.profile, () => setInitList({
-            ...initList,
-            profile: true
-        }), StreamsApi.streamProfile, {})
-    }, [handleDownStream, initList.profile])
-
-    //construct chats initialization data map
-    const handleChatInitList = useCallback(() => {
-        if (initList.profile && chatRoles.length > 0) {
-            const mapCopy = chatsInitMap === undefined ? new Map() : new Map(chatsInitMap)
-            for (const role of chatRoles) {
-                if (!mapCopy.has(role.Id)) {
-                    mapCopy.set(role.Id, {initialized: false, watching: false})
-                }
-            }
-            setChatsInitMap(mapCopy)
-            setInitList((prevState) => ({...prevState, chat: false}))
+    const handleSetMemberChanges = useCallback((obj: TransferObject) => {
+        const member: ChatMember = JSON.parse(new TextDecoder().decode(obj.Data))
+        const existsMember = members[member.Id]
+        if (!_.isEqual(existsMember, member)) {
+            setMembers((prevState) => ({...prevState, [member.Id]: member}))
         }
-    }, [chatRoles, initList.profile])
+    }, [members])
 
-    //start chat streams by initialization data
-    const handleChatStreams = useCallback(async () => {
-        if (initList.profile && chatsInitMap !== undefined) {
-            const mapCopy = new Map(chatsInitMap)
-            for (const chatInfo of mapCopy) {
-                const chatId = chatInfo[0]
-                const chatData = chatInfo[1]
-                if (chatData?.initialized === false) {
-                    await handleDownStream<ChatStreamRequest>(false, () => {
-                    }, StreamsApi.streamChat, {ChatId: chatId})
-                    mapCopy.set(chatId, {initialized: true, watching: false})
-                } else if (chatData?.watching === false) {
-                    handleDownStream<ChatStreamRequest>(true, () => {
-                    }, StreamsApi.streamChat, {ChatId: chatId})
-                    mapCopy.set(chatId, {initialized: true, watching: true})
-                }
-            }
-            if (!initList.chat) {
-                setChatsInitMap(mapCopy)
-            }
+    const handleChatMessagesChanges = useCallback((obj: TransferObject) => {
+        const message: ChatMessage = JSON.parse(new TextDecoder().decode(obj.Data))
+        const chatMd = chats[message.LinkedChatId]
+        if (chatMd.messages && !chatMd.messages.find((v) => v.Id === message.Id && v.Text === message.Text && v.Status === message.Status)) {
+            setChats((prevState) => ({
+                ...prevState,
+                [message.LinkedChatId]: {...chatMd, messages: handleArrayChangeValue(chatMd.messages, message)}
+            }))
         }
-    }, [chatsInitMap, handleDownStream, initList.profile, initList.chat])
+    }, [chats])
 
-    //observe chat initialization data
-    useEffect(() => {
-        if (initList.profile && !initList.chat) {
-            let allWatching = true;
-            chatsInitMap?.forEach((v) => {
-                if (!v.watching) {
-                    allWatching = false;
-                    return false;
-                }
+    const handleChatChanges = useCallback((obj: TransferObject) => {
+        const newChat: Chat = JSON.parse(new TextDecoder().decode(obj.Data))
+        const chatMd = chats[newChat.Id]
+        if (chatMd && !_.isEqual(chatMd, newChat)) {
+            chatMd.chatInfo = newChat
+            setChats((prevState) => ({...prevState, [newChat.Id]: chatMd}))
+        }
+    }, [chats])
+
+    const startProfileStreaming = useCallback(async () => {
+        if (!initList.profile) {
+            await handleDownStream<ProfileStreamRequest>(false, StreamsApi.streamProfile, {}).then((v) => {
+                handleDownStream<ProfileStreamRequest>(true, StreamsApi.streamProfile, {})
+                const profile = getValueByType<PagerProfile>(ProfileStreamRequest_Type[1], v)
+                setProfile(profile)
+                setChatRoles(getListByType<ChatRole>(ProfileStreamRequest_Type[2], v))
+                setInitList((prevState) => ({...prevState, profile: true}))
             })
-            setInitList((prevState) => ({...prevState, chat: allWatching}))
         }
-    }, [chatsInitMap, initList.chat]);
+    }, [initList.profile])
+
+    const startChatStreaming = useCallback(async () => {
+        const newMembersData: Map<string, ChatMember> = new Map()
+        const newChatsData: ChatsData = {}
+        let noChanges = true;
+        for (const role of chatRoles) {
+            if (!chats[role.Id]) {
+                await handleDownStream<ChatStreamRequest>(false, StreamsApi.streamChat, {
+                    ChatId: role.Id,
+                    RequestedMessages: 1
+                }).then(async (v) => {
+                    const chat = getValueByType<Chat>(ChatStreamRequest_Type[1], v)
+                    const messages = getListByType<ChatMessage>(ChatStreamRequest_Type[2], v)
+                    chat.MembersId.forEach((id) => {
+                        newMembersData.set(id, ChatMember.create())
+                    })
+                    newChatsData[chat.Id] = {
+                        messages: messages,
+                        chatInfo: chat
+                    }
+                    handleDownStream<ChatStreamRequest>(true, StreamsApi.streamChat, {
+                        ChatId: role.Id,
+                        RequestedMessages: 0
+                    })
+                })
+                noChanges = false;
+            }
+        }
+        if (!noChanges) {
+            setChats((prevState) => ({...prevState, ...newChatsData}))
+            await handleSetMembers(Array.from(newMembersData.keys()))
+            if (!initList.chats) {
+                setInitList((prevState) => ({...prevState, chats: true}))
+            }
+        } else if (initList.profile && !initList.chats && (chatRoles.length === 0)) {
+            setInitList((prevState) => ({...prevState, chats: true}))
+        }
+    }, [chatRoles, chats, handleSetMembers, initList.chats, initList.profile])
+
+    useEffect(() => {
+        startProfileStreaming()
+    }, [startProfileStreaming]);
+
+    useEffect(() => {
+        startChatStreaming()
+    }, [startChatStreaming]);
+
+    useEffect(() => {
+        if (profile.UserId) {
+            connectToWebSocket(profile.UserId)
+            window.addEventListener('beforeunload', closeWebSocket)
+        }
+        return () => {
+            closeWebSocket()
+            window.removeEventListener('beforeunload', closeWebSocket)
+        }
+    }, [profile.UserId]);
 
     //change states from watching streams (all streams are initialized)
     useEffect(() => autorun(() => {
-        const lObj = transfers.lastObject
-        if (lObj !== null && initList.chat && initList.profile) {
-            switch (lObj.Type) {
+        const object = transfers.lastObject
+        if (object !== null) {
+            switch (object.Type) {
                 case ProfileStreamRequest_Type[1]:
-                    setProfile(transfers.streamValue<PagerProfile>(ProfileStreamRequest_Type[1]))
+                    setProfile(JSON.parse(new TextDecoder().decode(object.Data)))
                     break;
                 case ProfileStreamRequest_Type[2]:
-                    setChatRoles(transfers.streamListValue<ChatRole>(ProfileStreamRequest_Type[2]))
+                    setChatRoles((prevState) => handleArrayChangeValue<ChatRole>(prevState, JSON.parse(new TextDecoder().decode(object.Data))))
                     break;
                 case ChatStreamRequest_Type[1]:
-                    setChats(transfers.streamListValue<Chat>(ChatStreamRequest_Type[1]))
+                    handleChatChanges(object)
                     break;
                 case ChatStreamRequest_Type[2]:
-                    setMessages(transfers.streamListValue<ChatMessage>(ChatStreamRequest_Type[2]))
+                    handleChatMessagesChanges(object)
+                    break;
+                case ChatMemberRequest_Type[1]:
+                    handleSetMemberChanges(object)
                     break;
             }
         }
-    }), [chatsInitMap, initList.profile])
+    }), [handleChatChanges, handleChatMessagesChanges, handleSetMemberChanges])
 
-    //set profile md after init
-    useEffect(() => {
-        if (initList.profile) {
-            setProfile(transfers.streamValue<PagerProfile>(ProfileStreamRequest_Type[1]))
-            setChatRoles(transfers.streamListValue<ChatRole>(ProfileStreamRequest_Type[2]))
-        }
-    }, [initList.profile]);
-
-    //set chats md after init
-    useEffect(() => {
-        if (initList.chat) {
-            setChats(transfers.streamListValue<Chat>(ChatStreamRequest_Type[1]))
-            setMessages(transfers.streamListValue<ChatMessage>(ChatStreamRequest_Type[2]))
-        }
-    }, [initList.chat]);
-
-    //start stream funcs
-    useEffect(() => {
-        handleProfileContextStream()
-    }, [handleProfileContextStream]);
-
-    useEffect(() => {
-        handleChatInitList()
-    }, [handleChatInitList]);
-
-    useEffect(() => {
-        handleChatStreams()
-    }, [handleChatStreams])
-
-    //connect to users socket server
-    useEffect(() => {
-        if (profile !== undefined) {
-            connectToWebSocket(profile.UserId)
-        }
-    }, [profile]);
+    //memo for context objs
+    const contextProperties = useMemo((): IDataObject => ({
+        chats,
+        chatRoles,
+        profile,
+        members,
+        handleMessagesPagination: handleChatMessagesPaginationUpdate,
+        handleSetMembers,
+        initList
+    }), [chatRoles, chats, handleChatMessagesPaginationUpdate, handleSetMembers, initList, members, profile])
 
     return (
         <StreamsContext.Provider

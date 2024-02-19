@@ -1,0 +1,72 @@
+@use '../../../styles/global';
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.profile-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  min-width: 29rem;
+  min-height: 10rem;
+}
+
+.header-modal{
+  display: flex;
+  padding-bottom: 15px;
+  justify-content: space-between;
+}
+
+.profile-info{
+  display: flex;
+
+}
+.profile-data{
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding-left: 1rem;
+}
+.buttons-modal{
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-buttons{
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-input-wrapper {
+  background-color: global.$tinted-color;
+  border-radius: global.$med-br;
+  padding: 0 .5rem;
+}
+
+.info-profile{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.5rem;
+  padding: .1rem .5rem;
+  div{
+   display: flex;
+  }
+  img{
+    max-width: none;
+  }
+  text{
+    padding-left: .5rem;
+  }
+}

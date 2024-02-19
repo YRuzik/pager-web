@@ -1,27 +1,27 @@
 @font-face {
-  font-family: "Circular";
-  src: url("./assets/fonts/CircularStd-Black.ttf") format("truetype");
+  font-family: "Geologica";
+  src: url("./assets/fonts/Geologica-Black.ttf");
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Circular";
-  src: url("./assets/fonts/CircularStd-Bold.ttf") format("truetype");
+  font-family: "Geologica";
+  src: url("./assets/fonts/Geologica-Medium.ttf");
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Circular";
-  src: url("./assets/fonts/CircularStd-Medium.ttf") format("truetype");
+  font-family: "Geologica";
+  src: url("./assets/fonts/Geologica-Regular.ttf");
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Circular";
-  src: url("./assets/fonts/CircularStd-Book.ttf") format("truetype");
+  font-family: "Geologica";
+  src: url("./assets/fonts/Geologica-Thin.ttf");
   font-weight: 400;
   font-style: normal;
 }
@@ -54,7 +54,9 @@ h1, h2, h3, h4, h5, h6, p {
   font-size: inherit;
   font-weight: inherit;
 }
-
+h1{
+  font-weight: bold;
+}
 ul, ul li {
   list-style: none;
 }

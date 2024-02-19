@@ -1,87 +1,11 @@
 @use '../../../styles/global';
-.chatting-window-wrapper {
+.messages-layout {
+  display: flex;
   background-color: global.$tinted-color;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.all-messages-wrapper {
-  height: 100%;
-  overflow-y: scroll;
-  display: flex;
-  flex-direction: column-reverse;
-}
-
-.input-wrapper {
-  padding: {
-    left: global.$default-inset;
-    right: global.$default-inset;
-    bottom: global.$default-inset;
-  };
-  z-index: 2;
-}
-
-.chatting-input {
-  width: 100%;
-  height: 40px;
-  background-color: global.$bg-color;
-  padding: 0 global.$default-inset;
-  border-radius: global.$default-inset;
-}
-
-.message-outer {
-  display: flex;
-  padding-bottom: 4px;
-}
-
-.message-inner {
-  flex: 1;
-  display: flex;
-  align-items: flex-end;
-  flex-direction: row-reverse;
-}
-
-.message-spacer {
-  flex: 1;
-}
-
-.message-bubble {
-  max-width: 70%;
-  overflow-wrap: break-word;
-  padding: global.$default-inset;
-}
-
-.message-status {
-  width: 20px;
-  display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-}
-
-.message-avatar {
-  padding-left: 6px;
-  padding-right: 8px;
-}
-
-.message-avatar-handle {
-  width: 20px;
-  height: 20px;
-  border-radius: global.$max-br;
-  background-color: #557BF3;
-}
-
-.my-message {
-  background-color: global.$brand-color;
-  color: global.$text-on-brand-color;
-  border-radius: global.$default-br global.$default-br 0 global.$default-br;
-}
-
-.other-message {
-  background-color: global.$secondary-color;
-  color: global.$text-color;
-  border-radius: global.$default-br global.$default-br global.$default-br 0;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
 }
