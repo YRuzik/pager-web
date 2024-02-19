@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import toast, { ToastBar, Toaster } from 'react-hot-toast';
-import AppRoutes from "./route.tsx";
-import {StrictMode} from "react";
+import AppRoutes from './route.tsx';
+import { StrictMode } from 'react';
 
 const App = () => {
     return (
@@ -15,9 +15,7 @@ const App = () => {
                                     <>
                                         {icon}
                                         {message}
-                                        {t.type !== 'loading' && (
-                                            <button onClick={() => toast.dismiss(t.id)}>X</button>
-                                        )}
+                                        {t.type !== 'loading' && <button onClick={() => toast.dismiss(t.id)}>X</button>}
                                     </>
                                 )}
                             </ToastBar>

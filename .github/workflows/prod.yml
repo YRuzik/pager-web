@@ -1,0 +1,17 @@
+name: production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  dockerize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out code
+        uses: actions/checkout@v3
+      - name: build docker container
+        run: docker build -t yruzik/pager-web .
+      - name: publish docker container
+        run: docker push yruzik/pager-web

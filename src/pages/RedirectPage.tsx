@@ -4,7 +4,7 @@ import {
 import toast from "react-hot-toast";
 
 const NotFoundRedirect = () => {
-    let location = useLocation();
+    const location = useLocation();
     toast.error('page not found' + location.pathname)
     return <Navigate to="/" />;
 };
