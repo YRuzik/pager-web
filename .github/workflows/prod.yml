@@ -27,12 +27,12 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/pager-web
       - name: deploy via ssh
-        uses: fifsky/ssh-action@master
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
-          user: ${{ secrets.USERNAME }}
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          command: |
+          script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/pager-web
             sudo docker compose -f docker-compose.yaml down
             sudo docker compose -f docker-compose.yaml up -d
