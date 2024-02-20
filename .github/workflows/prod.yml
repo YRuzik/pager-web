@@ -1,4 +1,4 @@
-#4
+#5
 name: production
 
 on:
@@ -7,6 +7,15 @@ on:
       - main
 
 jobs:
+  telegram:
+    runs-on: ubuntu-latest
+    steps:
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: хуй
   dockerize:
     runs-on: ubuntu-latest
     steps:
