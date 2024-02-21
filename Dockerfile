@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build --mode production
+RUN vite build --mode production
 
 FROM nginx:1.21.0-alpine
 
