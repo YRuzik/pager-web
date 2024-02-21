@@ -17,7 +17,7 @@ ENV REACT_APP_APIWSHOST=$REACT_APP_APIWSHOST
 
 COPY . .
 
-RUN npm run build
+RUN npm run buil
 
 FROM nginx:1.21.0-alpine
 
