@@ -15,7 +15,7 @@ export function connectToWebSocket(userID: string) {
         };
     }
     if (window['WebSocket']) {
-        webSocketConnection = new WebSocket(`${process.env.APIWSHOST}/ws/${userID}/`);
+        webSocketConnection = new WebSocket(`${process.env.REACT_APP_APIWSHOST}/ws/${userID}/`);
 
         webSocketConnection.onopen = function () {
             new ClientActionsApi().UpdateConnectionState({
