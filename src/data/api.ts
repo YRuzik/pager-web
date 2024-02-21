@@ -15,8 +15,8 @@ import { asyncFuncHandler } from './utils/error.ts';
 import { ClientServiceDefinition, ConnectionRequest, SearchUsersRequest } from '../testproto/client/client.ts';
 import { PagerProfile } from '../testproto/common/common.ts';
 
-export const host = process.env.REACT_APP_WSHOST ?? "";
-export const authHost = process.env.REACT_APP_ATHOST ?? "";
+export const host = import.meta.env.REACT_APP_WSHOST ?? "";
+export const authHost = import.meta.env.REACT_APP_ATHOST ?? "";
 
 const websocketTransport = createChannel(host, WebsocketTransport());
 const authTransport = createChannel(authHost);
