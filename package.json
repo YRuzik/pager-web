@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --mode production",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "nice-proto": "protoc --ts_proto_out=./src/testproto/ --ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false,forceLong=Long --proto_path=./proto/pager_proto/ ./proto/pager_proto/chat/chat_actions.proto ./proto/pager_proto/common/common.proto ./proto/pager_proto/common/errors.proto ./proto/pager_proto/transfers/item.proto ./proto/pager_proto/transfers/streams.proto ./proto/pager_proto/auth/auth.proto ./proto/pager_proto/client/client.proto"
