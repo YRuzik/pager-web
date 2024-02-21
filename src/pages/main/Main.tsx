@@ -7,6 +7,8 @@ import Icon, {AppIcons} from "../../components/common/icon/Icon.tsx";
 export function MainPage() {
     console.log(process.env.REACT_APP_ATHOST)
     console.log(process.env)
+    console.log(import.meta.env)
+    console.log(import.meta.env.VITE_ATHOST)
     return (
         <div className={'main-container'}>
             <header className={"header-main-page"}>
