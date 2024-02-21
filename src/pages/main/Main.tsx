@@ -19,7 +19,7 @@ export function MainPage() {
                 Будь частью разговора, будь частью истории. Мессенджер, где твои слова - ключ к захватывающему общению!
             </span>
             <div className={"main-slogan-text"}>
-                Pоager - <br/>облегчите общение с кем угодно!
+                Pager - <br/>облегчите общение с кем угодно!
             </div>
             <div className={"background-present"}>
                 <div className={'chats-image'}>
