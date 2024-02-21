@@ -15,6 +15,6 @@ export default defineConfig({
     port: 5000
   },
   define: {
-    'process.env': JSON.stringify(process.env) ?? {}
+    REACT_APP_WSHOST: process.env.REACT_APP_WSHOST
   }
 })
