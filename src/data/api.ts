@@ -15,8 +15,8 @@ import { asyncFuncHandler } from './utils/error.ts';
 import { ClientServiceDefinition, ConnectionRequest, SearchUsersRequest } from '../testproto/client/client.ts';
 import { PagerProfile } from '../testproto/common/common.ts';
 
-export const host = "https://wsocks.pagerw.ru";
-export const authHost = "https://auth.pagerw.ru";
+export const host = process.env.WSHOST ?? "";
+export const authHost = process.env.ATHOST ?? "";
 
 const websocketTransport = createChannel(host, WebsocketTransport());
 const authTransport = createChannel(authHost);
