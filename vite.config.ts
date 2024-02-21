@@ -15,6 +15,6 @@ export default defineConfig({
     port: 5000
   },
   define: {
-    'process.env': process.env ?? {}
+    'process.env': JSON.stringify(process.env) ?? {}
   }
 })
