@@ -6,8 +6,9 @@
 
 .header-main-page {
   display: flex;
-  padding: 1vh 10vh;
-  font-size: 5vh;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
 }
 
 .span-name-header {
@@ -16,15 +17,11 @@
 }
 
 .logo-header {
-  height: 5vh;
-  padding-right: 2.5vh;
-  margin-top: 0.4rem;
+  height: 4rem;
 }
 
 .auth-wrapper {
-  font-size: 2.5vh;
-  margin-left: auto;
-  margin-right: 0;
+  font-size: 140%;
   display: flex;
   gap: 2vh;
   align-items: center;
@@ -32,32 +29,37 @@
 }
 
 .main-slogan {
+  color: global.$text-secondary-color;
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
-  width: 50rem;
-  margin: 4vh auto;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   font-weight: bold;
   font-size: 1.5rem;
+  padding-bottom: 5rem;
+}
+
+.main-slogan div {
+  width: 50%;
 }
 
 .main-slogan-text{
-  font-size: 3rem;
+  padding: 5rem 0 1rem 0;
+  font-size: 4rem;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  width: 60vh;
-  margin: 4vh auto;
   text-align: center;
+  font-weight: 600;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-image: linear-gradient(global.$brand-gradient);
 }
 
 .background-present {
-  background: linear-gradient(1deg, global.$brand-color 0%, global.$light-brand-color 100%);
+  background: linear-gradient(210deg, rgba(114, 138, 213, 0.62) 0%, rgba(183, 110, 183, 0.47) 100%);
   border-radius: global.$default-br;
-  margin: 0 10rem;
   height: 50rem;
   display: flex;
   justify-content: center;
@@ -66,15 +68,24 @@
 
 .chats-image{
   position: relative;
-  width: 75rem;
-  top: 5rem;
-  box-shadow: 0 10px 10px rgba(0,0,0,0.22);
+  width: 87%;
+  top: 16%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+  border-radius: global.$default-br;
+}
+
+.chats-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: global.$default-br;
 }
 
 .feature-wrapper{
+  padding: 15rem 0 3rem 0;
   display: flex;
   justify-content: space-evenly;
-  margin: 10rem 10rem;
+  flex-wrap: wrap;
 }
 
 .feature-card{
@@ -83,6 +94,7 @@
   align-items: center;
   gap: 1rem;
   width: 20rem;
+  padding-bottom: 3rem;
   span{
     font-weight: bold;
     font-size: 1.8rem;
@@ -110,25 +122,26 @@
 
 .FAQ-container{
   display: flex;
-  margin: 10rem 10rem;
-  gap: 5rem;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .FAQ-wrapper{
   display: flex;
   flex-direction: column;
-  gap: 2rem;
   h1{
     color: global.$text-color;
     font-size: 3.5rem;
     font-weight: bold;
+    margin-bottom: 1rem;
   }
   h2{
+    margin-bottom: 2rem;
     font-size: 1.3rem;
     color: global.$text-secondary-color;
   }
   ul{
-    margin-left: 3.5rem;
+    margin-left: 1.75rem;
     font-size: 1.7rem;
     list-style: decimal;
     li{
@@ -140,8 +153,7 @@
 
 .FAQ-image{
   position: relative;
-  width: 35rem;
-  padding: 3rem 0 0 3rem;
+  width: 40%;
 }
 
 .footer{
@@ -164,5 +176,14 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-image: linear-gradient(global.$brand-gradient);
+  }
+}
+
+@media (max-width: 1024px) {
+  .FAQ-container {
+    flex-wrap: wrap;
+  }
+  .FAQ-image {
+    width: 100%;
   }
 }

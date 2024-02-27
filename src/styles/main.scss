@@ -1,5 +1,11 @@
 @use 'global';
 
+.body-container {
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 0 5rem;
+}
+
 body {
   background-color: global.$bg-color;
   font-family: "Geologica", sans-serif;

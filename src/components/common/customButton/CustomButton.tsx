@@ -4,11 +4,9 @@ import "./customButton.scss"
 export enum ButtonStyles {
     outlinedButtonMax = "outlined-button max-width",
     outlinedButtonDefault = "outlined-button base-width",
-    outlinedButtonMin = "outlined-button min-width",
 
     elevatedButtonMax = "elevated-button max-width",
     elevatedButtonDefault = "elevated-button base-width",
-    elevatedButtonMin = "elevated-button min-width"
 }
 
 type CustomButtonProps = {
