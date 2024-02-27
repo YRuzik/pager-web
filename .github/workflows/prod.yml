@@ -42,20 +42,20 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/pager-web
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [dockerize]
-    steps:
-      - name: deploy via ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/pager-web
-            sudo docker compose -f docker-compose.yaml down
-            sudo docker compose -f docker-compose.yaml up -d
+#  deploy:
+#    runs-on: ubuntu-latest
+#    needs: [dockerize]
+#    steps:
+#      - name: deploy via ssh
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.HOST }}
+#          username: ${{ secrets.USERNAME }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          script: |
+#            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/pager-web
+#            sudo docker compose -f docker-compose.yaml down
+#            sudo docker compose -f docker-compose.yaml up -d
 
   telegram-success:
     runs-on: ubuntu-latest
