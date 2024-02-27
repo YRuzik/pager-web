@@ -79,7 +79,7 @@ jobs:
   telegram-error:
     runs-on: ubuntu-latest
     if: failure()
-    needs: [ dockerize, deploy ]
+    needs: [ dockerize ]
     steps:
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
