@@ -60,7 +60,7 @@ jobs:
   telegram-success:
     runs-on: ubuntu-latest
     if: success()
-    needs: [ dockerize, deploy ]
+    needs: [ dockerize ]
     steps:
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
